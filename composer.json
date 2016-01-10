@@ -1,0 +1,12 @@
+{
+    "require": {
+        "symfony/console": "~3.0",
+        "martial/transmission-api": "~1.0",
+        "influxdb/influxdb-php": "~1.2",
+        "stecman/symfony-console-completion": "~0.6"
+    },
+    "autoload": {
+        "psr-4": { "Popstas\\Transmission\\Console\\": "src" }
+    },
+    "bin": ["bin/transmission-cli"]
+}
