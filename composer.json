@@ -1,9 +1,12 @@
 {
     "require": {
-        "symfony/console": "~3.0",
+        "symfony/console": "~2.1",
         "martial/transmission-api": "~1.0",
-        "influxdb/influxdb-php": "~1.2",
+        "influxdb/influxdb-php": "~1.1",
         "stecman/symfony-console-completion": "~0.6"
+    },
+    "require-dev": {
+        "kherge/box": "~2.6"
     },
     "autoload": {
         "psr-4": { "Popstas\\Transmission\\Console\\": "src" }

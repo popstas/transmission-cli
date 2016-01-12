@@ -1,0 +1,21 @@
+{
+    "chmod": "0755",
+    "directories": ["src"],
+    "finder": [
+    {
+        "name": "*.php",
+        "exclude": [
+            "herrera-io",
+            "kherge",
+            "phpseclib",
+            "phpunit",
+            "tests",
+            "test"
+        ],
+        "in": "vendor"
+    }
+],
+    "main": "bin/transmission-cli",
+    "output": "build/transmission-api.phar",
+    "stub": true
+}
