@@ -27,4 +27,5 @@ deploy:
   file: build/transmission-cli.phar
   on:
     repo: popstas/transmission-cli
+    php: '5.6'
     tags: true

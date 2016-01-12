@@ -16,6 +16,6 @@
     }
 ],
     "main": "bin/transmission-cli",
-    "output": "build/transmission-api.phar",
+    "output": "build/transmission-cli.phar",
     "stub": true
 }
