@@ -27,8 +27,6 @@ EOT
     {
         $client = $this->getClient();
 
-        $client->removeTorrents('all');
-
         $obsoleteList = $client->getObsoleteTorrents();
         if(!empty($obsoleteList)){
             $client->removeTorrents($obsoleteList);
