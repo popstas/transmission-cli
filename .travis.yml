@@ -1,10 +1,8 @@
 language: php
 sudo: false
-
 cache:
   directories:
     - $HOME/.composer/cache/files
-
 matrix:
   fast_finish: true
   include:
@@ -22,3 +20,11 @@ before_install:
 install:
   - composer install
   - vendor/bin/box build
+
+deploy:
+  provider: releases
+  api_key:
+    secure: Oy9uKchwNgHJDvb9OrZV64gc4jVRAkKigpT9CwFfDzm59aWhHbhh4JpTIHfmOo3xVKRDK0hgk/TGH1aHpphVQihWKnlLS62TpuDR28zruolCpPKg+ZinJ4jKbg5piCnTv+EZxpK3QvpiUX9rAzVtFEhlDc8KKZTtV3UyDvtokzhb84f5A6OlZqrMgGpspfBibHMnR/YJZFMl/MX5fiff2Fb+oOHHIVy9Cl/hZv4qLBtH5SwAbi5EQdg3qkVRqdSAy3j+/pYdmUGPvDJHkrzBozbP/QhFXeetuurwM9O7m3bsgFJ7qfJWnrWFJSdYUGLZwhcLF2GCv/seJ6xctHJ4mFsM3O0y9uQoj4QsawcEpjyNXP7RL+ypr4O98SK7AeH0+ucioGXyQ6dZxDqRjnCNkCA64+YUFclhUaEsxzYl/XkxD/p/IvuQM7DuKtRMfS6BoIFCFCDAPMlEriWvJUdPvji7u16RT99pcb/3vzZ9o14W8JM32lxZ5HoKly8oFAXi7IT7dBsLAItYm0NJRlsM9OWNa/SobPDL1qK3iqVAFONYRp/0kViS1yaFcMSWfxHgxCe2XzW6Gsrm7MmO7CGV+O07rwJ35HOTGdG2bbIdISHRcVFCcMZqevFfcn+OEmjiCEcrE4ec2s6ihX26zJUXv4cX678d03noGMGCn6udAxM=
+  file: build/transmission-cli.phar
+  on:
+    repo: popstas/transmission-cli
