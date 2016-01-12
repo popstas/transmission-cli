@@ -17,6 +17,7 @@ matrix:
 
 before_install:
   - composer self-update
+  - mkdir build
 
 install:
   - composer install
