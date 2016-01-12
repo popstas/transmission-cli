@@ -9,6 +9,7 @@
             "kherge",
             "phpseclib",
             "phpunit",
+            "Tests",
             "tests",
             "test"
         ],
