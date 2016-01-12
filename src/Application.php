@@ -9,6 +9,10 @@ use Popstas\Transmission\Console\Command;
 
 class Application extends BaseApplication {
 
+    public function __construct($name='Transmission CLI', $version='dev') {
+        parent::__construct($name, $version);
+    }
+
     protected function getDefaultCommands()
     {
         $commands = parent::getDefaultCommands();
