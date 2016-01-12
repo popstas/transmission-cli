@@ -81,7 +81,7 @@ PATH="$PATH:/usr/local/bin"
 
 # TODO:
 - [ ] config file
-- [ ] phpunit
-- [ ] travisCI
+- [x] phpunit
+- [x] travisCI
 - [ ] packagist
 - [ ] docs
