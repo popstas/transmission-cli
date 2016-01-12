@@ -6,7 +6,6 @@ cache:
 matrix:
   fast_finish: true
   include:
-    - php: 5.5
     - php: 5.6
     - php: 7.0
     - php: hhvm
@@ -28,3 +27,4 @@ deploy:
   file: build/transmission-cli.phar
   on:
     repo: popstas/transmission-cli
+    tags: true
