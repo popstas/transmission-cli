@@ -1,3 +1,5 @@
+# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=v0.1)](https://travis-ci.org/popstas/transmission-cli)
+
 transmission-cli is console php application for automate torrent download/upload from weburg.net
 
 Based on [symfony/console](http://symfony.com/doc/current/components/console/index.html),
