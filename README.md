@@ -2,9 +2,11 @@
 
 transmission-cli is console php application for automate torrent download/upload from weburg.net
 
-Based on [symfony/console](http://symfony.com/doc/current/components/console/index.html),
-[martial/transmission-api](https://github.com/MartialGeek/transmission-api),
-[leominov/weburg-torrent-grabber](https://github.com/leominov/weburg-torrent-grabber).
+Based on:
+
+- [symfony/console](http://symfony.com/doc/current/components/console/index.html),
+- [martial/transmission-api](https://github.com/MartialGeek/transmission-api),
+- [leominov/weburg-torrent-grabber](https://github.com/leominov/weburg-torrent-grabber).
 
 # Features
 - send metrics to InfluxDB, torrent monitoring trends with Grafana
@@ -26,7 +28,15 @@ Based on [symfony/console](http://symfony.com/doc/current/components/console/ind
 - `send-metrics`       Send metrics to InfluxDB
 
 # Install
+Download latest transmission-cli.phar [here](https://github.com/popstas/transmission-cli/releases/latest)
+make it executable and put it to bin directory:
+```
+latest_phar=$(curl -s https://api.github.com/repos/popstas/transmission-cli/releases/latest | grep 'browser_' | cut -d\" -f4)
+wget -O /usr/local/bin/transmission-cli "$latest_phar"
+chmod +x /usr/local/bin/transmission-cli
+```
 
+Or build with composer:
 ```
 git clone https://github.com/popstas/transmission-cli
 cd transmission-cli

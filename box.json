@@ -5,7 +5,6 @@
     {
         "name": "*.php",
         "exclude": [
-            "herrera-io",
             "kherge",
             "phpseclib",
             "phpunit",
