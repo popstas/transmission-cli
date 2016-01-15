@@ -1,4 +1,4 @@
-# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=master)](https://travis-ci.org/popstas/transmission-cli) [![Coverage Status](https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&service=github)](https://coveralls.io/github/popstas/transmission-cli?branch=master)
+# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=v0.1)](https://travis-ci.org/popstas/transmission-cli) [![Coverage Status](https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&service=github)](https://coveralls.io/github/popstas/transmission-cli?branch=master)
 
 transmission-cli is console php application for automate torrent download/upload from weburg.net
 
@@ -13,19 +13,29 @@ Based on:
 - download popular (rating and comment based) movies from http://weburg.net
 - delete not popular uploads from transmission
 - working with multiple transmission instances
+- command line autocompletion
+
+## Graphics
+
+- hourly upload stats by torrent and summary upload
+- list all hosts that sends metrics to InfluxDB
 
 ![Screenshot](doc/img/grafana.png?raw=true)
 
 
 # Available commands:
-- `_completion`        BASH completion hook.
-- `clean-torrents`     Cleans torrents
 - `download-weburg`    Download torrents from weburg.net
 - `help`               Displays help for a command
-- `list`               Lists commands
+- `list`               List commands
 - `list-torrents`      List torrents
 - `remove-duplicates`  Remove duplicates obsolete torrents
 - `send-metrics`       Send metrics to InfluxDB
+
+#### Global command options
+- `--host` - set transmission host
+- `--dry-run` - don't change any data
+- `-v|vv|vvv` - more verbose output
+
 
 # Install
 Download latest transmission-cli.phar [here](https://github.com/popstas/transmission-cli/releases/latest)
@@ -47,7 +57,8 @@ ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
 #### Transmission
 You need to enable remote access in Transmission
 and add host, port, username, password if it not defaults.
-
+Unfortunately, you must change `src/Config.php` for that, it hardcoded to localhost:9091 without user and password.
+You can only pass host though --host=host option.
 
 #### InfluxDB and Grafana
 You need to install it for drawing torrent graphics.
@@ -55,6 +66,7 @@ You need to install it for drawing torrent graphics.
 **Influxdb**
 
 Add host, port and database name in InfluxDB to config.
+InfluxDB now hardcoded to 192.168.99.100:8086 (docker-toolbox default IP on Mac OS)
 
 **Grafana**
 
@@ -79,9 +91,18 @@ PATH="$PATH:/usr/local/bin"
 ```
 
 
+# Check code style
+```
+ ./vendor/bin/phpcs --standard=psr2 ./src
+ ./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
+```
+
 # TODO:
 - [ ] config file
 - [x] phpunit
 - [x] travisCI
-- [ ] packagist
+- [x] logs
+- [ ] weburg get movie_id
+- [ ] 80% coverage
 - [ ] docs
+- [ ] packagist

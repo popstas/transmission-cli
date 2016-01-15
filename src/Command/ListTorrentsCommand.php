@@ -3,7 +3,6 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\Table;
 
@@ -13,12 +12,10 @@ class ListTorrentsCommand extends Command
 {
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('list-torrents')
             ->setDescription('List torrents')
-            ->setDefinition(array(
-                new InputOption('host', null, InputOption::VALUE_OPTIONAL, 'Transmission host'),
-            ))
             ->setHelp(<<<EOT
 The <info>list</info> list torrents.
 EOT
@@ -28,7 +25,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = $this->getClient();
+        $client = $this->getClient($output);
         $torrentList = $client->getTorrentData();
 
         $table = new Table($output);

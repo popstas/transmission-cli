@@ -13,6 +13,7 @@ class DownloadWeburgCommand extends Command
 {
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('download-weburg')
             ->setDescription('Download torrents from weburg.net')

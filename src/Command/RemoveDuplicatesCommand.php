@@ -3,19 +3,16 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class RemoveDuplicatesCommand extends Command
 {
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('remove-duplicates')
             ->setDescription('Remove duplicates obsolete torrents')
-            ->setDefinition(array(
-                new InputOption('host', null, InputOption::VALUE_OPTIONAL, 'Transmission host'),
-            ))
             ->setHelp(<<<EOT
 The <info>remove-duplicates</info> removed all torrents with same name and smaller size than other.
 EOT
@@ -25,11 +22,17 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = $this->getClient();
+        $logger = $this->getLogger($output);
+        $client = $this->getClient($output);
 
         $obsoleteList = $client->getObsoleteTorrents();
         if(!empty($obsoleteList)){
-            $client->removeTorrents($obsoleteList);
+            if(!$input->getOption('dry-run')) {
+                $client->removeTorrents($obsoleteList);
+            }
+            else {
+                $logger->info('dry-run, don\'t really remove');
+            }
             $output->writeln('Found and deleted '.count($obsoleteList).' obsolete torrents from transmission:');
             $client->printTorrentsTable($obsoleteList, $output);
         }

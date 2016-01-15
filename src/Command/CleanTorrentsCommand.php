@@ -3,21 +3,17 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
 use Martial\Transmission\API\Argument\Torrent;
 
 class CleanTorrentsCommand extends Command
 {
     protected function configure()
     {
+        parent::configure();
         $this
             ->setName('clean-torrents')
             ->setDescription('Cleans torrents')
-            ->setDefinition(array(
-                new InputOption('host', null, InputOption::VALUE_OPTIONAL, 'Transmission host'),
-            ))
             ->setHelp(<<<EOT
 The <info>clean-torrents</info> removes torrents listed in text file.
 EOT
@@ -27,13 +23,15 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = $this->getClient();
+        $logger = $this->getLogger($output);
+
+        $client = $this->getClient($output);
         $torrentList = $client->getTorrentData();
 
-        $blacklist_file = 'blacklist.txt';
+        $blacklist_file = getcwd() . '/blacklist.txt';
 
         if(!file_exists($blacklist_file)){
-            $output->writeln('<error>file ' . $blacklist_file . 'not found</error>');
+            $logger->critical('file ' . $blacklist_file . ' not found');
             exit(1);
         }
 
@@ -48,8 +46,13 @@ EOT
         $client->printTorrentsTable($blackTorrentList, $output);
         $output->writeln('Total size: ' . $size_in_gb . ' Gb');
 
-        $output->writeln('<error>actual delete not implemented!</error>');
-        //$client->removeTorrents($blackTorrentList, true);
+        if (!$input->getOption('dry-run')) {
+            $logger->critical('actual delete not implemented!');
+            //$client->removeTorrents($blackTorrentList, true);
+        }
+        else {
+            $logger->info('dry-run, don\'t really remove');
+        }
     }
 
     private function isTorrentBlacklisted($torrent_name, $blacklist_file){
