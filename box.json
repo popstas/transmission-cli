@@ -6,8 +6,13 @@
         "name": "*.php",
         "exclude": [
             "kherge",
+            "mockery",
+            "pdepend",
+            "php_codesniffer",
+            "phpmd",
             "phpseclib",
             "phpunit",
+            "satooshi",
             "Tests",
             "tests",
             "test"

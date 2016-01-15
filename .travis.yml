@@ -12,10 +12,17 @@ matrix:
 before_install:
   - composer self-update
   - mkdir build
+  - curl -LSs https://box-project.github.io/box2/installer.php | php
+  - mv box.phar box
+  - chmod 755 box
 
 install:
-  - composer install
-  - vendor/bin/box build
+  - composer install --no-dev
+  - php box build
+  - vendor/bin/phpcs --standard=psr2 ./src
+
+script:
+  - phpunit
 
 deploy:
   provider: releases
