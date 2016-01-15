@@ -2,24 +2,27 @@
 
 namespace Popstas\Transmission\Console;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\Table;
+use GuzzleHttp;
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
-use GuzzleHttp;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class TransmissionClient {
+class TransmissionClient
+{
     private $api;
     private $sessionId;
 
-    public function __construct($host = 'localhost', $port = 9091, $username = '', $password = '') {
+    public function __construct($host = 'localhost', $port = 9091, $username = '', $password = '')
+    {
         $httpClient = new GuzzleHttp\Client(['base_uri' => 'http://' . $host . ':' . $port . '/transmission/rpc']);
         $this->api = new API\RpcClient($httpClient, $username, $password);
 
         $this->sessionId = $this->getSessionId($this->sessionId);
     }
 
-    private function getSessionId($sessionId) {
+    private function getSessionId($sessionId)
+    {
         try {
             $this->api->sessionGet($sessionId);
         } catch (API\CSRFException $e) {
@@ -33,7 +36,8 @@ class TransmissionClient {
         return $sessionId;
     }
 
-    public function getTorrentData(array $ids=[]) {
+    public function getTorrentData(array $ids = [])
+    {
         $torrentList = $this->api->torrentGet($this->sessionId, $ids, [
             API\Argument\Torrent\Get::ID,
             API\Argument\Torrent\Get::NAME,
@@ -44,7 +48,8 @@ class TransmissionClient {
         return $torrentList;
     }
 
-    function getTorrentsSize(array $torrentList){
+    public function getTorrentsSize(array $torrentList)
+    {
         $total_size = 0;
         foreach ($torrentList as $torrentData) {
             $total_size += $torrentData[Torrent\Get::TOTAL_SIZE];
@@ -52,22 +57,24 @@ class TransmissionClient {
         return $total_size;
     }
 
-    public function printTorrentsTable(array $torrentList, OutputInterface $output){
+    public function printTorrentsTable(array $torrentList, OutputInterface $output)
+    {
         $table = new Table($output);
         $table->setHeaders(['Name', 'Id', 'Size']);
 
-        foreach($torrentList as $torrent){
+        foreach ($torrentList as $torrent) {
             $table->addRow([
                 $torrent[Torrent\Get::NAME],
                 $torrent[Torrent\Get::ID],
-                round($torrent[Torrent\Get::TOTAL_SIZE] / 1024 / 1000 / 1000, 2)
+                round($torrent[Torrent\Get::TOTAL_SIZE] / 1024 / 1000 / 1000, 2),
             ]);
         }
 
         $table->render();
     }
 
-    public function getObsoleteTorrents(){
+    public function getObsoleteTorrents()
+    {
         $torrentList = $this->getTorrentData();
         $all = [];
         $obsolete = [];
@@ -82,7 +89,7 @@ class TransmissionClient {
             $obs = $this->detectObsoleteTorrent($all[$name], $torrent);
             if ($obs) {
                 $obsolete[] = $obs;
-                if($obs[Torrent\Get::ID] !== $torrent[Torrent\Get::ID]){
+                if ($obs[Torrent\Get::ID] !== $torrent[Torrent\Get::ID]) {
                     $all[$name] = $torrent;
                 }
             }
@@ -96,14 +103,15 @@ class TransmissionClient {
      * @param bool $deleteLocalData
      * @return bool
      */
-    public function removeTorrents(array $torrentList, $deleteLocalData=false) {
-        if(empty($torrentList)){
+    public function removeTorrents(array $torrentList, $deleteLocalData = false)
+    {
+        if (empty($torrentList)) {
             return false;
         }
 
         $torrent_ids = [];
 
-        foreach($torrentList as $torrent){
+        foreach ($torrentList as $torrent) {
             $torrent_ids[] = $torrent[Torrent\Get::ID];
         }
 
@@ -112,8 +120,9 @@ class TransmissionClient {
         return true;
     }
 
-    private function detectObsoleteTorrent($a, $b){
-        if($a[Torrent\Get::DOWNLOAD_DIR] !== $b[Torrent\Get::DOWNLOAD_DIR]){
+    private function detectObsoleteTorrent($a, $b)
+    {
+        if ($a[Torrent\Get::DOWNLOAD_DIR] !== $b[Torrent\Get::DOWNLOAD_DIR]) {
             return false;
         }
 

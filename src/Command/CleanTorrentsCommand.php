@@ -2,9 +2,9 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Martial\Transmission\API\Argument\Torrent;
 
 class CleanTorrentsCommand extends Command
 {
@@ -17,8 +17,7 @@ class CleanTorrentsCommand extends Command
             ->setHelp(<<<EOT
 The <info>clean-torrents</info> removes torrents listed in text file.
 EOT
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -30,12 +29,12 @@ EOT
 
         $blacklist_file = getcwd() . '/blacklist.txt';
 
-        if(!file_exists($blacklist_file)){
+        if (!file_exists($blacklist_file)) {
             $logger->critical('file ' . $blacklist_file . ' not found');
             exit(1);
         }
 
-        $blackTorrentList = array_filter($torrentList, function($torrent) use ($blacklist_file){
+        $blackTorrentList = array_filter($torrentList, function ($torrent) use ($blacklist_file) {
             return $this->isTorrentBlacklisted($torrent[Torrent\Get::NAME], $blacklist_file);
         });
 
@@ -49,14 +48,14 @@ EOT
         if (!$input->getOption('dry-run')) {
             $logger->critical('actual delete not implemented!');
             //$client->removeTorrents($blackTorrentList, true);
-        }
-        else {
+        } else {
             $logger->info('dry-run, don\'t really remove');
         }
     }
 
-    private function isTorrentBlacklisted($torrent_name, $blacklist_file){
-        $handle = fopen($blacklist_file, 'r') or die ('File opening failed');
+    private function isTorrentBlacklisted($torrent_name, $blacklist_file)
+    {
+        $handle = fopen($blacklist_file, 'r') or die('File opening failed');
 
         while (!feof($handle)) {
             $line = trim(fgets($handle));
@@ -65,7 +64,7 @@ EOT
                 continue;
             }
 
-            if($line===$torrent_name){
+            if ($line === $torrent_name) {
                 return true;
             }
         }

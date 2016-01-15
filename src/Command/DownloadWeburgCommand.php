@@ -2,12 +2,11 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use GuzzleHttp;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
-
-use GuzzleHttp;
 
 class DownloadWeburgCommand extends Command
 {
@@ -23,24 +22,24 @@ class DownloadWeburgCommand extends Command
             ->setHelp(<<<EOT
 The <info>download-weburg</info> scans weburg.net top page and downloads popular torrents.
 EOT
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $torrents_dir = $input->getOption('dest');
-        if(!$torrents_dir){
+        if (!$torrents_dir) {
             $torrents_dir = $this->config->get('download-torrents-dir');
         }
-        if(!$torrents_dir){
+        if (!$torrents_dir) {
             $output->writeln('<error>Download destination direcrory not set.</error>');
-            $output->writeln('Use command with --dest=/path/to/dir parameter or define destinstion directory in config file.');
+            $output->writeln('Use command with --dest=/path/to/dir parameter '
+                .'or define destination directory in config file.');
             exit(1);
         }
 
         $download_dir = $torrents_dir . '/downloaded';
-        if(!file_exists($download_dir)){
+        if (!file_exists($download_dir)) {
             mkdir($download_dir, 0777, true);
         }
 
@@ -56,19 +55,20 @@ EOT
             $downloaded_path = $download_dir . '/' . $movie_id;
 
             $isDownloaded = file_exists($downloaded_path);
-            if($isDownloaded){
+            if ($isDownloaded) {
                 continue;
             }
 
             $movie_info = $this->getTorrentInfo($movie_id);
 
-            if($this->isTorrentPopular($movie_info)){
+            if ($this->isTorrentPopular($movie_info)) {
                 $progress->setMessage('Download movie ' . $movie_id . '...');
 
                 $torrents_urls = $this->getTorrentUrls($movie_id);
                 $this->downloadTorrents($torrents_urls, $torrents_dir);
 
-                file_put_contents($downloaded_path,
+                file_put_contents(
+                    $downloaded_path,
                     date('Y-m-d H:i:s') . "\n" . implode("\n", $torrents_urls)
                 );
             }
@@ -77,42 +77,45 @@ EOT
         $progress->finish();
     }
 
-    private function getUrlBody($url, $headers=[]){
+    private function getUrlBody($url, $headers = [])
+    {
         $client = new GuzzleHttp\Client();
         $jar = new GuzzleHttp\Cookie\CookieJar();
 
         $res = $client->request('GET', $url, [
             'headers' => $headers,
-            'cookies' => $jar
+            'cookies' => $jar,
         ]);
 
-        if(!$res->getStatusCode()){
-            echo 'error '.$res->getStatusCode();
+        if (!$res->getStatusCode()) {
+            echo 'error ' . $res->getStatusCode();
             exit(1);
         }
 
         return $res->getBody();
     }
 
-    private function getMoviesIds(){
+    private function getMoviesIds()
+    {
         $movie_id_regex = '\/movies\/info\/([0-9]+)';
         $movies_url = 'http://weburg.net/movies/new/?clever_title=1&template=0&last=0';
 
         $json_raw = $this->getUrlBody($movies_url, [
-            'Content-Type' => 'text/html; charset=utf-8',
-            'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0',
-            'X-Requested-With' => 'XMLHttpRequest'
+            'Content-Type'     => 'text/html; charset=utf-8',
+            'User-Agent'       => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0',
+            'X-Requested-With' => 'XMLHttpRequest',
         ]);
 
         $movies_json = json_decode($json_raw);
-        preg_match_all('/'.$movie_id_regex.'/', $movies_json->items, $res);
+        preg_match_all('/' . $movie_id_regex . '/', $movies_json->items, $res);
         $movies_ids = array_unique($res[1]);
 
         return $movies_ids;
     }
 
-    private function getTorrentInfo($movie_id){
-        $movie_url = 'http://weburg.net/movies/info/'.$movie_id;
+    private function getTorrentInfo($movie_id)
+    {
+        $movie_url = 'http://weburg.net/movies/info/' . $movie_id;
 
         $info = array();
 
@@ -131,7 +134,8 @@ EOT
         return $info;
     }
 
-    private function getTorrentUrls($movie_id){
+    private function getTorrentUrls($movie_id)
+    {
         $torrent_url = sprintf('http://weburg.net/ajax/download/movie?obj_id=%d', $movie_id);
 
         $body = $this->getUrlBody($torrent_url);
@@ -142,28 +146,30 @@ EOT
         return $torrents_urls;
     }
 
-    private function isTorrentPopular($movie_info){
+    private function isTorrentPopular($movie_info)
+    {
         return $movie_info['comments'] >= $this->config->get('download-comments-min')
         || $movie_info['rating_imdb'] >= $this->config->get('download-imdb-min')
         || $movie_info['rating_kinopoisk'] >= $this->config->get('download-kinopoisk-min');
     }
 
-    private function downloadTorrents($torrents_urls, $torrents_dir){
-        if(!file_exists($torrents_dir)){
+    private function downloadTorrents($torrents_urls, $torrents_dir)
+    {
+        if (!file_exists($torrents_dir)) {
             echo $torrents_dir . ' not found';
             exit(1);
         }
 
-        foreach($torrents_urls as $torrent_url){
+        foreach ($torrents_urls as $torrent_url) {
             $client = new GuzzleHttp\Client();
             $jar = new GuzzleHttp\Cookie\CookieJar();
 
             $res = $client->request('GET', $torrent_url, [
-                'cookies' => $jar
+                'cookies' => $jar,
             ]);
 
-            if(!$res->getStatusCode()){
-                echo 'error '.$res->getStatusCode();
+            if (!$res->getStatusCode()) {
+                echo 'error ' . $res->getStatusCode();
                 exit(1);
             }
 

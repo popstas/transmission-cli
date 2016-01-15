@@ -2,11 +2,10 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use InfluxDB;
+use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use Martial\Transmission\API\Argument\Torrent;
-use InfluxDB;
 
 class SendMetricsCommand extends Command
 {
@@ -19,8 +18,7 @@ class SendMetricsCommand extends Command
             ->setHelp(<<<EOT
 The <info>send-metrics</info> sends upload ever for every torrent to InfluxDB.
 EOT
-            )
-        ;
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -41,17 +39,23 @@ EOT
 
         $client = $this->getClient($output);
         $obsoleteList = $client->getObsoleteTorrents();
-        if(!empty($obsoleteList)){
-            $output->writeln('<comment>Found obsolete torrents, remove it using transmission-cli remove-duplicates</comment>');
+        if (!empty($obsoleteList)) {
+            $output->writeln('<comment>Found obsolete torrents,
+                              remove it using transmission-cli remove-duplicates</comment>');
             exit(1);
         }
 
-        $influxdb = new InfluxDB\Client($influx_connect['host'], $influx_connect['port'], $influx_connect['user'], $influx_connect['password']);
+        $influxdb = new InfluxDB\Client(
+            $influx_connect['host'],
+            $influx_connect['port'],
+            $influx_connect['user'],
+            $influx_connect['password']
+        );
         $database = $influxdb->selectDB($influx_connect['database']);
 
         $points = [];
 
-        if(!$database->exists()){
+        if (!$database->exists()) {
             $logger->info('Database ' . $influx_connect['database'] . ' not exists, creating');
             $database->create();
         }
@@ -62,7 +66,10 @@ EOT
             $point = new InfluxDB\Point(
                 'uploaded',
                 $torrent[Torrent\Get::UPLOAD_EVER],
-                ['host' => $transmission_host, 'torrent_name' => $torrent[Torrent\Get::NAME]],
+                [
+                    'host'         => $transmission_host,
+                    'torrent_name' => $torrent[Torrent\Get::NAME],
+                ],
                 [],
                 time()
             );
@@ -70,9 +77,9 @@ EOT
             $logger->debug('Send point: {point}', ['point' => $point]);
         }
 
-        if(!$input->getOption('dry-run')){
+        if (!$input->getOption('dry-run')) {
             $isSuccess = $database->writePoints($points, InfluxDB\Database::PRECISION_SECONDS);
-            $logger->info('InfluxDB write '.($isSuccess ? 'success' : 'failed'));
+            $logger->info('InfluxDB write ' . ($isSuccess ? 'success' : 'failed'));
         } else {
             $logger->info('dry-run, don\'t really send points');
         }

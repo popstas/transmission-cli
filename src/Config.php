@@ -2,18 +2,19 @@
 
 namespace Popstas\Transmission\Console;
 
-class Config {
+class Config
+{
     public static $defaultConfig = array(
-        'transmission-host'      => 'localhost',
-        'transmission-port'      => 9091,
-        'transmission-user'      => '',
-        'transmission-password'  => '',
+        'transmission-host'     => 'localhost',
+        'transmission-port'     => 9091,
+        'transmission-user'     => '',
+        'transmission-password' => '',
 
-        'influxdb-host'          => '192.168.99.100',
-        'influxdb-port'          => 8086,
-        'influxdb-database'      => 'transmission',
-        'influxdb-user'          => '',
-        'influxdb-password'      => '',
+        'influxdb-host'     => '192.168.99.100',
+        'influxdb-port'     => 8086,
+        'influxdb-database' => 'transmission',
+        'influxdb-user'     => '',
+        'influxdb-password' => '',
 
         'download-torrents-dir'  => '',
         'download-imdb-min'      => 8.0,
@@ -23,19 +24,22 @@ class Config {
 
     private $config;
 
-    public function __construct() {
+    public function __construct()
+    {
         // load defaults
         $this->config = static::$defaultConfig;
     }
 
-    public function get($key) {
+    public function get($key)
+    {
         if (!isset($this->config[$key])) {
-            return NULL;
+            return null;
         }
         return $this->config[$key];
     }
 
-    public function set($key, $value) {
+    public function set($key, $value)
+    {
         $this->config[$key] = $value;
     }
 }

@@ -2,14 +2,15 @@
 
 namespace Popstas\Transmission\Console;
 
-use Symfony\Component\Console\Application as BaseApplication;
-use Stecman\Component\Symfony\Console\BashCompletion;
 use Popstas\Transmission\Console\Command;
+use Stecman\Component\Symfony\Console\BashCompletion;
+use Symfony\Component\Console\Application as BaseApplication;
 
+class Application extends BaseApplication
+{
 
-class Application extends BaseApplication {
-
-    public function __construct($name='Transmission CLI', $version='dev') {
+    public function __construct($name = 'Transmission CLI', $version = 'dev')
+    {
         parent::__construct($name, $version);
     }
 
