@@ -6,6 +6,7 @@ FEATURES:
   
 IMPROVEMENTS:
 
+  * core: reduce size of PHAR
   * app: add simple logging
   * grafana: show all hosts summary together
   * code: psr-2 standards 
