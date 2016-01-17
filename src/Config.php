@@ -10,7 +10,7 @@ class Config
         'transmission-user'     => '',
         'transmission-password' => '',
 
-        'influxdb-host'     => '192.168.99.100',
+        'influxdb-host'     => 'localhost',
         'influxdb-port'     => 8086,
         'influxdb-database' => 'transmission',
         'influxdb-user'     => '',
