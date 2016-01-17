@@ -5,6 +5,7 @@ namespace Popstas\Transmission\Console;
 use GuzzleHttp;
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -13,10 +14,11 @@ class TransmissionClient
     private $api;
     private $sessionId;
 
-    public function __construct($host = 'localhost', $port = 9091, $username = '', $password = '')
+    public function __construct($host = 'localhost', $port = 9091, $username = '', $password = '', LoggerInterface $logger)
     {
         $httpClient = new GuzzleHttp\Client(['base_uri' => 'http://' . $host . ':' . $port . '/transmission/rpc']);
         $this->api = new API\RpcClient($httpClient, $username, $password);
+        $this->api->setLogger($logger);
 
         $this->sessionId = $this->getSessionId($this->sessionId);
     }

@@ -2,6 +2,8 @@
 
 transmission-cli is console php application for automate torrent download/upload from weburg.net
 
+Blog post: http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/
+
 Based on:
 
 - [symfony/console](http://symfony.com/doc/current/components/console/index.html),

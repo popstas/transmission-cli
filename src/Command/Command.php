@@ -68,13 +68,15 @@ class Command extends BaseCommand
             'password' => $this->config->get('transmission-password'),
         ];
 
-        $this->getLogger($output)
-            ->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
+        $logger = $this->getLogger($output);
+        $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
+
         $this->client = new Console\TransmissionClient(
             $connect['host'],
             $connect['port'],
             $connect['user'],
-            $connect['password']
+            $connect['password'],
+            $logger
         );
 
         return $this->client;

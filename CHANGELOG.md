@@ -6,6 +6,11 @@ IMPROVEMENTS:
 
 BUG FIXES:
 
+## 0.2.1 (January 17, 2016)
+
+BUG FIXES:
+  * core: Fix fatal error in RpcClient logger
+
 ## 0.2.0 (January 17, 2016)
 
 BREAKING CHANGES:
