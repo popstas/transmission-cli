@@ -2,12 +2,24 @@
 
 FEATURES:
 
+IMPROVEMENTS:
+
+BUG FIXES:
+
+## 0.2.0 (January 17, 2016)
+
+BREAKING CHANGES:
+
+  * InfluxDB default host changed to localhost
+
+FEATURES:
+
   * command/all: add option --dry-run
+  * app: add logging
   
 IMPROVEMENTS:
 
   * core: reduce size of PHAR
-  * app: add simple logging
   * grafana: show all hosts summary together
   * code: psr-2 standards 
 

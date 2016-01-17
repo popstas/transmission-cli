@@ -1,4 +1,4 @@
-# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=v0.1)](https://travis-ci.org/popstas/transmission-cli) [![Coverage Status](https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&service=github)](https://coveralls.io/github/popstas/transmission-cli?branch=master)
+# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=master)](https://travis-ci.org/popstas/transmission-cli) [![Coverage Status](https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&service=github)](https://coveralls.io/github/popstas/transmission-cli?branch=master)
 
 transmission-cli is console php application for automate torrent download/upload from weburg.net
 
@@ -57,7 +57,7 @@ ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
 #### Transmission
 You need to enable remote access in Transmission
 and add host, port, username, password if it not defaults.
-Unfortunately, you must change `src/Config.php` for that, it hardcoded to localhost:9091 without user and password.
+Unfortunately, you must change `src/Config.php` for that, it hardcoded to `localhost:9091` without user and password.
 You can only pass host though --host=host option.
 
 #### InfluxDB and Grafana
@@ -66,7 +66,7 @@ You need to install it for drawing torrent graphics.
 **Influxdb**
 
 Add host, port and database name in InfluxDB to config.
-InfluxDB now hardcoded to 192.168.99.100:8086 (docker-toolbox default IP on Mac OS)
+InfluxDB now hardcoded to `localhost`.
 
 **Grafana**
 
