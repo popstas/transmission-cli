@@ -14,8 +14,13 @@ class TransmissionClient
     private $api;
     private $sessionId;
 
-    public function __construct($host = 'localhost', $port = 9091, $username = '', $password = '', LoggerInterface $logger)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        $host = 'localhost',
+        $port = 9091,
+        $username = '',
+        $password = ''
+    ) {
         $httpClient = new GuzzleHttp\Client(['base_uri' => 'http://' . $host . ':' . $port . '/transmission/rpc']);
         $this->api = new API\RpcClient($httpClient, $username, $password);
         $this->api->setLogger($logger);

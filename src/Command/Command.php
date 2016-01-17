@@ -72,11 +72,11 @@ class Command extends BaseCommand
         $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
 
         $this->client = new Console\TransmissionClient(
+            $logger,
             $connect['host'],
             $connect['port'],
             $connect['user'],
-            $connect['password'],
-            $logger
+            $connect['password']
         );
 
         return $this->client;
