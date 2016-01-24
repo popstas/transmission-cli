@@ -20,6 +20,7 @@ class Config
         'download-imdb-min'      => 8.0,
         'download-kinopoisk-min' => 8.0,
         'download-comments-min'  => 10,
+        'download-votes-min'  => 25,
     );
 
     private $config;

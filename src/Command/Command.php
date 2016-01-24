@@ -45,6 +45,10 @@ class Command extends BaseCommand
         parent::initialize($input, $output);
     }
 
+    /**
+     * @param OutputInterface $output
+     * @return ConsoleLogger
+     */
     protected function getLogger(OutputInterface $output)
     {
         $verbosityLevelMap = [

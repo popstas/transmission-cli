@@ -7,6 +7,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 
 class DownloadWeburgCommand extends Command
 {
@@ -16,9 +17,7 @@ class DownloadWeburgCommand extends Command
         $this
             ->setName('download-weburg')
             ->setDescription('Download torrents from weburg.net')
-            ->setDefinition(array(
-                new InputOption('dest', null, InputOption::VALUE_OPTIONAL, 'Torrents destination directory'),
-            ))
+            ->addOption('dest', null, InputOption::VALUE_OPTIONAL, 'Torrents destination directory')
             ->setHelp(<<<EOT
 The <info>download-weburg</info> scans weburg.net top page and downloads popular torrents.
 EOT
@@ -27,6 +26,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $logger = $this->getLogger($output);
         $torrents_dir = $input->getOption('dest');
         if (!$torrents_dir) {
             $torrents_dir = $this->config->get('download-torrents-dir');
@@ -64,13 +64,17 @@ EOT
             if ($this->isTorrentPopular($movie_info)) {
                 $progress->setMessage('Download movie ' . $movie_id . '...');
 
-                $torrents_urls = $this->getTorrentUrls($movie_id);
-                $this->downloadTorrents($torrents_urls, $torrents_dir);
+                $torrents_urls = $this->getTorrentUrls($movie_id, $logger);
+                if (!$input->getOption('dry-run')) {
+                    $this->downloadTorrents($torrents_urls, $torrents_dir);
 
-                file_put_contents(
-                    $downloaded_path,
-                    date('Y-m-d H:i:s') . "\n" . implode("\n", $torrents_urls)
-                );
+                    file_put_contents(
+                        $downloaded_path,
+                        date('Y-m-d H:i:s') . "\n" . implode("\n", $torrents_urls)
+                    );
+                } else {
+                    $logger->info('dry-run, don\'t really download');
+                }
             }
         }
 
@@ -131,10 +135,13 @@ EOT
         preg_match('/external-ratings-link_type_imdb.*?>(\d+\.\d+)/mis', $body, $res);
         $info['rating_kinopoisk'] = $res[1];
 
+        preg_match('/count-votes" value="([0-9]+)"/mis', $body, $res);
+        $info['rating_votes'] = $res[1];
+
         return $info;
     }
 
-    private function getTorrentUrls($movie_id)
+    private function getTorrentUrls($movie_id, ConsoleLogger $logger)
     {
         $torrent_url = sprintf('http://weburg.net/ajax/download/movie?obj_id=%d', $movie_id);
 
@@ -143,6 +150,10 @@ EOT
         preg_match_all('/(http:\/\/.*?)"/', $body, $res);
         $torrents_urls = $res[1];
 
+        foreach ($torrents_urls as $torrents_url) {
+            $logger->debug('found torrent url: ' . $torrents_url);
+        }
+
         return $torrents_urls;
     }
 
@@ -150,7 +161,8 @@ EOT
     {
         return $movie_info['comments'] >= $this->config->get('download-comments-min')
         || $movie_info['rating_imdb'] >= $this->config->get('download-imdb-min')
-        || $movie_info['rating_kinopoisk'] >= $this->config->get('download-kinopoisk-min');
+        || $movie_info['rating_kinopoisk'] >= $this->config->get('download-kinopoisk-min')
+        || $movie_info['rating_votes'] >= $this->config->get('download-votes-min');
     }
 
     private function downloadTorrents($torrents_urls, $torrents_dir)

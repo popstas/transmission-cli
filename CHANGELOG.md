@@ -1,10 +1,12 @@
 ## Next Release
 
 FEATURES:
+  * command/download-weburg: add download-votes-min config parameter
 
 IMPROVEMENTS:
 
 BUG FIXES:
+  * command/download-weburg: fixed dry-run option
 
 ## 0.2.1 (January 17, 2016)
 
