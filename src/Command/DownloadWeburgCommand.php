@@ -127,16 +127,21 @@ EOT
         $body = iconv('WINDOWS-1251', 'UTF-8', $body);
 
         preg_match('/Комментариев:&nbsp;(\d+)/', $body, $res);
-        $info['comments'] = $res[1];
+        $info['comments'] = count($res) ? $res[1] : 0;
 
         preg_match('/external-ratings-link_type_kinopoisk.*?>(\d+\.\d+)/mis', $body, $res);
-        $info['rating_imdb'] = $res[1];
+        $info['rating_imdb'] = count($res) ? $res[1] : 0;
 
         preg_match('/external-ratings-link_type_imdb.*?>(\d+\.\d+)/mis', $body, $res);
-        $info['rating_kinopoisk'] = $res[1];
+        $info['rating_kinopoisk'] = count($res) ? $res[1] : 0;
 
         preg_match('/count-votes" value="([0-9]+)"/mis', $body, $res);
-        $info['rating_votes'] = $res[1];
+        $info['rating_votes'] = count($res) ? $res[1] : 0;
+
+        if (!$info['comments'] || !$info['comments'] || !$info['comments'] || !$info['comments']) {
+            printf("Cannot find all information about movie %s\n%s", $movie_url);
+            print_r($info);
+        }
 
         return $info;
     }
