@@ -5,9 +5,11 @@ FEATURES:
   * core: add config file
 
 IMPROVEMENTS:
+  * command/download-weburg: command rewrited, extracted WeburgClient class and fully tested
 
 BUG FIXES:
   * command/download-weburg: fixed dry-run option
+  * command/download-weburg: fixed imdb rating bypass
 
 ## 0.2.1 (January 17, 2016)
 

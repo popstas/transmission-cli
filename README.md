@@ -95,7 +95,7 @@ PATH="$PATH:/usr/local/bin"
 
 # Check code style
 ```
- ./vendor/bin/phpcs --standard=psr2 ./src
+ ./vendor/bin/phpcs --standard=psr2 ./src ./tests
  ./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
 ```
 
@@ -105,3 +105,5 @@ PATH="$PATH:/usr/local/bin"
 - [ ] docs
 - [ ] packagist
 - [ ] track deleted torrents
+- [ ] more strict variable naming
+- [ ] move all weburg code to WeburgClient

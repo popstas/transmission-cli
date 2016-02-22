@@ -5,6 +5,7 @@ namespace Popstas\Transmission\Console\Command;
 use Martial\Transmission\API;
 use Popstas\Transmission\Console;
 use Popstas\Transmission\Console\Config;
+use Popstas\Transmission\Console\TransmissionClient;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +15,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Command extends BaseCommand
 {
+    /**
+     * @var Config $config
+     */
     protected $config;
+
+    /**
+     * @var TransmissionClient $client
+     */
     private $client;
 
     protected function configure()
@@ -73,7 +81,7 @@ class Command extends BaseCommand
         $logger = $this->getLogger($output);
         $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
 
-        $this->client = new Console\TransmissionClient(
+        $this->client = new TransmissionClient(
             $logger,
             $connect['host'],
             $connect['port'],
