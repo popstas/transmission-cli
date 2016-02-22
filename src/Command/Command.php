@@ -17,16 +17,11 @@ class Command extends BaseCommand
     protected $config;
     private $client;
 
-    public function __construct($name = null)
-    {
-        $this->config = new Config();
-        parent::__construct($name);
-    }
-
     protected function configure()
     {
         $this->addOption('dry-run', null, InputOption::VALUE_NONE, 'Dry run, don\'t change any data');
         $this->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Transmission host');
+        $this->addOption('config', null, InputOption::VALUE_OPTIONAL, 'Configuration file');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output)
@@ -37,6 +32,9 @@ class Command extends BaseCommand
             'date' => date('Y-m-d H:i:s'),
             'args' => implode(' ', array_slice($_SERVER['argv'], 1)),
         ]);
+
+        $this->config = new Config();
+        $this->config->loadConfigFile($input->getOption('config'));
 
         if ($input->hasOption('host') && $input->getOption('host')) {
             $this->config->set('transmission-host', $input->getOption('host'));

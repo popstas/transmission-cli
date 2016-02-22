@@ -12,7 +12,7 @@ Based on:
 
 # Features
 - send metrics to InfluxDB, torrent monitoring trends with Grafana
-- download popular (rating and comment based) movies from http://weburg.net
+- download popular (rating, comment and votes based) movies from http://weburg.net
 - delete not popular uploads from transmission
 - working with multiple transmission instances
 - command line autocompletion
@@ -34,6 +34,7 @@ Based on:
 - `send-metrics`       Send metrics to InfluxDB
 
 #### Global command options
+- `--config` - set path to config file
 - `--host` - set transmission host
 - `--dry-run` - don't change any data
 - `-v|vv|vvv` - more verbose output
@@ -59,8 +60,8 @@ ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
 #### Transmission
 You need to enable remote access in Transmission
 and add host, port, username, password if it not defaults.
-Unfortunately, you must change `src/Config.php` for that, it hardcoded to `localhost:9091` without user and password.
-You can only pass host though --host=host option.
+You can change it in `~/.transmission-cli.yml`.
+You can pass host though --host=host option.
 
 #### InfluxDB and Grafana
 You need to install it for drawing torrent graphics.
@@ -68,7 +69,6 @@ You need to install it for drawing torrent graphics.
 **Influxdb**
 
 Add host, port and database name in InfluxDB to config.
-InfluxDB now hardcoded to `localhost`.
 
 **Grafana**
 
@@ -100,11 +100,8 @@ PATH="$PATH:/usr/local/bin"
 ```
 
 # TODO:
-- [ ] config file
-- [x] phpunit
-- [x] travisCI
-- [x] logs
-- [ ] weburg get movie_id
+- [ ] test phar
 - [ ] 80% coverage
 - [ ] docs
 - [ ] packagist
+- [ ] track deleted torrents

@@ -2,6 +2,7 @@
 
 FEATURES:
   * command/download-weburg: add download-votes-min config parameter
+  * core: add config file
 
 IMPROVEMENTS:
 
