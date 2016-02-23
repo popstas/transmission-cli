@@ -9,6 +9,22 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase
 {
+    public function testDefaultConfigWrite()
+    {
+        $homeDir = sys_get_temp_dir();
+        $configFile = $homeDir . '/.transmission-cli.yml';
+        putenv('HOME=' . $homeDir);
+
+        $this->assertFalse(file_exists($configFile));
+
+        $config = new Config();
+        $config->loadConfigFile();
+
+        $this->assertTrue(file_exists($configFile));
+
+        unlink($configFile);
+    }
+
     public function testSaveLoadConfig()
     {
         $config = new Config();
@@ -47,5 +63,22 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
             'command'   => $command->getName(),
             '--config'  => '/a/b/c/transmission-cli.yml',
         ));
+    }
+
+    public function testGet()
+    {
+        $config = new Config();
+        $this->assertNull($config->get('non-existent-parameter'));
+    }
+
+    public function testGetHomeDir()
+    {
+        putenv('HOME=/home/user');
+        $this->assertEquals('/home/user', Config::getHomeDir());
+
+        putenv('HOME=');
+        $_SERVER['HOMEDRIVE'] = 'c:';
+        $_SERVER['HOMEPATH'] = '\\server\\directory\\';
+        $this->assertEquals('c:\\server\\directory', Config::getHomeDir());
     }
 }

@@ -37,7 +37,7 @@ class Config
     public function loadConfigFile($configFile = null)
     {
         if (!isset($configFile)) {
-            $configFile = $this->getHomeDir() . '/.transmission-cli.yml';
+            $configFile = self::getHomeDir() . '/.transmission-cli.yml';
             if (!file_exists($configFile)) {
                 $this->saveConfigFile($configFile);
             }
@@ -69,7 +69,7 @@ class Config
         $this->config[$key] = $value;
     }
 
-    private function getHomeDir()
+    public static function getHomeDir()
     {
         // Cannot use $_SERVER superglobal since that's empty during UnitUnishTestCase
         // getenv('HOME') isn't set on Windows and generates a Notice.
