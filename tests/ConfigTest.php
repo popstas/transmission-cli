@@ -16,7 +16,9 @@ class ConfigTest extends TestCase
         $configFile = $homeDir . '/.transmission-cli.yml';
         putenv('HOME=' . $homeDir);
 
-        unlink($configFile);
+        if (file_exists($configFile)) {
+            unlink($configFile);
+        }
 
         $config = new Config();
         $config->loadConfigFile();
