@@ -43,7 +43,7 @@ EOT
         if (!empty($obsoleteList)) {
             $output->writeln('<comment>Found obsolete torrents,
                               remove it using transmission-cli remove-duplicates</comment>');
-            exit(1);
+            return false;
         }
 
         $influxDb = new InfluxDB\Client(

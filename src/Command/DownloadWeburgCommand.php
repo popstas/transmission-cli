@@ -45,7 +45,8 @@ EOT
 
         $download_dir = $torrents_dir . '/downloaded';
         if (!file_exists($download_dir)) {
-            mkdir($download_dir, 0777, true);
+            throw new \RuntimeException('Destination directory not exists: ' . $torrents_dir);
+            //mkdir($download_dir, 0777, true);
         }
 
         $movies_ids = $weburgClient->getMoviesIds();

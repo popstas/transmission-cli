@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Tests\Helpers;
 
 use Popstas\Transmission\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class CommandTestCase extends TestCase
 {
@@ -10,6 +11,13 @@ abstract class CommandTestCase extends TestCase
      * @var Application $app
      */
     public $app;
+
+    private $commandName;
+
+    /**
+     * @var CommandTester
+     */
+    private $commandTester;
 
     public function setUp()
     {
@@ -25,5 +33,23 @@ abstract class CommandTestCase extends TestCase
 
         $this->app->setClient($client);
         parent::setUp();
+    }
+
+    public function setCommandName($name)
+    {
+        $this->commandName = $name;
+    }
+
+    public function executeCommand($options = [])
+    {
+        $command = $this->app->find($this->commandName);
+        $this->commandTester = new CommandTester($command);
+        $args = [ 'command' => $command->getName() ] + $options;
+        $this->commandTester->execute($args);
+    }
+    
+    public function getDisplay()
+    {
+        return $this->commandTester->getDisplay();
     }
 }
