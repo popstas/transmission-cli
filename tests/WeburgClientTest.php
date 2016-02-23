@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Tests;
 
 use GuzzleHttp;
 use GuzzleHttp\ClientInterface;
+use Popstas\Transmission\Console\Tests\Helpers\TestCase;
 use Popstas\Transmission\Console\WeburgClient;
 
 class WeburgClientTest extends TestCase
@@ -28,11 +29,7 @@ class WeburgClientTest extends TestCase
 
     public function getClientWithBodyResponse($body)
     {
-        $client = $this->getMock(
-            'Popstas\Transmission\Console\WeburgClient',
-            array('getUrlBody'),
-            array($this->httpClient)
-        );
+        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', ['getUrlBody'], [$this->httpClient]);
         $client->method('getUrlBody')->will($this->returnValue($body));
         return $client;
     }
@@ -42,7 +39,7 @@ class WeburgClientTest extends TestCase
     {
         $body = $this->getTestPage('series_page');
         $body = iconv('WINDOWS-1251', 'UTF-8', $body);
-        $info = $this->invokeMethod($this->client, 'getMovieInfo', array($body));
+        $info = $this->invokeMethod($this->client, 'getMovieInfo', [$body]);
 
         $this->assertEquals(
             $info['title'],
@@ -90,10 +87,10 @@ class WeburgClientTest extends TestCase
     public function checkTorrentDateProvider()
     {
         return [
-            [strtotime('2016-02-16 00:00:00'), '17.02.2016'],
-            [strtotime('2016-02-17 00:00:00'), '17.02.2016'],
-            [0, '17.02.2016'],
-            [strtotime('2016-02-18 00:00:00'), false],
+            'from previous day' => [strtotime('2016-02-16 00:00:00'), '17.02.2016'],
+            'from same day' => [strtotime('2016-02-17 00:00:00'), '17.02.2016'],
+            'from unix epoch' => [0, '17.02.2016'],
+            'from next day' => [strtotime('2016-02-18 00:00:00'), false],
         ];
     }
 
@@ -106,7 +103,7 @@ class WeburgClientTest extends TestCase
     {
         $body = $this->getTestPage('series_hashed_torrents');
 
-        $matched_date = $this->invokeMethod($this->client, 'checkTorrentDate', array($body, $timestamp));
+        $matched_date = $this->invokeMethod($this->client, 'checkTorrentDate', [$body, $timestamp]);
         $this->assertEquals($expected_result, $matched_date);
     }
 
@@ -114,18 +111,18 @@ class WeburgClientTest extends TestCase
     {
         $body = $this->getTestPage('movie_torrents');
 
-        $matched_date = $this->invokeMethod($this->client, 'checkTorrentDate', array($body, 0));
+        $matched_date = $this->invokeMethod($this->client, 'checkTorrentDate', [$body, 0]);
         $this->assertEquals(false, $matched_date);
     }
 
     public function testGetTorrentsUrls()
     {
         $body = $this->getTestPage('movie_torrents');
-        $urls = $this->invokeMethod($this->client, 'getTorrentsUrls', array($body));
+        $urls = $this->invokeMethod($this->client, 'getTorrentsUrls', [$body]);
         $this->assertEquals(2, count($urls));
 
         $body = $this->getTestPage('series_hashed_torrents');
-        $urls = $this->invokeMethod($this->client, 'getTorrentsUrls', array($body));
+        $urls = $this->invokeMethod($this->client, 'getTorrentsUrls', [$body]);
         $this->assertEquals(1, count($urls));
     }
 
@@ -141,7 +138,7 @@ class WeburgClientTest extends TestCase
     {
         $this->assertEquals(
             'http://weburg.net/movies/info/12345',
-            $this->invokeMethod($this->client, 'getMovieUrl', array(12345))
+            $this->invokeMethod($this->client, 'getMovieUrl', [12345])
         );
     }
 
@@ -149,12 +146,12 @@ class WeburgClientTest extends TestCase
     {
         $this->assertEquals(
             'http://weburg.net/ajax/download/movie?obj_id=12345',
-            $this->invokeMethod($this->client, 'getMovieTorrentUrl', array(12345))
+            $this->invokeMethod($this->client, 'getMovieTorrentUrl', [12345])
         );
 
         $this->assertEquals(
             'http://weburg.net/ajax/download/movie?hash=abcde&obj_id=12345',
-            $this->invokeMethod($this->client, 'getMovieTorrentUrl', array(12345, 'abcde'))
+            $this->invokeMethod($this->client, 'getMovieTorrentUrl', [12345, 'abcde'])
         );
     }
 
@@ -163,7 +160,7 @@ class WeburgClientTest extends TestCase
         $client = $this->getClientWithBodyResponse($this->getTestPage('series_hashed_torrents'));
 
         $series_body = $this->getTestPage('series_page');
-        $info = $this->invokeMethod($client, 'getMovieInfo', array($series_body));
+        $info = $this->invokeMethod($client, 'getMovieInfo', [$series_body]);
 
         $torrents_urls = $client->getSeriesTorrents(12345, $info['hashes'], 99999);
         $this->assertCount(19, $torrents_urls);
