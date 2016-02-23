@@ -1,21 +1,18 @@
 <?php
 
-namespace Popstas\Transmission\Console\Tests;
+namespace Popstas\Transmission\Console\Tests\Command;
 
+use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
-use Popstas\Transmission\Console\Application;
 
-class ListCommandTest extends \PHPUnit_Framework_TestCase
+class HelpCommandTest extends CommandTestCase
 {
     public function testHelpCompletion()
     {
-        $application = new Application();
-
-        $command = $application->find('list');
+        $command = $this->app->find('list');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command' => $command->getName(),
-            '_completion'
         ));
 
         $this->assertRegExp('/Transmission CLI/', $commandTester->getDisplay());

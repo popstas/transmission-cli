@@ -23,7 +23,8 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $client = $this->getClient($output);
+        $client = $this->getApplication()->getClient();
+
         $torrentList = $client->getTorrentData();
 
         $table = new Table($output);

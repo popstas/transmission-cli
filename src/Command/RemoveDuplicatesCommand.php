@@ -21,8 +21,8 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = $this->getLogger($output);
-        $client = $this->getClient($output);
+        $logger = $this->getApplication()->getLogger();
+        $client = $this->getApplication()->getClient();
 
         $obsoleteList = $client->getObsoleteTorrents();
         if (!empty($obsoleteList)) {

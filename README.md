@@ -57,6 +57,12 @@ composer install
 ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
 ```
 
+#### Configure
+Default config placement: `~/.transmission-cli.yml`. It creates on first application run.
+You can change some parameters here.
+Also, you can pass config to command: `transmission-cli --config /path/to/config.yml`
+
+
 #### Transmission
 You need to enable remote access in Transmission
 and add host, port, username, password if it not defaults.

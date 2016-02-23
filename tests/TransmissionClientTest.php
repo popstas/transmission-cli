@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Tests;
 
 use Martial\Transmission\API;
+use Popstas\Transmission\Console\Tests\Helpers\TestCase;
 use Popstas\Transmission\Console\TransmissionClient;
 use Symfony\Component\Console\Output\NullOutput;
 
@@ -17,13 +18,6 @@ class TransmissionClientTest extends TestCase
      * @var TransmissionClient $client
      */
     private $client;
-
-    private $expectedTorrentList = [
-        ['downloadDir' => '/', 'id' => 1, 'name' => 'name.ext', 'totalSize' => 1, 'uploadedEver' => 3],
-        ['downloadDir' => '/', 'id' => 2, 'name' => 'name.ext', 'totalSize' => 2, 'uploadedEver' => 4],
-        ['downloadDir' => '/', 'id' => 3, 'name' => 'name2.ext', 'totalSize' => 3, 'uploadedEver' => 5],
-        ['downloadDir' => '/dir2', 'id' => 3, 'name' => 'name.ext', 'totalSize' => 1, 'uploadedEver' => 5]
-    ];
 
     public function setUp()
     {

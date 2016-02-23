@@ -22,9 +22,9 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = $this->getLogger($output);
+        $logger = $this->getApplication()->getLogger();
+        $client = $this->getApplication()->getClient();
 
-        $client = $this->getClient($output);
         $torrentList = $client->getTorrentData();
 
         $blacklist_file = getcwd() . '/blacklist.txt';

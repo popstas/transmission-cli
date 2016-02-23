@@ -26,13 +26,15 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = $this->getLogger($output);
+        $config = $this->getApplication()->getConfig();
+        $logger = $this->getApplication()->getLogger();
+        
         $httpClient = new GuzzleHttp\Client();
         $weburgClient = new WeburgClient($httpClient);
 
         $torrents_dir = $input->getOption('dest');
         if (!$torrents_dir) {
-            $torrents_dir = $this->config->get('download-torrents-dir');
+            $torrents_dir = $config->get('download-torrents-dir');
         }
         if (!$torrents_dir) {
             $output->writeln('<error>Download destination directory not set.</error>');
@@ -66,10 +68,10 @@ EOT
 
             $isTorrentPopular = $this->isTorrentPopular(
                 $movie_info,
-                $this->config->get('download-comments-min'),
-                $this->config->get('download-imdb-min'),
-                $this->config->get('download-kinopoisk-min'),
-                $this->config->get('download-votes-min')
+                $config->get('download-comments-min'),
+                $config->get('download-imdb-min'),
+                $config->get('download-kinopoisk-min'),
+                $config->get('download-votes-min')
             );
 
             if ($isTorrentPopular) {

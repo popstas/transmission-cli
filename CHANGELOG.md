@@ -11,7 +11,9 @@ FEATURES:
 
 IMPROVEMENTS:
   * command/download-weburg: command rewrited, extracted WeburgClient class and fully tested
-  * core: TransmissionClient fully tested
+  * core: Config, TransmissionClient and WeburgClient fully tested
+  * command/list-torrents: partially tested
+  * command/remove-duplicates: partially tested
 
 BUG FIXES:
   * command/download-weburg: fixed dry-run option

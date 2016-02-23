@@ -28,10 +28,11 @@ class Config
 
     private $config;
 
-    public function __construct()
+    public function __construct($configFile = null)
     {
         // load defaults
         $this->config = static::$defaultConfig;
+        $this->loadConfigFile($configFile);
     }
 
     public function loadConfigFile($configFile = null)

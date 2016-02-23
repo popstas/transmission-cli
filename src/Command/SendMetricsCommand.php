@@ -23,21 +23,22 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $config = $this->getApplication()->getConfig();
+        $logger = $this->getApplication()->getLogger();
+        $client = $this->getApplication()->getClient();
+
         $influx_connect = [
-            'host'     => $this->config->get('influxdb-host'),
-            'port'     => $this->config->get('influxdb-port'),
-            'user'     => $this->config->get('influxdb-user'),
-            'password' => $this->config->get('influxdb-password'),
-            'database' => $this->config->get('influxdb-database'),
+            'host'     => $config->get('influxdb-host'),
+            'port'     => $config->get('influxdb-port'),
+            'user'     => $config->get('influxdb-user'),
+            'password' => $config->get('influxdb-password'),
+            'database' => $config->get('influxdb-database'),
         ];
 
-        $transmission_host = $this->config->get('transmission-host');
-
-        $logger = $this->getLogger($output);
+        $transmission_host = $config->get('transmission-host');
 
         $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $influx_connect);
 
-        $client = $this->getClient($output);
         $obsoleteList = $client->getObsoleteTorrents();
         if (!empty($obsoleteList)) {
             $output->writeln('<comment>Found obsolete torrents,
@@ -45,13 +46,13 @@ EOT
             exit(1);
         }
 
-        $influxdb = new InfluxDB\Client(
+        $influxDb = new InfluxDB\Client(
             $influx_connect['host'],
             $influx_connect['port'],
             $influx_connect['user'],
             $influx_connect['password']
         );
-        $database = $influxdb->selectDB($influx_connect['database']);
+        $database = $influxDb->selectDB($influx_connect['database']);
 
         $points = [];
 
@@ -83,6 +84,5 @@ EOT
         } else {
             $logger->info('dry-run, don\'t really send points');
         }
-
     }
 }

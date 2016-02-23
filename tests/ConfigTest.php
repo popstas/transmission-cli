@@ -5,9 +5,10 @@ namespace Popstas\Transmission\Console\Tests;
 use InvalidArgumentException;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\Application;
+use Popstas\Transmission\Console\Tests\Helpers\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class ConfigTest extends \PHPUnit_Framework_TestCase
+class ConfigTest extends TestCase
 {
     public function testDefaultConfigWrite()
     {
@@ -15,7 +16,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $configFile = $homeDir . '/.transmission-cli.yml';
         putenv('HOME=' . $homeDir);
 
-        $this->assertFalse(file_exists($configFile));
+        unlink($configFile);
 
         $config = new Config();
         $config->loadConfigFile();
@@ -73,6 +74,8 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
 
     public function testGetHomeDir()
     {
+        $home = getenv('HOME');
+
         putenv('HOME=/home/user');
         $this->assertEquals('/home/user', Config::getHomeDir());
 
@@ -80,5 +83,7 @@ class ConfigTest extends \PHPUnit_Framework_TestCase
         $_SERVER['HOMEDRIVE'] = 'c:';
         $_SERVER['HOMEPATH'] = '\\server\\directory\\';
         $this->assertEquals('c:\\server\\directory', Config::getHomeDir());
+
+        putenv('HOME=' . $home);
     }
 }

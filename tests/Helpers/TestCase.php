@@ -1,9 +1,16 @@
 <?php
 
-namespace Popstas\Transmission\Console\Tests;
+namespace Popstas\Transmission\Console\Tests\Helpers;
 
-class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
+    public $expectedTorrentList = [
+        ['downloadDir' => '/', 'id' => 1, 'name' => 'name.ext', 'totalSize' => 1, 'uploadedEver' => 3],
+        ['downloadDir' => '/', 'id' => 2, 'name' => 'name.ext', 'totalSize' => 2, 'uploadedEver' => 4],
+        ['downloadDir' => '/', 'id' => 3, 'name' => 'name2.ext', 'totalSize' => 3, 'uploadedEver' => 5],
+        ['downloadDir' => '/dir2', 'id' => 4, 'name' => 'name.ext', 'totalSize' => 1, 'uploadedEver' => 5]
+    ];
+
     /**
      * Call protected/private method of a class.
      *
