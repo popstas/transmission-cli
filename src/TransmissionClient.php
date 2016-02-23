@@ -2,10 +2,8 @@
 
 namespace Popstas\Transmission\Console;
 
-use GuzzleHttp;
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -14,17 +12,9 @@ class TransmissionClient
     private $api;
     private $sessionId;
 
-    public function __construct(
-        LoggerInterface $logger,
-        $host = 'localhost',
-        $port = 9091,
-        $username = '',
-        $password = ''
-    ) {
-        $httpClient = new GuzzleHttp\Client(['base_uri' => 'http://' . $host . ':' . $port . '/transmission/rpc']);
-        $this->api = new API\RpcClient($httpClient, $username, $password);
-        $this->api->setLogger($logger);
-
+    public function __construct(API\TransmissionAPI $api)
+    {
+        $this->api = $api;
         $this->sessionId = $this->getSessionId($this->sessionId);
     }
 
@@ -35,9 +25,6 @@ class TransmissionClient
         } catch (API\CSRFException $e) {
             // The session has been reinitialized. Fetch the new session ID with the method getSessionId().
             $sessionId = $e->getSessionId();
-        } catch (API\TransmissionException $e) {
-            // The API returned an error, retrieve the reason with the method getResult().
-            die('API error: ' . $e->getResult());
         }
 
         return $sessionId;
@@ -57,11 +44,11 @@ class TransmissionClient
 
     public function getTorrentsSize(array $torrentList)
     {
-        $total_size = 0;
+        $torrentSize = 0;
         foreach ($torrentList as $torrentData) {
-            $total_size += $torrentData[Torrent\Get::TOTAL_SIZE];
+            $torrentSize += $torrentData[Torrent\Get::TOTAL_SIZE];
         }
-        return $total_size;
+        return $torrentSize;
     }
 
     public function printTorrentsTable(array $torrentList, OutputInterface $output)

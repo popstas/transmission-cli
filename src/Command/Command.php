@@ -2,6 +2,7 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use GuzzleHttp;
 use Martial\Transmission\API;
 use Popstas\Transmission\Console;
 use Popstas\Transmission\Console\Config;
@@ -81,13 +82,13 @@ class Command extends BaseCommand
         $logger = $this->getLogger($output);
         $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
 
-        $this->client = new TransmissionClient(
-            $logger,
-            $connect['host'],
-            $connect['port'],
-            $connect['user'],
-            $connect['password']
-        );
+        $base_uri = 'http://' . $connect['host'] . ':' . $connect['port'] . '/transmission/rpc';
+        $httpClient = new GuzzleHttp\Client(['base_uri' => $base_uri]);
+
+        $api = new API\RpcClient($httpClient, $connect['user'], $connect['password']);
+        $api->setLogger($logger);
+
+        $this->client = new TransmissionClient($api);
 
         return $this->client;
     }

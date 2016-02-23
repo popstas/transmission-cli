@@ -1,11 +1,17 @@
 ## Next Release
 
+BREAKING CHANGES:
+
+  * TransmissionClient constructor changed
+
+
 FEATURES:
   * command/download-weburg: add download-votes-min config parameter
   * core: add config file
 
 IMPROVEMENTS:
   * command/download-weburg: command rewrited, extracted WeburgClient class and fully tested
+  * core: TransmissionClient fully tested
 
 BUG FIXES:
   * command/download-weburg: fixed dry-run option
