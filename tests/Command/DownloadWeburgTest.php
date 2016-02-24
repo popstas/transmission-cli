@@ -10,6 +10,18 @@ class DownloadWeburgTest extends CommandTestCase
     {
         $this->setCommandName('download-weburg');
         parent::setUp();
+
+        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
+        $client->method('getMoviesIds')->will($this->returnValue([1, 2, 3]));
+
+        $command = $this->getCommand();
+        $command->setWeburgClient($client);
+    }
+
+    public function testDryRun()
+    {
+        $this->executeCommand();
     }
 
     /**

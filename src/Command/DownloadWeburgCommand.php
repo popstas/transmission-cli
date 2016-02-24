@@ -11,6 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DownloadWeburgCommand extends Command
 {
+    private $weburgClient;
+
     protected function configure()
     {
         parent::configure();
@@ -29,8 +31,7 @@ EOT
         $config = $this->getApplication()->getConfig();
         $logger = $this->getApplication()->getLogger();
         
-        $httpClient = new GuzzleHttp\Client();
-        $weburgClient = new WeburgClient($httpClient);
+        $weburgClient = $this->getWeburgClient();
 
         $torrents_dir = $input->getOption('dest');
         if (!$torrents_dir) {
@@ -93,6 +94,7 @@ EOT
         }
 
         $progress->finish();
+        return 0;
     }
 
     private function isTorrentPopular($movie_info, $comments_min, $imdb_min, $kinopoisk_min, $votes_min)
@@ -132,5 +134,20 @@ EOT
             $file_path = $torrents_dir . '/' . $filename;
             file_put_contents($file_path, $torrent_body);
         }
+        return true;
+    }
+
+    public function getWeburgClient()
+    {
+        if (!isset($this->weburgClient)) {
+            $httpClient = new GuzzleHttp\Client();
+            $this->weburgClient = new WeburgClient($httpClient);
+        }
+        return $this->weburgClient;
+    }
+
+    public function setWeburgClient($weburgClient)
+    {
+        $this->weburgClient = $weburgClient;
     }
 }

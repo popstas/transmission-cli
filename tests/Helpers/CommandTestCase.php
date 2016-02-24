@@ -19,6 +19,8 @@ abstract class CommandTestCase extends TestCase
      */
     private $commandTester;
 
+    private $command;
+
     public function setUp()
     {
         $this->app = new Application();
@@ -32,6 +34,10 @@ abstract class CommandTestCase extends TestCase
         $client->method('getTorrentData')->will($this->returnValue($this->expectedTorrentList));
 
         $this->app->setClient($client);
+
+        $this->command = $this->app->find($this->commandName);
+        $this->commandTester = new CommandTester($this->command);
+
         parent::setUp();
     }
 
@@ -42,12 +48,18 @@ abstract class CommandTestCase extends TestCase
 
     public function executeCommand($options = [])
     {
-        $command = $this->app->find($this->commandName);
-        $this->commandTester = new CommandTester($command);
-        $args = [ 'command' => $command->getName() ] + $options;
+        $args = [ 'command' => $this->command->getName() ] + $options;
         $this->commandTester->execute($args);
     }
-    
+
+    /**
+     * @return mixed
+     */
+    public function getCommand()
+    {
+        return $this->command;
+    }
+
     public function getDisplay()
     {
         return $this->commandTester->getDisplay();

@@ -1,4 +1,4 @@
-# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=master)](https://travis-ci.org/popstas/transmission-cli) [![Coverage Status](https://coveralls.io/repos/popstas/transmission-cli/badge.svg?branch=master&service=github)](https://coveralls.io/github/popstas/transmission-cli?branch=master)
+# Transmission CLI [![Build Status](https://travis-ci.org/popstas/transmission-cli.svg?branch=master)](https://travis-ci.org/popstas/transmission-cli) [![Coverage Status](https://coveralls.io/repos/github/popstas/transmission-cli/badge.svg?branch=master)](https://coveralls.io/github/popstas/transmission-cli?branch=master)
 
 transmission-cli is console php application for automate torrent download/upload from weburg.net
 
