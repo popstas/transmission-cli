@@ -15,20 +15,18 @@ class DownloadWeburgTest extends CommandTestCase
         $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
         $client->method('getMoviesIds')->will($this->returnValue([1, 2, 3]));
 
-        $command = $this->getCommand();
-        $command->setWeburgClient($client);
+        $this->getCommand()->setWeburgClient($client);
     }
 
     public function testDryRun()
     {
-        $this->executeCommand();
+        $dest = sys_get_temp_dir();
+        $this->executeCommand(['--dry-run' => true, '--dest' => $dest]);
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testNotExistDest()
     {
-        $this->executeCommand(['--dest' => '/not/exists/directory']);
+        $result = $this->executeCommand(['--dest' => '/not/exists/directory']);
+        $this->assertEquals(1, $result);
     }
 }

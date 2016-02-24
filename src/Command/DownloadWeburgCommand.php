@@ -44,10 +44,14 @@ EOT
             return 1;
         }
 
+        if (!file_exists($torrents_dir)) {
+            $logger->critical('Destination directory not exists: ' . $torrents_dir);
+            return 1;
+        }
+
         $download_dir = $torrents_dir . '/downloaded';
         if (!file_exists($download_dir)) {
-            throw new \RuntimeException('Destination directory not exists: ' . $torrents_dir);
-            //mkdir($download_dir, 0777, true);
+            mkdir($download_dir, 0777);
         }
 
         $movies_ids = $weburgClient->getMoviesIds();

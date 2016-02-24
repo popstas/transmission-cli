@@ -11,12 +11,25 @@ class SendMetricsTest extends CommandTestCase
     {
         $this->setCommandName('send-metrics');
         parent::setUp();
+
+        $influxDb = $this->getMockBuilder('InfluxDB\Client')
+         ->setMethods([])
+         ->setConstructorArgs([''])
+         ->disableOriginalConstructor()
+         ->getMock();
+
+        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $influxDb]);
+        $database->method('exists')->will($this->returnValue(true));
+
+        $influxDb->method('selectDB')->will($this->returnValue($database));
+
+        $this->getCommand()->setInfluxDb($influxDb);
     }
 
-    /*public function testWithoutOptions()
+    public function testWithoutOptions()
     {
         $this->executeCommand();
-    }*/
+    }
 
     /**
      * @expectedException \GuzzleHttp\Exception\ConnectException;
@@ -30,10 +43,11 @@ class SendMetricsTest extends CommandTestCase
         $this->executeCommand();
     }*/
 
-    /*public function testDryRun()
+    public function testDryRun()
     {
+
         $this->executeCommand(['--dry-run' => true]);
-    }*/
+    }
 
     public function testObsoleteTorrentsExists()
     {
