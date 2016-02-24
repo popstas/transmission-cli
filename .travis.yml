@@ -23,7 +23,13 @@ install:
   - vendor/bin/phpcs --standard=psr2 ./src ./tests
 
 script:
-  - phpunit --tap --debug -v --colors
+  - phpunit tests/Command/HelpTest.php
+  - phpunit tests/Command/ListTorrentsTest.php
+  - phpunit tests/Command/CleanTorrentsTest.php
+  - phpunit tests/Command/RemoveDuplicatesTest.php
+  - phpunit tests/Command/DownloadWeburgTest.php
+  - phpunit tests/Command/SendMetricsTest.php
+  - phpunit --debug
 
 deploy:
   provider: releases
