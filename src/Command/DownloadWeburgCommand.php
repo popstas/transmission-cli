@@ -40,7 +40,7 @@ EOT
             $output->writeln('<error>Download destination directory not set.</error>');
             $output->writeln('Use command with --dest=/path/to/dir parameter '
                 .'or define destination directory in config file.');
-            exit(1);
+            return 1;
         }
 
         $download_dir = $torrents_dir . '/downloaded';
@@ -107,7 +107,7 @@ EOT
     {
         if (!file_exists($torrents_dir)) {
             echo $torrents_dir . ' not found';
-            exit(1);
+            return false; // TODO: replace with logger and exception
         }
 
         foreach ($torrents_urls as $torrent_url) {
@@ -120,7 +120,7 @@ EOT
 
             if (!$res->getStatusCode()) {
                 echo 'error ' . $res->getStatusCode();
-                exit(1);
+                return false; // TODO: replace with logger and exception
             }
 
             $torrent_body = $res->getBody();
