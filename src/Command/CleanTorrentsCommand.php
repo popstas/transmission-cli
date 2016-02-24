@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CleanTorrentsCommand extends Command
@@ -14,6 +15,7 @@ class CleanTorrentsCommand extends Command
         $this
             ->setName('clean-torrents')
             ->setDescription('Cleans torrents')
+            ->addOption('blacklist', null, InputOption::VALUE_OPTIONAL, 'Torrents blacklist')
             ->setHelp(<<<EOT
 The <info>clean-torrents</info> removes torrents listed in text file.
 EOT
@@ -27,15 +29,10 @@ EOT
 
         $torrentList = $client->getTorrentData();
 
-        $blacklist_file = getcwd() . '/blacklist.txt';
+        $blacklist = $this->getBlacklist($input->getOption('blacklist'));
 
-        if (!file_exists($blacklist_file)) {
-            $logger->critical('file ' . $blacklist_file . ' not found');
-            exit(1);
-        }
-
-        $blackTorrentList = array_filter($torrentList, function ($torrent) use ($blacklist_file) {
-            return $this->isTorrentBlacklisted($torrent[Torrent\Get::NAME], $blacklist_file);
+        $blackTorrentList = array_filter($torrentList, function ($torrent) use ($blacklist) {
+            return in_array($torrent[Torrent\Get::NAME], $blacklist);
         });
 
         $total_size = $client->getTorrentsSize($blackTorrentList);
@@ -53,22 +50,20 @@ EOT
         }
     }
 
-    private function isTorrentBlacklisted($torrent_name, $blacklist_file)
+    private function getBlacklist($blacklist_file)
     {
-        $handle = fopen($blacklist_file, 'r') or die('File opening failed');
-
-        while (!feof($handle)) {
-            $line = trim(fgets($handle));
-
-            if (empty($line)) {
-                continue;
-            }
-
-            if ($line === $torrent_name) {
-                return true;
-            }
+        $blacklist = [];
+        if (!file_exists($blacklist_file)) {
+            $this->getApplication()->getLogger()->critical('file ' . $blacklist_file . ' not found');
+            return [];
         }
 
-        return false;
+        $handle = fopen($blacklist_file, 'r');
+
+        while (!feof($handle)) {
+            $blacklist[] = trim(fgets($handle));
+        }
+        
+        return $blacklist;
     }
 }
