@@ -11,6 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DownloadWeburgCommand extends Command
 {
+    /**
+     * @var WeburgClient
+     */
     private $weburgClient;
 
     protected function configure()
@@ -33,47 +36,33 @@ EOT
         
         $weburgClient = $this->getWeburgClient();
 
-        $torrents_dir = $input->getOption('dest');
-        if (!$torrents_dir) {
-            $torrents_dir = $config->get('download-torrents-dir');
-        }
-        if (!$torrents_dir) {
-            $output->writeln('<error>Download destination directory not set.</error>');
-            $output->writeln('Use command with --dest=/path/to/dir parameter '
-                .'or define destination directory in config file.');
+        try {
+            list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
+        } catch (\RuntimeException $e) {
+            $logger->critical($e->getMessage());
             return 1;
         }
 
-        if (!file_exists($torrents_dir)) {
-            $logger->critical('Destination directory not exists: ' . $torrents_dir);
-            return 1;
-        }
+        $moviesIds = $weburgClient->getMoviesIds();
 
-        $download_dir = $torrents_dir . '/downloaded';
-        if (!file_exists($download_dir)) {
-            mkdir($download_dir, 0777);
-        }
-
-        $movies_ids = $weburgClient->getMoviesIds();
-
-        $progress = new ProgressBar($output, count($movies_ids));
+        $progress = new ProgressBar($output, count($moviesIds));
         $progress->start();
 
-        foreach ($movies_ids as $movie_id) {
-            $progress->setMessage('Check movie ' . $movie_id . '...');
+        foreach ($moviesIds as $movieId) {
+            $progress->setMessage('Check movie ' . $movieId . '...');
             $progress->advance();
 
-            $downloaded_path = $download_dir . '/' . $movie_id;
+            $downloadedLogfile = $downloadDir . '/' . $movieId;
 
-            $isDownloaded = file_exists($downloaded_path);
+            $isDownloaded = file_exists($downloadedLogfile);
             if ($isDownloaded) {
                 continue;
             }
 
-            $movie_info = $weburgClient->getMovieInfoById($movie_id);
+            $movieInfo = $weburgClient->getMovieInfoById($movieId);
 
-            $isTorrentPopular = $this->isTorrentPopular(
-                $movie_info,
+            $isTorrentPopular = $weburgClient->isTorrentPopular(
+                $movieInfo,
                 $config->get('download-comments-min'),
                 $config->get('download-imdb-min'),
                 $config->get('download-kinopoisk-min'),
@@ -81,16 +70,11 @@ EOT
             );
 
             if ($isTorrentPopular) {
-                $progress->setMessage('Download movie ' . $movie_id . '...');
+                $progress->setMessage('Download movie ' . $movieId . '...');
 
-                $torrents_urls = $weburgClient->getMovieTorrentUrlsById($movie_id);
+                $torrentsUrls = $weburgClient->getMovieTorrentUrlsById($movieId);
                 if (!$input->getOption('dry-run')) {
-                    $this->downloadTorrents($torrents_urls, $torrents_dir);
-
-                    file_put_contents(
-                        $downloaded_path,
-                        date('Y-m-d H:i:s') . "\n" . implode("\n", $torrents_urls)
-                    );
+                    $this->downloadTorrents($torrentsUrls, $torrentsDir, $downloadedLogfile);
                 } else {
                     $logger->info('dry-run, don\'t really download');
                 }
@@ -99,46 +83,6 @@ EOT
 
         $progress->finish();
         return 0;
-    }
-
-    private function isTorrentPopular($movie_info, $comments_min, $imdb_min, $kinopoisk_min, $votes_min)
-    {
-        return $movie_info['comments'] >= $comments_min
-        || $movie_info['rating_imdb'] >= $imdb_min
-        || $movie_info['rating_kinopoisk'] >= $kinopoisk_min
-        || $movie_info['rating_votes'] >= $votes_min;
-    }
-
-    private function downloadTorrents($torrents_urls, $torrents_dir)
-    {
-        if (!file_exists($torrents_dir)) {
-            echo $torrents_dir . ' not found';
-            return false; // TODO: replace with logger and exception
-        }
-
-        foreach ($torrents_urls as $torrent_url) {
-            $client = new GuzzleHttp\Client();
-            $jar = new GuzzleHttp\Cookie\CookieJar();
-
-            $res = $client->request('GET', $torrent_url, [
-                'cookies' => $jar,
-            ]);
-
-            if (!$res->getStatusCode()) {
-                echo 'error ' . $res->getStatusCode();
-                return false; // TODO: replace with logger and exception
-            }
-
-            $torrent_body = $res->getBody();
-
-            $disposition = $res->getHeader('content-disposition');
-            preg_match('/filename="(.*?)"/', $disposition[0], $res);
-            $filename = $res[1];
-
-            $file_path = $torrents_dir . '/' . $filename;
-            file_put_contents($file_path, $torrent_body);
-        }
-        return true;
     }
 
     public function getWeburgClient()
@@ -153,5 +97,49 @@ EOT
     public function setWeburgClient($weburgClient)
     {
         $this->weburgClient = $weburgClient;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return array
+     * @throws \RuntimeException
+     */
+    private function getTorrentsDirectory(InputInterface $input)
+    {
+        $config = $this->getApplication()->getConfig();
+
+        $torrentsDir = $input->getOption('dest');
+        if (!$torrentsDir) {
+            $torrentsDir = $config->get('download-torrents-dir');
+        }
+        if (!$torrentsDir) {
+            throw new \RuntimeException('Use command with --dest=/path/to/dir parameter '
+                .'or define destination directory \'download-torrents-dir\' in config file.');
+        }
+
+        if (!file_exists($torrentsDir)) {
+            throw new \RuntimeException('Destination directory not exists: ' . $torrentsDir);
+        }
+
+        $downloadDir = $torrentsDir . '/downloaded';
+        if (!file_exists($downloadDir)) {
+            mkdir($downloadDir, 0777);
+        }
+
+        return [$torrentsDir, $downloadDir];
+    }
+
+    private function downloadTorrents($torrentsUrls, $torrentsDir, $downloadedLogfile = '')
+    {
+        foreach ($torrentsUrls as $torrentUrl) {
+            $this->weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
+        }
+
+        if ($downloadedLogfile) {
+            file_put_contents(
+                $downloadedLogfile,
+                date('Y-m-d H:i:s') . "\n" . implode("\n", $torrentsUrls)
+            );
+        }
     }
 }

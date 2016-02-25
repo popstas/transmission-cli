@@ -95,6 +95,55 @@ class WeburgClient
         return 'http://weburg.net/movies/info/' . $movie_id;
     }
 
+    public function getUrlBody($url, $headers = [])
+    {
+        $jar = new CookieJar();
+
+        $res = $this->httpClient->request('GET', $url, [
+            'headers' => $headers,
+            'cookies' => $jar,
+        ]);
+
+        // TODO: it should return 200 or not 200 code, never 0
+        if ($res->getStatusCode() != 200) {
+            echo 'error ' . $res->getStatusCode();
+            throw new \RuntimeException('Error while get url ' . $url);
+        }
+
+        $body = $res->getBody();
+
+        return $body;
+    }
+
+    public function isTorrentPopular($movie_info, $comments_min, $imdb_min, $kinopoisk_min, $votes_min)
+    {
+        return $movie_info['comments'] >= $comments_min
+        || $movie_info['rating_imdb'] >= $imdb_min
+        || $movie_info['rating_kinopoisk'] >= $kinopoisk_min
+        || $movie_info['rating_votes'] >= $votes_min;
+    }
+
+    public function downloadTorrent($url, $torrentsDir)
+    {
+        $jar = new CookieJar();
+
+        $res = $this->httpClient->request('GET', $url, ['cookies' => $jar]);
+
+        if ($res->getStatusCode() != 200) {
+            echo 'error ' . $res->getStatusCode();
+            throw new \RuntimeException('Error while get url ' . $url);
+        }
+
+        $torrentBody = $res->getBody();
+
+        $disposition = $res->getHeader('content-disposition');
+        preg_match('/filename="(.*?)"/', $disposition[0], $res);
+        $filename = $res[1];
+
+        $filePath = $torrentsDir . '/' . $filename;
+        file_put_contents($filePath, $torrentBody);
+    }
+
     private function getMovieTorrentUrl($movie_id, $hash = '')
     {
         return 'http://weburg.net/ajax/download/movie?'
@@ -161,25 +210,5 @@ class WeburgClient
         $torrents_urls = $res[1];
         $torrents_urls = array_unique($torrents_urls);
         return $torrents_urls;
-    }
-
-    public function getUrlBody($url, $headers = [])
-    {
-        $jar = new CookieJar();
-
-        $res = $this->httpClient->request('GET', $url, [
-            'headers' => $headers,
-            'cookies' => $jar,
-        ]);
-
-        // TODO: it should return 200 or not 200 code, never 0
-        if (!$res->getStatusCode()) {
-            echo 'error ' . $res->getStatusCode();
-            throw new \RuntimeException('Error while get url ' . $url);
-        }
-
-        $body = $res->getBody();
-
-        return $body;
     }
 }

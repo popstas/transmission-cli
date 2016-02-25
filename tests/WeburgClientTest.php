@@ -169,12 +169,52 @@ class WeburgClientTest extends TestCase
         $this->assertCount(0, $torrents_urls);
     }
 
-    public function testGetUrlBody()
+    public function testIsTorrentPopular()
+    {
+        $client = $this->getClientWithBodyResponse($this->getTestPage('movie_page'));
+        $info = $client->getMovieInfoById(12345);
+
+        $this->assertFalse($client->isTorrentPopular($info, 1000, 10, 10, 1000));
+
+        $this->assertTrue($client->isTorrentPopular($info, 123, 10, 10, 1000));
+        $this->assertTrue($client->isTorrentPopular($info, 1000, '3.4', 10, 1000));
+        $this->assertTrue($client->isTorrentPopular($info, 1000, 10, 1.1, 1000));
+        $this->assertTrue($client->isTorrentPopular($info, 1000, 10, 10, 0));
+    }
+
+    public function testDownloadTorrent()
+    {
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response->method('getStatusCode')->will($this->returnValue(200));
+        $response->method('getBody')->will($this->returnValue('mock'));
+        $response->method('getHeader')->will($this->returnValue(['filename="movie.torrent"']));
+        $this->httpClient->method('request')->will($this->returnValue($response));
+
+        $dest = sys_get_temp_dir();
+
+        $this->client->downloadTorrent('http://torrent-url', $dest);
+        $this->assertFileExists($dest . '/movie.torrent');
+        unlink($dest . '/movie.torrent');
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testDownloadTorrentError()
     {
         $guzzleResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
-        $guzzleResponse->method('getStatusCode')->will($this->returnValue(200));
-        $guzzleResponse->method('getBody')->will($this->returnValue('mock'));
+        $guzzleResponse->method('getStatusCode')->will($this->returnValue(404));
         $this->httpClient->method('request')->will($this->returnValue($guzzleResponse));
+
+        $this->client->downloadTorrent('http://torrent-url', '/not/matter');
+    }
+
+    public function testGetUrlBody()
+    {
+        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response->method('getStatusCode')->will($this->returnValue(200));
+        $response->method('getBody')->will($this->returnValue('mock'));
+        $this->httpClient->method('request')->will($this->returnValue($response));
 
         $this->client->getUrlBody('http://google.com');
     }
@@ -185,7 +225,7 @@ class WeburgClientTest extends TestCase
     public function testGetUrlBodyError()
     {
         $guzzleResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
-        $guzzleResponse->method('getStatusCode')->will($this->returnValue(0));
+        $guzzleResponse->method('getStatusCode')->will($this->returnValue(404));
         $guzzleResponse->method('getBody')->will($this->returnValue('mock'));
         $this->httpClient->method('request')->will($this->returnValue($guzzleResponse));
 
