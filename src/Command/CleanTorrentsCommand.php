@@ -29,7 +29,12 @@ EOT
 
         $torrentList = $client->getTorrentData();
 
-        $blacklist = $this->getBlacklist($input->getOption('blacklist'));
+        try {
+            $blacklist = $this->getBlacklistTorrents($input->getOption('blacklist'));
+        } catch (\RuntimeException $e) {
+            $logger->critical($e->getMessage());
+            return 1;
+        }
 
         $blackTorrentList = array_filter($torrentList, function ($torrent) use ($blacklist) {
             return in_array($torrent[Torrent\Get::NAME], $blacklist);
@@ -46,16 +51,19 @@ EOT
             $logger->critical('actual delete not implemented!');
             //$client->removeTorrents($blackTorrentList, true);
         } else {
-            $logger->info('dry-run, don\'t really remove');
+            $output->writeln('dry-run, don\'t really remove');
         }
     }
 
-    private function getBlacklist($blacklist_file)
+    /**
+     * @param $blacklist_file
+     * @return array torrent names
+     */
+    private function getBlacklistTorrents($blacklist_file)
     {
         $blacklist = [];
         if (!file_exists($blacklist_file)) {
-            $this->getApplication()->getLogger()->critical('file ' . $blacklist_file . ' not found');
-            return [];
+            throw  new \RuntimeException('file ' . $blacklist_file . ' not found');
         }
 
         $handle = fopen($blacklist_file, 'r');
