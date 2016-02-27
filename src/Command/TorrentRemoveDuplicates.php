@@ -6,16 +6,17 @@ use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RemoveDuplicatesCommand extends Command
+class TorrentRemoveDuplicates extends Command
 {
     protected function configure()
     {
         parent::configure();
         $this
-            ->setName('remove-duplicates')
+            ->setName('torrent-remove-duplicates')
+            ->setAliases(['trd'])
             ->setDescription('Remove duplicates obsolete torrents')
             ->setHelp(<<<EOT
-The <info>remove-duplicates</info> removed all torrents with same name and smaller size than other.
+The <info>torrent-remove-duplicates</info> removed all torrents with same name and smaller size than other.
 EOT
             );
     }

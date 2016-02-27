@@ -43,7 +43,7 @@ EOT
         $obsoleteList = $client->getObsoleteTorrents();
         if (!empty($obsoleteList)) {
             $output->writeln('<comment>Found obsolete torrents,
-                              remove it using transmission-cli remove-duplicates</comment>');
+                              remove it using transmission-cli torrent-remove-duplicates</comment>');
             return 1;
         }
 

@@ -4,11 +4,11 @@ namespace Popstas\Transmission\Console\Tests\Command;
 
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
-class RemoveDuplicatesTest extends CommandTestCase
+class TorrentRemoveDuplicatesTest extends CommandTestCase
 {
     public function setUp()
     {
-        $this->setCommandName('remove-duplicates');
+        $this->setCommandName('torrent-remove-duplicates');
         parent::setUp();
 
         //$this->app->getClient()->method('getObsoleteTorrents')->will($this->returnValue($this->expectedTorrentList));

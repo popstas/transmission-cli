@@ -37,9 +37,9 @@ class Application extends BaseApplication
 
         $commands[] = new Command\CleanTorrentsCommand();
         $commands[] = new Command\ListTorrentsCommand();
-        $commands[] = new Command\RemoveDuplicatesCommand();
 
         $commands[] = new Command\StatsSend();
+        $commands[] = new Command\TorrentRemoveDuplicates();
         $commands[] = new Command\WeburgDownload();
 
         $commands[] = new BashCompletion\CompletionCommand();
