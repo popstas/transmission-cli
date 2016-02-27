@@ -132,6 +132,16 @@ class WeburgClient
         file_put_contents($filePath, $torrentBody);
     }
 
+    public function cleanMovieId($idOrUrl)
+    {
+        if (preg_match('/^\d+$/', $idOrUrl)) {
+            return $idOrUrl;
+        }
+        preg_match('/^http:\/\/weburg\.net\/(series|movies)\/info\/(\d+)$/', $idOrUrl, $res);
+        $movieId = count($res) ? $res[2] : null;
+        return $movieId;
+    }
+
     private function getMovieTorrentUrl($movie_id, $hash = '')
     {
         return 'http://weburg.net/ajax/download/movie?'

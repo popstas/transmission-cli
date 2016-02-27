@@ -2,8 +2,6 @@
 
 namespace Popstas\Transmission\Console\Command;
 
-use GuzzleHttp;
-use Popstas\Transmission\Console\WeburgClient;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -11,11 +9,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WeburgDownload extends Command
 {
-    /**
-     * @var WeburgClient
-     */
-    private $weburgClient;
-
     protected function configure()
     {
         parent::configure();
@@ -35,10 +28,10 @@ EOT
         $config = $this->getApplication()->getConfig();
         $logger = $this->getApplication()->getLogger();
 
-        $weburgClient = $this->getWeburgClient();
+        $weburgClient = $this->getApplication()->getWeburgClient();
         if (!isset($weburgClient)) {
-            $this->setWeburgClient($this->createWeburgClient());
-            $weburgClient = $this->getWeburgClient();
+            $this->getApplication()->setWeburgClient($this->createWeburgClient());
+            $weburgClient = $this->getApplication()->getWeburgClient();
         }
 
         try {
@@ -99,22 +92,6 @@ EOT
         return 0;
     }
 
-    public function getWeburgClient()
-    {
-        return $this->weburgClient;
-    }
-
-    public function setWeburgClient($weburgClient)
-    {
-        $this->weburgClient = $weburgClient;
-    }
-
-    public function createWeburgClient()
-    {
-        $httpClient = new GuzzleHttp\Client();
-        return new WeburgClient($httpClient);
-    }
-
     /**
      * @param InputInterface $input
      * @return array
@@ -146,7 +123,7 @@ EOT
     private function downloadTorrents($torrentsUrls, $torrentsDir, $downloadedLogfile = '')
     {
         foreach ($torrentsUrls as $torrentUrl) {
-            $this->weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
+            $this->getApplication()->getWeburgClient()->downloadTorrent($torrentUrl, $torrentsDir);
         }
 
         if ($downloadedLogfile) {

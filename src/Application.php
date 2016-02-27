@@ -12,6 +12,11 @@ class Application extends BaseApplication
     const VERSION = 'dev';
 
     /**
+     * @var Config $config
+     */
+    private $config;
+
+    /**
      * @var LoggerInterface $logger
      */
     private $logger;
@@ -22,9 +27,9 @@ class Application extends BaseApplication
     private $client;
 
     /**
-     * @var Config $config
+     * @var WeburgClient
      */
-    private $config;
+    private $weburgClient;
 
     public function __construct($name = 'Transmission CLI', $version = self::VERSION)
     {
@@ -93,5 +98,15 @@ class Application extends BaseApplication
     public function setConfig($config)
     {
         $this->config = $config;
+    }
+
+    public function getWeburgClient()
+    {
+        return $this->weburgClient;
+    }
+
+    public function setWeburgClient($weburgClient)
+    {
+        $this->weburgClient = $weburgClient;
     }
 }

@@ -26,24 +26,31 @@ EOT
     {
         $config = $this->getApplication()->getConfig();
 
+        $weburgClient = $this->getApplication()->getWeburgClient();
+        if (!isset($weburgClient)) {
+            $this->getApplication()->setWeburgClient($this->createWeburgClient());
+            $weburgClient = $this->getApplication()->getWeburgClient();
+        }
+
         $seriesArgument = $input->getArgument('series-id');
-        $seriesArgument = str_replace('http://weburg.net/series/info/', '', $seriesArgument);
-        if (!preg_match('/^\d+$/', $seriesArgument)) {
+        $seriesId = $weburgClient->cleanMovieId($seriesArgument);
+
+        if (!$seriesId) {
             $output->writeln($seriesArgument . ' seems not weburg series url');
             return 1;
         }
 
         $seriesList = $config->get('weburg-series-list');
-        if (in_array($seriesArgument, $seriesList)) {
-            $output->writeln($seriesArgument . ' already in list');
+        if (in_array($seriesId, $seriesList)) {
+            $output->writeln($seriesId . ' already in list');
             return 0;
         }
 
-        $seriesList[] = $seriesArgument;
+        $seriesList[] = $seriesId;
         $config->set('weburg-series-list', $seriesList);
         $config->saveConfigFile();
 
-        $output->writeln('Series ' . $seriesArgument . ' added to list');
+        $output->writeln('Series ' . $seriesId . ' added to list');
         return 0;
     }
 }

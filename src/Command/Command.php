@@ -9,6 +9,7 @@ use Popstas\Transmission\Console;
 use Popstas\Transmission\Console\Application;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\TransmissionClient;
+use Popstas\Transmission\Console\WeburgClient;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -91,5 +92,11 @@ class Command extends BaseCommand
         $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
 
         return new TransmissionClient($api);
+    }
+
+    public function createWeburgClient()
+    {
+        $httpClient = new GuzzleHttp\Client();
+        return new WeburgClient($httpClient);
     }
 }

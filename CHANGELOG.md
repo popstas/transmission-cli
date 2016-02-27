@@ -3,9 +3,15 @@
 BREAKING CHANGES:
 
 FEATURES:
-  * **weburg-series-add**: Add series to monitoring list
 
 IMPROVEMENTS:
+
+BUG FIXES:
+
+## 0.3.1 (February 28, 2016)
+
+FEATURES:
+  * **weburg-series-add**: Add series to monitoring list
 
 BUG FIXES:
   * command/weburg-download: fixed false warning 'Cannot find all information about movie'

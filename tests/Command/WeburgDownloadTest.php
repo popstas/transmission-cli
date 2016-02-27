@@ -32,12 +32,12 @@ class WeburgDownloadTest extends CommandTestCase
         $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
         $client->method('getMoviesIds')->will($this->returnValue([1, 2, 3]));
 
-        $this->getCommand()->setWeburgClient($client);
+        $this->app->setWeburgClient($client);
     }
 
     public function testDownloadPopular()
     {
-        $client = $this->getCommand()->getWeburgClient();
+        $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
         $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->expects($this->exactly(2))->method('downloadTorrent');
@@ -51,7 +51,7 @@ class WeburgDownloadTest extends CommandTestCase
     // TODO: check that all skipped
     public function testDownloadDownloaded()
     {
-        $client = $this->getCommand()->getWeburgClient();
+        $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
         $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->expects($this->exactly(1))->method('downloadTorrent');
@@ -66,7 +66,7 @@ class WeburgDownloadTest extends CommandTestCase
 
     public function testAllPopularDryRun()
     {
-        $client = $this->getCommand()->getWeburgClient();
+        $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->returnValue(true));
         $client->expects($this->never())->method('downloadTorrents');
 
@@ -76,7 +76,7 @@ class WeburgDownloadTest extends CommandTestCase
 
     public function testAllNotPopular()
     {
-        $client = $this->getCommand()->getWeburgClient();
+        $client = $this->app->getWeburgClient();
         $client->expects($this->never())->method('getMovieTorrentUrlsById');
 
         $this->executeCommand(['--dry-run' => true, '--download-torrents-dir' => $this->dest]);
