@@ -2,6 +2,16 @@
 
 BREAKING CHANGES:
 
+FEATURES:
+
+IMPROVEMENTS:
+
+BUG FIXES:
+
+## 0.3.0 (February 28, 2016)
+
+BREAKING CHANGES:
+
   * TransmissionClient constructor changed
   * option --host renamed to --transmission-host
   * option --dest renamed to --download-torrents-dir
