@@ -7,16 +7,17 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ListTorrentsCommand extends Command
+class TorrentList extends Command
 {
     protected function configure()
     {
         parent::configure();
         $this
-            ->setName('list-torrents')
+            ->setName('torrent-list')
+            ->setAliases(['tl'])
             ->setDescription('List torrents')
             ->setHelp(<<<EOT
-The <info>list</info> list torrents.
+The <info>torrent-list</info> list torrents.
 EOT
             );
     }

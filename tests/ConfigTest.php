@@ -60,7 +60,7 @@ class ConfigTest extends TestCase
     {
         $application = new Application();
 
-        $command = $application->find('list-torrents');
+        $command = $application->find('torrent-list');
         $commandTester = new CommandTester($command);
         $commandTester->execute(array(
             'command'   => $command->getName(),

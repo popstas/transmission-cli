@@ -4,11 +4,11 @@ namespace Popstas\Transmission\Console\Tests\Command;
 
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
-class ListTorrentsTest extends CommandTestCase
+class TorrentListTest extends CommandTestCase
 {
     public function setUp()
     {
-        $this->setCommandName('list-torrents');
+        $this->setCommandName('torrent-list');
         parent::setUp();
     }
 

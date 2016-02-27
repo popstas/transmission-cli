@@ -8,6 +8,7 @@ BREAKING CHANGES:
   * command download-weburg renamed to weburg-download
   * command send-metrics renamed to stats-send
   * command remove-duplicates renamed to torrent-remove-duplicates
+  * command list-torrents renamed to torrent-list
 
 FEATURES:
   * command/weburg-download: add download-votes-min config parameter

@@ -28,7 +28,7 @@ Based on:
 # Available commands:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
-- `list-torrents`                    - List torrents
+- `torrent-list`, `tl`               - List torrents
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download torrents from weburg.net
