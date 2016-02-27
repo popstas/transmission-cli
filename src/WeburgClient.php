@@ -23,16 +23,6 @@ class WeburgClient
         $body = $this->getUrlBody($movie_url);
         $body = iconv('WINDOWS-1251', 'UTF-8', $body);
         $info = $this->getMovieInfo($body);
-
-        if (!isset($info['title'])
-            || !isset($info['comments'])
-            || !isset($info['rating_kinopoisk'])
-            || !isset($info['rating_imdb'])
-            || !isset($info['rating_votes'])
-        ) {
-            printf("Cannot find all information about movie %s", $movie_url);
-        }
-
         return $info;
     }
 
@@ -106,8 +96,7 @@ class WeburgClient
 
         // TODO: it should return 200 or not 200 code, never 0
         if ($res->getStatusCode() != 200) {
-            echo 'error ' . $res->getStatusCode();
-            throw new \RuntimeException('Error while get url ' . $url);
+            throw new \RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
         }
 
         $body = $res->getBody();
@@ -130,8 +119,7 @@ class WeburgClient
         $res = $this->httpClient->request('GET', $url, ['cookies' => $jar]);
 
         if ($res->getStatusCode() != 200) {
-            echo 'error ' . $res->getStatusCode();
-            throw new \RuntimeException('Error while get url ' . $url);
+            throw new \RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
         }
 
         $torrentBody = $res->getBody();

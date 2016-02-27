@@ -33,8 +33,12 @@ EOT
     {
         $config = $this->getApplication()->getConfig();
         $logger = $this->getApplication()->getLogger();
-        
+
         $weburgClient = $this->getWeburgClient();
+        if (!isset($weburgClient)) {
+            $this->setWeburgClient($this->createWeburgClient());
+            $weburgClient = $this->getWeburgClient();
+        }
 
         try {
             list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
@@ -60,6 +64,15 @@ EOT
             }
 
             $movieInfo = $weburgClient->getMovieInfoById($movieId);
+            if (!isset($info['title'])
+                || !isset($info['comments'])
+                || !isset($info['rating_kinopoisk'])
+                || !isset($info['rating_imdb'])
+                || !isset($info['rating_votes'])
+            ) {
+                $logger->warning('Cannot find all information about movie ' . $movieId);
+            }
+
 
             $isTorrentPopular = $weburgClient->isTorrentPopular(
                 $movieInfo,
@@ -87,16 +100,18 @@ EOT
 
     public function getWeburgClient()
     {
-        if (!isset($this->weburgClient)) {
-            $httpClient = new GuzzleHttp\Client();
-            $this->weburgClient = new WeburgClient($httpClient);
-        }
         return $this->weburgClient;
     }
 
     public function setWeburgClient($weburgClient)
     {
         $this->weburgClient = $weburgClient;
+    }
+
+    public function createWeburgClient()
+    {
+        $httpClient = new GuzzleHttp\Client();
+        return new WeburgClient($httpClient);
     }
 
     /**

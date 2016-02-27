@@ -106,10 +106,8 @@ PATH="$PATH:/usr/local/bin"
 ```
 
 # TODO:
-- [ ] test phar
-- [ ] 80% coverage
-- [ ] docs
-- [ ] packagist
-- [ ] track deleted torrents
-- [ ] more strict variable naming
-- [ ] move all weburg code to WeburgClient
+- test phar
+- docs
+- packagist
+- track deleted torrents
+- more strict variable naming

@@ -3,6 +3,7 @@
 BREAKING CHANGES:
 
   * TransmissionClient constructor changed
+  * option --host renamed to --transmission-host
 
 
 FEATURES:
@@ -10,8 +11,10 @@ FEATURES:
   * core: add config file
 
 IMPROVEMENTS:
-  * command/download-weburg: command rewrited, extracted WeburgClient class and fully tested
   * core: Config, TransmissionClient and WeburgClient fully tested
+  * core: extracted WeburgClient class and fully tested
+  * command/download-weburg: command rewrited, fully tested 
+  * command/download-weburg: add logging of corrupted movie info 
   * command/list-torrents: partially tested
   * command/remove-duplicates: partially tested
 
