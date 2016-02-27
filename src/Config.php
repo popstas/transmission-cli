@@ -25,35 +25,43 @@ class Config
         'download-kinopoisk-min' => '8.0',
         'download-comments-min'  => 10,
         'download-votes-min'     => 25,
+        
+        'weburg-series-list' => []
     );
 
     private $config;
+    private $configFile;
 
     public function __construct($configFile = null)
     {
-        // load defaults
         $this->config = static::$defaultConfig;
-        $this->loadConfigFile($configFile);
-    }
 
-    public function loadConfigFile($configFile = null)
-    {
         if (!isset($configFile)) {
             $configFile = self::getHomeDir() . '/.transmission-cli.yml';
             if (!file_exists($configFile)) {
                 $this->saveConfigFile($configFile);
             }
-        } else {
-            if (!file_exists($configFile)) {
-                throw new InvalidArgumentException('Config file not found: ' . $configFile);
-            }
+        }
+        $this->configFile = $configFile;
+        if ($configFile) {
+            $this->loadConfigFile($configFile);
+        }
+    }
+
+    public function loadConfigFile($configFile)
+    {
+        if (!file_exists($configFile)) {
+            throw new InvalidArgumentException('Config file not found: ' . $configFile);
         }
         $yaml = Yaml::parse(file_get_contents($configFile));
         $this->config = $yaml + $this->config;
     }
 
-    public function saveConfigFile($configFile)
+    public function saveConfigFile($configFile = null)
     {
+        if (!isset($configFile)) {
+            $configFile = $this->configFile;
+        }
         $config_raw = Yaml::dump($this->config, 2);
         file_put_contents($configFile, $config_raw);
     }

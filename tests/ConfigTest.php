@@ -21,7 +21,6 @@ class ConfigTest extends TestCase
         }
 
         $config = new Config();
-        $config->loadConfigFile();
 
         $this->assertTrue(file_exists($configFile));
 

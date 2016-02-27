@@ -1,0 +1,54 @@
+<?php
+
+namespace Popstas\Transmission\Console\Tests\Command;
+
+use Popstas\Transmission\Console\Config;
+use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
+
+class WeburgSeriesAddTest extends CommandTestCase
+{
+    private $configFile;
+
+    public function setUp()
+    {
+        $this->setCommandName('weburg-series-add');
+        parent::setUp();
+
+        $this->configFile = tempnam(sys_get_temp_dir(), 'config');
+        $config = new Config('');
+        $config->saveConfigFile($this->configFile);
+
+        $this->app->setConfig(new Config($this->configFile));
+    }
+
+    public function tearDown()
+    {
+        unlink($this->configFile);
+        parent::tearDown();
+    }
+
+    public function testAddById()
+    {
+        $this->executeCommand(['series-id' => '12345']);
+        $this->assertRegExp('/Series 12345 added to list/', $this->getDisplay());
+    }
+
+    public function testAddByUrl()
+    {
+        $this->executeCommand(['series-id' => 'http://weburg.net/series/info/12345']);
+        $this->assertRegExp('/Series 12345 added to list/', $this->getDisplay());
+    }
+
+    public function testAddTwice()
+    {
+        $this->executeCommand(['series-id' => '12345']);
+        $this->executeCommand(['series-id' => 'http://weburg.net/series/info/12345']);
+        $this->assertRegExp('/already in list/', $this->getDisplay());
+    }
+
+    public function testAddInvalidUrl()
+    {
+        $this->executeCommand(['series-id' => 'http://invalid-url/12345']);
+        $this->assertRegExp('/http:\/\/invalid-url\/12345 seems not weburg series url/', $this->getDisplay());
+    }
+}

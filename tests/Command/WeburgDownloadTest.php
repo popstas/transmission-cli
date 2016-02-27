@@ -5,7 +5,7 @@ namespace Popstas\Transmission\Console\Tests\Command;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
-class DownloadWeburgTest extends CommandTestCase
+class WeburgDownloadTest extends CommandTestCase
 {
     private $dest;
 

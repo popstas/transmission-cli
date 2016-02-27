@@ -3,6 +3,7 @@
 BREAKING CHANGES:
 
 FEATURES:
+  * **weburg-series-add**: Add series to monitoring list
 
 IMPROVEMENTS:
 

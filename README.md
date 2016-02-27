@@ -33,6 +33,7 @@ Based on:
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download torrents from weburg.net
+- `weburg-series-add`, `wsa`         - Add series to monitoring list
 
 #### Global command options
 - `--config` - set path to config file
