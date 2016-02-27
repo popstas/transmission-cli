@@ -18,7 +18,7 @@ before_install:
 
 install:
   - version=$(git tag | grep '^v.' | tail -n1)
-  - sed -i '' "s/const VERSION = 'dev'/const VERSION = '$version'/g" src/Application.php
+  - sed -i "s/const VERSION = 'dev'/const VERSION = '$version'/g" src/Application.php
   - composer install --no-dev
   - php box build
   - composer update
