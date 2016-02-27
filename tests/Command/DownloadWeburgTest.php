@@ -7,12 +7,26 @@ use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
 class DownloadWeburgTest extends CommandTestCase
 {
+    private $dest;
+
+    private function rmdir($path)
+    {
+        $files = glob($path . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+        rmdir($path);
+    }
+
     public function setUp()
     {
         $this->setCommandName('download-weburg');
         parent::setUp();
 
         $this->app->setConfig(new Config());
+        $this->dest = sys_get_temp_dir();
 
         $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
         $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
@@ -21,7 +35,6 @@ class DownloadWeburgTest extends CommandTestCase
         $this->getCommand()->setWeburgClient($client);
     }
 
-    // TODO: check that all skipped
     public function testDownloadPopular()
     {
         $client = $this->getCommand()->getWeburgClient();
@@ -29,17 +42,10 @@ class DownloadWeburgTest extends CommandTestCase
         $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->expects($this->exactly(2))->method('downloadTorrent');
 
-        $dest = sys_get_temp_dir();
-        $this->executeCommand(['--dest' => $dest]);
+        $this->executeCommand(['--download-torrents-dir' => $this->dest]);
 
         // TODO: dirty downloaded variable define
-        $files = glob($dest . '/downloaded/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
-        }
-        rmdir($dest . '/downloaded');
+        $this->rmdir($this->dest . '/downloaded');
     }
 
     // TODO: check that all skipped
@@ -50,48 +56,43 @@ class DownloadWeburgTest extends CommandTestCase
         $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->expects($this->exactly(1))->method('downloadTorrent');
 
-        $dest = sys_get_temp_dir();
-        mkdir($dest . '/downloaded');
-        file_put_contents($dest . '/downloaded/1', '');
+        mkdir($this->dest . '/downloaded');
+        file_put_contents($this->dest . '/downloaded/1', '');
 
-        $this->executeCommand(['--dest' => $dest]);
+        $this->executeCommand(['--download-torrents-dir' => $this->dest]);
 
-        // TODO: dirty downloaded variable define
-        $files = glob($dest . '/downloaded/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
-        }
-        rmdir($dest . '/downloaded');
+        $this->rmdir($this->dest . '/downloaded');
     }
 
     public function testAllPopularDryRun()
     {
-        $dest = sys_get_temp_dir();
         $client = $this->getCommand()->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->returnValue(true));
-        $this->executeCommand(['--dry-run' => true, '--dest' => $dest]);
+        $client->expects($this->never())->method('downloadTorrents');
+
+        $this->executeCommand(['--dry-run' => true, '--download-torrents-dir' => $this->dest]);
+        $this->assertRegExp('/dry-run/', $this->getDisplay());
     }
 
-    // TODO: check that all skipped
     public function testAllNotPopular()
     {
-        $dest = sys_get_temp_dir();
-        $this->executeCommand(['--dry-run' => true, '--dest' => $dest]);
+        $client = $this->getCommand()->getWeburgClient();
+        $client->expects($this->never())->method('getMovieTorrentUrlsById');
+
+        $this->executeCommand(['--dry-run' => true, '--download-torrents-dir' => $this->dest]);
     }
 
     public function testNotExistDest()
     {
-        $result = $this->executeCommand(['--dest' => '/not/exists/directory']);
+        $result = $this->executeCommand(['--download-torrents-dir' => '/not/exists/directory']);
         $this->assertEquals(1, $result);
     }
 
-    // TODO: check output
     public function testDownloadDirNotDefined()
     {
         $this->app->getConfig()->set('download-torrents-dir', '');
         $result = $this->executeCommand();
         $this->assertEquals(1, $result);
+        $this->assertRegExp('/Destination directory not defined/', $this->getDisplay());
     }
 }

@@ -35,9 +35,12 @@ Based on:
 
 #### Global command options
 - `--config` - set path to config file
-- `--host` - set transmission host
 - `--dry-run` - don't change any data
 - `-v|vv|vvv` - more verbose output
+- `--transmission-host` - set transmission host
+- `--transmission-port` - set transmission port
+- `--transmission-user` - set transmission user
+- `--transmission-password` - set transmission password
 
 
 # Install
@@ -67,7 +70,7 @@ Also, you can pass config to command: `transmission-cli --config /path/to/config
 You need to enable remote access in Transmission
 and add host, port, username, password if it not defaults.
 You can change it in `~/.transmission-cli.yml`.
-You can pass host though --host=host option.
+You can override default config: `--transmission-host`, `--transmission-port`, `--transmission-user`, `--transmission-password`
 
 #### InfluxDB and Grafana
 You need to install it for drawing torrent graphics.
@@ -91,11 +94,11 @@ source <(transmission-cli _completion --generate-hook)
 Then, add to cron tasks like this:
 ```
 PATH="$PATH:/usr/local/bin"
-59 * * * * transmission-cli remove-duplicates --host=localhost
-59 * * * * transmission-cli remove-duplicates --host=wrtnsq
-0  * * * * transmission-cli send-metrics --host=localhost
-0  * * * * transmission-cli send-metrics --host=wrtnsq
-1  2 * * * transmission-cli download-weburg --dest=/Volumes/media/_planeta/_torrents
+59 * * * * transmission-cli remove-duplicates --transmission-host=localhost
+59 * * * * transmission-cli remove-duplicates --transmission-host=wrtnsq
+0  * * * * transmission-cli send-metrics --transmission-host=localhost
+0  * * * * transmission-cli send-metrics --transmission-host=wrtnsq
+1  2 * * * transmission-cli download-weburg --download-torrents-dir=/Volumes/media/_planeta/_torrents
 ```
 
 

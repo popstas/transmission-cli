@@ -22,7 +22,7 @@ class DownloadWeburgCommand extends Command
         $this
             ->setName('download-weburg')
             ->setDescription('Download torrents from weburg.net')
-            ->addOption('dest', null, InputOption::VALUE_OPTIONAL, 'Torrents destination directory')
+            ->addOption('download-torrents-dir', null, InputOption::VALUE_OPTIONAL, 'Torrents destination directory')
             ->setHelp(<<<EOT
 The <info>download-weburg</info> scans weburg.net top page and downloads popular torrents.
 EOT
@@ -43,7 +43,7 @@ EOT
         try {
             list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
         } catch (\RuntimeException $e) {
-            $logger->critical($e->getMessage());
+            $output->writeln($e->getMessage());
             return 1;
         }
 
@@ -89,7 +89,7 @@ EOT
                 if (!$input->getOption('dry-run')) {
                     $this->downloadTorrents($torrentsUrls, $torrentsDir, $downloadedLogfile);
                 } else {
-                    $logger->info('dry-run, don\'t really download');
+                    $output->writeln('dry-run, don\'t really download');
                 }
             }
         }
@@ -123,12 +123,10 @@ EOT
     {
         $config = $this->getApplication()->getConfig();
 
-        $torrentsDir = $input->getOption('dest');
+        $torrentsDir = $config->overrideConfig($input, 'download-torrents-dir');
         if (!$torrentsDir) {
-            $torrentsDir = $config->get('download-torrents-dir');
-        }
-        if (!$torrentsDir) {
-            throw new \RuntimeException('Use command with --dest=/path/to/dir parameter '
+            throw new \RuntimeException('Destination directory not defined. '
+                .'Use command with --download-torrents-dir=/path/to/dir parameter '
                 .'or define destination directory \'download-torrents-dir\' in config file.');
         }
 
