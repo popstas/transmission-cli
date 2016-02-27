@@ -45,10 +45,19 @@ class TransmissionClient
     public function getTorrentsSize(array $torrentList)
     {
         $torrentSize = 0;
-        foreach ($torrentList as $torrentData) {
-            $torrentSize += $torrentData[Torrent\Get::TOTAL_SIZE];
+        foreach ($torrentList as $torrent) {
+            $torrentSize += $torrent[Torrent\Get::TOTAL_SIZE];
         }
         return $torrentSize;
+    }
+
+    public function getTorrentsField(array $torrentList, $fieldName)
+    {
+        $fields = [];
+        foreach ($torrentList as $torrent) {
+            $fields[] = $torrent[$fieldName];
+        }
+        return $fields;
     }
 
     public function printTorrentsTable(array $torrentList, OutputInterface $output)

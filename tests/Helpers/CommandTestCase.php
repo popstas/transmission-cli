@@ -32,6 +32,7 @@ abstract class CommandTestCase extends TestCase
 
         $client = $this->getMock('Popstas\Transmission\Console\TransmissionClient', [], [$api]);
         $client->method('getTorrentData')->will($this->returnValue($this->expectedTorrentList));
+        $client->method('getTorrentsField')->will($this->returnValue(['a', 'b', 'c', 'd']));
 
         $this->app->setClient($client);
 
