@@ -9,6 +9,8 @@ use Symfony\Component\Console\Application as BaseApplication;
 
 class Application extends BaseApplication
 {
+    const VERSION = 'dev';
+
     /**
      * @var LoggerInterface $logger
      */
@@ -24,7 +26,7 @@ class Application extends BaseApplication
      */
     private $config;
 
-    public function __construct($name = 'Transmission CLI', $version = 'dev')
+    public function __construct($name = 'Transmission CLI', $version = self::VERSION)
     {
         parent::__construct($name, $version);
     }
