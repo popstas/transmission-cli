@@ -8,6 +8,7 @@ FEATURES:
 IMPROVEMENTS:
 
 BUG FIXES:
+  * command/weburg-download: fixed false warning 'Cannot find all information about movie'
 
 ## 0.3.0 (February 28, 2016)
 

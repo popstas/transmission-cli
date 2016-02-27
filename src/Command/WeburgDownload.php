@@ -65,11 +65,11 @@ EOT
             }
 
             $movieInfo = $weburgClient->getMovieInfoById($movieId);
-            if (!isset($info['title'])
-                || !isset($info['comments'])
-                || !isset($info['rating_kinopoisk'])
-                || !isset($info['rating_imdb'])
-                || !isset($info['rating_votes'])
+            if (!isset($movieInfo['title'])
+                || !isset($movieInfo['comments'])
+                || !isset($movieInfo['rating_kinopoisk'])
+                || !isset($movieInfo['rating_imdb'])
+                || !isset($movieInfo['rating_votes'])
             ) {
                 $logger->warning('Cannot find all information about movie ' . $movieId);
             }
