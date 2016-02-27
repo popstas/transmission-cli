@@ -3,9 +3,8 @@
 namespace Popstas\Transmission\Console\Tests\Command;
 
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
-use Symfony\Component\Console\Tester\CommandTester;
 
-class CleanTorrentsTest extends CommandTestCase
+class TorrentCleanTest extends CommandTestCase
 {
     /**
      * @var string $blacklist_file
@@ -14,7 +13,7 @@ class CleanTorrentsTest extends CommandTestCase
 
     public function setUp()
     {
-        $this->setCommandName('clean-torrents');
+        $this->setCommandName('torrent-clean');
         parent::setUp();
 
         $this->blacklist_file = tempnam(sys_get_temp_dir(), 'blacklist');

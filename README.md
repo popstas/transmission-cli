@@ -28,6 +28,7 @@ Based on:
 # Available commands:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
+- `torrent-clean`, `tc`              - Clean not popular torrents
 - `torrent-list`, `tl`               - List torrents
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB

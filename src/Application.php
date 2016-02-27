@@ -35,9 +35,8 @@ class Application extends BaseApplication
     {
         $commands = parent::getDefaultCommands();
 
-        $commands[] = new Command\CleanTorrentsCommand();
-
         $commands[] = new Command\StatsSend();
+        $commands[] = new Command\TorrentClean();
         $commands[] = new Command\TorrentList();
         $commands[] = new Command\TorrentRemoveDuplicates();
         $commands[] = new Command\WeburgDownload();

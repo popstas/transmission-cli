@@ -7,17 +7,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CleanTorrentsCommand extends Command
+class TorrentClean extends Command
 {
     protected function configure()
     {
         parent::configure();
         $this
-            ->setName('clean-torrents')
+            ->setName('torrent-clean')
+            ->setAliases(['tc'])
             ->setDescription('Cleans torrents')
             ->addOption('blacklist', null, InputOption::VALUE_OPTIONAL, 'Torrents blacklist')
             ->setHelp(<<<EOT
-The <info>clean-torrents</info> removes torrents listed in text file.
+The <info>torrent-clean</info> removes torrents listed in text file.
 EOT
             );
     }
