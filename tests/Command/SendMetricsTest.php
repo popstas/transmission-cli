@@ -7,23 +7,32 @@ use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
 class SendMetricsTest extends CommandTestCase
 {
+    /**
+     * @var InfluxDB\Client $influxDb
+     */
+    private $influxDb;
+
+    /**
+     * @var InfluxDB\Database $database
+     */
+    private $database;
+
     public function setUp()
     {
         $this->setCommandName('send-metrics');
         parent::setUp();
 
-        $influxDb = $this->getMockBuilder('InfluxDB\Client')
+        $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
          ->setMethods([])
          ->setConstructorArgs([''])
          ->disableOriginalConstructor()
          ->getMock();
 
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $influxDb]);
-        $database->method('exists')->will($this->returnValue(true));
+        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $this->database->method('exists')->will($this->returnValue(true));
+        $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
-        $influxDb->method('selectDB')->will($this->returnValue($database));
-
-        $this->getCommand()->setInfluxDb($influxDb);
+        $this->getCommand()->setInfluxDb($this->influxDb);
     }
 
     public function testWithoutOptions()
@@ -34,14 +43,31 @@ class SendMetricsTest extends CommandTestCase
     /**
      * @expectedException \GuzzleHttp\Exception\ConnectException;
      */
-    /*public function testInfluxDbConnectionError()
+    public function testInfluxDbConnectionError()
     {
         $config = new Config();
         $config->set('influxdb-host', 'null');
         $this->app->setConfig($config);
 
         $this->executeCommand();
-    }*/
+    }
+
+    public function testInfluxDbCreate()
+    {
+        $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
+            ->setMethods([])
+            ->setConstructorArgs([''])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $this->database->method('exists')->will($this->returnValue(false));
+        $this->database->expects($this->once())->method('create');
+        $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
+
+        $this->getCommand()->setInfluxDb($this->influxDb);
+        $this->executeCommand();
+    }
 
     public function testDryRun()
     {
