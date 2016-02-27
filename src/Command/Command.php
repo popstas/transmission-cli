@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Command;
 
 use GuzzleHttp;
+use InfluxDB;
 use Martial\Transmission\API;
 use Popstas\Transmission\Console;
 use Popstas\Transmission\Console\Application;
@@ -20,8 +21,11 @@ class Command extends BaseCommand
     protected function configure()
     {
         $this->addOption('dry-run', null, InputOption::VALUE_NONE, 'Dry run, don\'t change any data');
-        $this->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Transmission host');
         $this->addOption('config', null, InputOption::VALUE_OPTIONAL, 'Configuration file');
+        $this->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host');
+        $this->addOption('transmission-port', null, InputOption::VALUE_OPTIONAL, 'Transmission port');
+        $this->addOption('transmission-user', null, InputOption::VALUE_OPTIONAL, 'Transmission user');
+        $this->addOption('transmission-password', null, InputOption::VALUE_OPTIONAL, 'Transmission password');
     }
 
     /**
@@ -50,16 +54,18 @@ class Command extends BaseCommand
         $config = $this->getApplication()->getConfig();
         if (!isset($config)) {
             $config = new Config($input->getOption('config'));
-            if ($input->hasOption('host') && $input->getOption('host')) {
-                $config->set('transmission-host', $input->getOption('host'));
-            }
             $this->getApplication()->setConfig($config);
         }
 
         // client
         $client = $this->getApplication()->getClient();
         if (!isset($client)) {
-            $this->getApplication()->setClient($this->createClient($config, $logger));
+            $this->getApplication()->setClient($this->createTransmissionClient(
+                $config->overrideConfig($input, 'transmission-host'),
+                $config->overrideConfig($input, 'transmission-port'),
+                $config->overrideConfig($input, 'transmission-user'),
+                $config->overrideConfig($input, 'transmission-password')
+            ));
         }
 
         $logger->info('[{date}] command: {args}', [
@@ -70,22 +76,19 @@ class Command extends BaseCommand
         parent::initialize($input, $output);
     }
 
-    private function createClient(Config $config, ConsoleLogger $logger)
+    private function createTransmissionClient($host, $port, $user, $password)
     {
-        $connect = [
-            'host'     => $config->get('transmission-host'),
-            'port'     => $config->get('transmission-port'),
-            'user'     => $config->get('transmission-user'),
-            'password' => $config->get('transmission-password'),
-        ];
+        $logger = $this->getApplication()->getLogger();
 
-        $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
+        $connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
 
         $base_uri = 'http://' . $connect['host'] . ':' . $connect['port'] . '/transmission/rpc';
         $httpClient = new GuzzleHttp\Client(['base_uri' => $base_uri]);
 
         $api = new API\RpcClient($httpClient, $connect['user'], $connect['password']);
         $api->setLogger($logger);
+
+        $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
 
         return new TransmissionClient($api);
     }

@@ -2,18 +2,22 @@
 
 namespace Popstas\Transmission\Console\Tests\Command;
 
+use InfluxDB;
+use PHPUnit_Framework_MockObject_MockObject;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
 class SendMetricsTest extends CommandTestCase
 {
     /**
-     * @var InfluxDB\Client $influxDb
+     * var InfluxDB\Client $influxDb
+     * @var PHPUnit_Framework_MockObject_MockObject $influxDb
      */
     private $influxDb;
 
     /**
-     * @var InfluxDB\Database $database
+     * var InfluxDB\Database $database
+     * @var PHPUnit_Framework_MockObject_MockObject $database
      */
     private $database;
 
@@ -45,6 +49,7 @@ class SendMetricsTest extends CommandTestCase
      */
     public function testInfluxDbConnectionError()
     {
+        $this->markTestIncomplete('It pass always');
         $config = new Config();
         $config->set('influxdb-host', 'null');
         $this->app->setConfig($config);
@@ -71,13 +76,14 @@ class SendMetricsTest extends CommandTestCase
 
     public function testDryRun()
     {
-
+        $this->database->expects($this->never())->method('writePoints');
         $this->executeCommand(['--dry-run' => true]);
     }
 
     public function testObsoleteTorrentsExists()
     {
         $this->app->getClient()->method('getObsoleteTorrents')->will($this->returnValue($this->expectedTorrentList));
+        $this->influxDb->expects($this->never())->method('getInfluxDb');
         $this->executeCommand();
         $this->assertRegExp('/Found obsolete torrents/', $this->getDisplay());
     }

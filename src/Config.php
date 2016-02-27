@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console;
 
 use InvalidArgumentException;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
 class Config
@@ -68,6 +69,20 @@ class Config
     public function set($key, $value)
     {
         $this->config[$key] = $value;
+    }
+
+    public function overrideConfig(InputInterface $input, $optionName, $configName = null)
+    {
+        if (!isset($configName)) {
+            $configName = $optionName;
+        }
+
+        $optionValue = $input->hasOption($optionName) ? $input->getOption($optionName) : null;
+        if (isset($optionValue)) {
+            $this->set($configName, $optionValue);
+        }
+
+        return $this->get($configName);
     }
 
     public static function getHomeDir()

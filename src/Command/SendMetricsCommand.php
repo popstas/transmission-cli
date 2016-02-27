@@ -5,6 +5,7 @@ namespace Popstas\Transmission\Console\Command;
 use InfluxDB;
 use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SendMetricsCommand extends Command
@@ -20,6 +21,12 @@ class SendMetricsCommand extends Command
         $this
             ->setName('send-metrics')
             ->setDescription('Send metrics to InfluxDB')
+            ->addOption('influxdb-host', null, InputOption::VALUE_OPTIONAL, 'InfluxDb host')
+            ->addOption('influxdb-port', null, InputOption::VALUE_OPTIONAL, 'InfluxDb port')
+            ->addOption('influxdb-user', null, InputOption::VALUE_OPTIONAL, 'InfluxDb user')
+            ->addOption('influxdb-password', null, InputOption::VALUE_OPTIONAL, 'InfluxDb password')
+            ->addOption('influxdb-database', null, InputOption::VALUE_OPTIONAL, 'InfluxDb database')
+            ->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host')
             ->setHelp(<<<EOT
 The <info>send-metrics</info> sends upload ever for every torrent to InfluxDB.
 EOT
@@ -32,8 +39,6 @@ EOT
         $logger = $this->getApplication()->getLogger();
         $client = $this->getApplication()->getClient();
 
-        $transmission_host = $config->get('transmission-host');
-
         $obsoleteList = $client->getObsoleteTorrents();
         if (!empty($obsoleteList)) {
             $output->writeln('<comment>Found obsolete torrents,
@@ -42,7 +47,17 @@ EOT
         }
 
         $influxDb = $this->getInfluxDb();
-        $database_name = $config->get('influxdb-database');
+        if (!isset($influxDb)) {
+            $this->setInfluxDb($this->createInfluxDb(
+                $config->overrideConfig($input, 'influxdb-host'),
+                $config->overrideConfig($input, 'influxdb-port'),
+                $config->overrideConfig($input, 'influxdb-user'),
+                $config->overrideConfig($input, 'influxdb-password')
+            ));
+            $influxDb = $this->getInfluxDb();
+        }
+
+        $database_name = $config->overrideConfig($input, 'influxdb-database');
         $database = $influxDb->selectDB($database_name);
 
         $points = [];
@@ -53,6 +68,8 @@ EOT
         }
 
         $torrentList = $client->getTorrentData();
+
+        $transmission_host = $config->overrideConfig($input, 'transmission-host');
 
         foreach ($torrentList as $torrent) {
             $point = new InfluxDB\Point(
@@ -75,40 +92,40 @@ EOT
         } else {
             $logger->info('dry-run, don\'t really send points');
         }
+
+        return 0;
     }
 
     /**
-     * @return mixed
+     * @return InfluxDB\Client $influxDb
      */
     public function getInfluxDb()
     {
-        if (!isset($this->influxDb)) {
-            $config = $this->getApplication()->getConfig();
-            $logger = $this->getApplication()->getLogger();
-
-            $influx_connect = [
-                'host'     => $config->get('influxdb-host'),
-                'port'     => $config->get('influxdb-port'),
-                'user'     => $config->get('influxdb-user'),
-                'password' => $config->get('influxdb-password'),
-            ];
-
-            $this->influxDb = new InfluxDB\Client(
-                $influx_connect['host'],
-                $influx_connect['port'],
-                $influx_connect['user'],
-                $influx_connect['password']
-            );
-            $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $influx_connect);
-        }
         return $this->influxDb;
     }
 
     /**
-     * @param mixed $influxDb
+     * @param InfluxDB\Client $influxDb
      */
     public function setInfluxDb($influxDb)
     {
         $this->influxDb = $influxDb;
+    }
+
+    public function createInfluxDb($host, $port, $user, $password)
+    {
+        $logger = $this->getApplication()->getLogger();
+
+        $influx_connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
+
+        $influxDb = new InfluxDB\Client(
+            $influx_connect['host'],
+            $influx_connect['port'],
+            $influx_connect['user'],
+            $influx_connect['password']
+        );
+        $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $influx_connect);
+
+        return $influxDb;
     }
 }
