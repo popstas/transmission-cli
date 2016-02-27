@@ -34,11 +34,13 @@ class Application extends BaseApplication
     protected function getDefaultCommands()
     {
         $commands = parent::getDefaultCommands();
+
         $commands[] = new Command\CleanTorrentsCommand();
-        $commands[] = new Command\DownloadWeburgCommand();
         $commands[] = new Command\ListTorrentsCommand();
         $commands[] = new Command\RemoveDuplicatesCommand();
         $commands[] = new Command\SendMetricsCommand();
+
+        $commands[] = new Command\WeburgDownload();
 
         $commands[] = new BashCompletion\CompletionCommand();
 

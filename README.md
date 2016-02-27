@@ -26,12 +26,12 @@ Based on:
 
 
 # Available commands:
-- `download-weburg`    Download torrents from weburg.net
-- `help`               Displays help for a command
-- `list`               List commands
-- `list-torrents`      List torrents
-- `remove-duplicates`  Remove duplicates obsolete torrents
-- `send-metrics`       Send metrics to InfluxDB
+- `weburg-download`, `wd`    Download torrents from weburg.net
+- `help`                     Displays help for a command
+- `list`                     List commands
+- `list-torrents`            List torrents
+- `remove-duplicates`        Remove duplicates obsolete torrents
+- `send-metrics`             Send metrics to InfluxDB
 
 #### Global command options
 - `--config` - set path to config file
@@ -98,7 +98,7 @@ PATH="$PATH:/usr/local/bin"
 59 * * * * transmission-cli remove-duplicates --transmission-host=wrtnsq
 0  * * * * transmission-cli send-metrics --transmission-host=localhost
 0  * * * * transmission-cli send-metrics --transmission-host=wrtnsq
-1  2 * * * transmission-cli download-weburg --download-torrents-dir=/Volumes/media/_planeta/_torrents
+1  2 * * * transmission-cli weburg-download --download-torrents-dir=/Volumes/media/_planeta/_torrents
 ```
 
 

@@ -22,7 +22,7 @@ class DownloadWeburgTest extends CommandTestCase
 
     public function setUp()
     {
-        $this->setCommandName('download-weburg');
+        $this->setCommandName('weburg-download');
         parent::setUp();
 
         $this->app->setConfig(new Config());

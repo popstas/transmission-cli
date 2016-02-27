@@ -5,23 +5,23 @@ BREAKING CHANGES:
   * TransmissionClient constructor changed
   * option --host renamed to --transmission-host
   * option --dest renamed to --download-torrents-dir
-
+  * command download-weburg renamed to weburg-download
 
 FEATURES:
-  * command/download-weburg: add download-votes-min config parameter
+  * command/weburg-download: add download-votes-min config parameter
   * core: add config file
 
 IMPROVEMENTS:
   * core: Config, TransmissionClient and WeburgClient fully tested
   * core: extracted WeburgClient class and fully tested
-  * command/download-weburg: command rewrited, fully tested
-  * command/download-weburg: add logging of corrupted movie info
+  * command/weburg-download: command rewrited, fully tested
+  * command/weburg-download: add logging of corrupted movie info
   * command/list-torrents: partially tested
   * command/remove-duplicates: partially tested
 
 BUG FIXES:
-  * command/download-weburg: fixed dry-run option
-  * command/download-weburg: fixed imdb rating bypass
+  * command/weburg-download: fixed dry-run option
+  * command/weburg-download: fixed imdb rating bypass
 
 ## 0.2.1 (January 17, 2016)
 
