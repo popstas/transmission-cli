@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SendMetricsCommand extends Command
+class StatsSend extends Command
 {
     /**
      * @var InfluxDB\Client $influxDb
@@ -19,7 +19,8 @@ class SendMetricsCommand extends Command
     {
         parent::configure();
         $this
-            ->setName('send-metrics')
+            ->setName('stats-send')
+            ->setAliases(['ss'])
             ->setDescription('Send metrics to InfluxDB')
             ->addOption('influxdb-host', null, InputOption::VALUE_OPTIONAL, 'InfluxDb host')
             ->addOption('influxdb-port', null, InputOption::VALUE_OPTIONAL, 'InfluxDb port')
@@ -28,7 +29,7 @@ class SendMetricsCommand extends Command
             ->addOption('influxdb-database', null, InputOption::VALUE_OPTIONAL, 'InfluxDb database')
             ->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host')
             ->setHelp(<<<EOT
-The <info>send-metrics</info> sends upload ever for every torrent to InfluxDB.
+The <info>stats-send</info> sends upload ever for every torrent to InfluxDB.
 EOT
             );
     }

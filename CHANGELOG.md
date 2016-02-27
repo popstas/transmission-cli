@@ -6,6 +6,7 @@ BREAKING CHANGES:
   * option --host renamed to --transmission-host
   * option --dest renamed to --download-torrents-dir
   * command download-weburg renamed to weburg-download
+  * command send-metrics renamed to stats-send
 
 FEATURES:
   * command/weburg-download: add download-votes-min config parameter

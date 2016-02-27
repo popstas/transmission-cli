@@ -26,12 +26,12 @@ Based on:
 
 
 # Available commands:
-- `weburg-download`, `wd`    Download torrents from weburg.net
 - `help`                     Displays help for a command
 - `list`                     List commands
 - `list-torrents`            List torrents
 - `remove-duplicates`        Remove duplicates obsolete torrents
-- `send-metrics`             Send metrics to InfluxDB
+- `stats-send`, `ss`         Send metrics to InfluxDB
+- `weburg-download`, `wd`    Download torrents from weburg.net
 
 #### Global command options
 - `--config` - set path to config file
@@ -96,8 +96,8 @@ Then, add to cron tasks like this:
 PATH="$PATH:/usr/local/bin"
 59 * * * * transmission-cli remove-duplicates --transmission-host=localhost
 59 * * * * transmission-cli remove-duplicates --transmission-host=wrtnsq
-0  * * * * transmission-cli send-metrics --transmission-host=localhost
-0  * * * * transmission-cli send-metrics --transmission-host=wrtnsq
+0  * * * * transmission-cli stats-send --transmission-host=localhost
+0  * * * * transmission-cli stats-send --transmission-host=wrtnsq
 1  2 * * * transmission-cli weburg-download --download-torrents-dir=/Volumes/media/_planeta/_torrents
 ```
 

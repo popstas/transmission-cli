@@ -7,7 +7,7 @@ use PHPUnit_Framework_MockObject_MockObject;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
-class SendMetricsTest extends CommandTestCase
+class StatsSendTest extends CommandTestCase
 {
     /**
      * var InfluxDB\Client $influxDb
@@ -23,7 +23,7 @@ class SendMetricsTest extends CommandTestCase
 
     public function setUp()
     {
-        $this->setCommandName('send-metrics');
+        $this->setCommandName('stats-send');
         parent::setUp();
 
         $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
