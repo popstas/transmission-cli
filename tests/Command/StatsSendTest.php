@@ -77,8 +77,19 @@ class StatsSendTest extends CommandTestCase
 
     public function testInfluxDbConnectionError()
     {
-        $this->getCommand()->setInfluxDb(null);
-        $this->app->getConfig()->set('influxdb-database', 'test');
+        $requestInterface = $this->getMock('Psr\Http\Message\RequestInterface');
+        $exception = new \GuzzleHttp\Exception\ConnectException('error', $requestInterface);
+
+        $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
+            ->setMethods([])
+            ->setConstructorArgs([''])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $database = $this->getMock('InfluxDB\Database', ['exists'], ['dbname', $this->influxDb]);
+        $database->method('exists')->willThrowException($exception);
+        $this->influxDb->method('selectDB')->will($this->returnValue($database));
+        $this->getCommand()->setInfluxDb($this->influxDb);
 
         $this->app->getLogger()->expects($this->once())->method('critical');
         $result = $this->executeCommand();
