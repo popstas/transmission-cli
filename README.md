@@ -119,4 +119,3 @@ PATH="$PATH:/usr/local/bin"
 - docs
 - packagist
 - track deleted torrents
-- more strict variable naming

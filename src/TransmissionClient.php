@@ -117,24 +117,26 @@ class TransmissionClient
             return false;
         }
 
-        $torrent_ids = [];
+        $torrentIds = [];
 
         foreach ($torrentList as $torrent) {
-            $torrent_ids[] = $torrent[Torrent\Get::ID];
+            $torrentIds[] = $torrent[Torrent\Get::ID];
         }
 
         $this->createSession();
-        $this->api->torrentRemove($this->sessionId, $torrent_ids, $deleteLocalData);
+        $this->api->torrentRemove($this->sessionId, $torrentIds, $deleteLocalData);
 
         return true;
     }
 
-    private function detectObsoleteTorrent($a, $b)
+    private function detectObsoleteTorrent($torrentInList, $torrentNotInList)
     {
-        if ($a[Torrent\Get::DOWNLOAD_DIR] !== $b[Torrent\Get::DOWNLOAD_DIR]) {
+        if ($torrentInList[Torrent\Get::DOWNLOAD_DIR] !== $torrentNotInList[Torrent\Get::DOWNLOAD_DIR]) {
             return false;
         }
 
-        return $a[Torrent\Get::TOTAL_SIZE] < $b[Torrent\Get::TOTAL_SIZE] ? $a : $b;
+        return $torrentInList[Torrent\Get::TOTAL_SIZE] < $torrentNotInList[Torrent\Get::TOTAL_SIZE] ?
+            $torrentInList :
+            $torrentNotInList;
     }
 }

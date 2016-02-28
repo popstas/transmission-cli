@@ -2,6 +2,7 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use Popstas\Transmission\Console\WeburgClient;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,7 +29,6 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $config = $this->getApplication()->getConfig();
-        $logger = $this->getApplication()->getLogger();
 
         $weburgClient = $this->getApplication()->getWeburgClient();
         if (!isset($weburgClient)) {
@@ -43,8 +43,6 @@ EOT
             return 1;
         }
 
-        $torrentsUrls = [];
-
         $movieArgument = $input->getArgument('movie-id');
         if (isset($movieArgument)) {
             $movieId = $weburgClient->cleanMovieId($movieArgument);
@@ -53,69 +51,12 @@ EOT
                 return 1;
             }
 
-            $movieInfo = $weburgClient->getMovieInfoById($movieId);
-            $logger->info('Search series ' . $movieId);
-            if (!empty($movieInfo['hashes'])) {
-                $days = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
-                $seriesUrls = $weburgClient->getSeriesTorrents($movieId, $movieInfo['hashes'], $days);
-                $torrentsUrls = array_merge($torrentsUrls, $seriesUrls);
+            $daysMax = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
 
-                if (count($seriesUrls)) {
-                    $logger->info('Download series ' . $movieId . ': '
-                        . $movieInfo['title'] . ' (' . count($seriesUrls) . ')');
-                }
-            } else {
-                $torrentsUrls = array_merge($torrentsUrls, $weburgClient->getMovieTorrentUrlsById($movieId));
-            }
+            $torrentsUrls = $this->getMovieTorrentsUrls($weburgClient, $movieId, $daysMax);
 
         } else {
-
-            $moviesIds = $weburgClient->getMoviesIds();
-
-            $progress = new ProgressBar($output, count($moviesIds));
-            $progress->start();
-
-            foreach ($moviesIds as $movieId) {
-                $progress->setMessage('Check movie ' . $movieId . '...');
-                $progress->advance();
-
-                $downloadedLogfile = $downloadDir . '/' . $movieId;
-
-                $isDownloaded = file_exists($downloadedLogfile);
-                if ($isDownloaded) {
-                    continue;
-                }
-
-                $movieInfo = $weburgClient->getMovieInfoById($movieId);
-                foreach (array_keys($movieInfo) as $infoField) {
-                    if (!isset($movieInfo[$infoField])) {
-                        $logger->warning('Cannot find ' . $infoField . ' in movie ' . $movieId);
-                    }
-                }
-
-                $isTorrentPopular = $weburgClient->isTorrentPopular(
-                    $movieInfo,
-                    $config->get('download-comments-min'),
-                    $config->get('download-imdb-min'),
-                    $config->get('download-kinopoisk-min'),
-                    $config->get('download-votes-min')
-                );
-
-                if ($isTorrentPopular) {
-                    $progress->setMessage('Download movie ' . $movieId . '...');
-
-                    $movieUrls = $weburgClient->getMovieTorrentUrlsById($movieId);
-                    $torrentsUrls = array_merge($torrentsUrls, $movieUrls);
-                    $logger->info('Download movie ' . $movieId . ': ' . $movieInfo['title']);
-
-                    file_put_contents(
-                        $downloadedLogfile,
-                        date('Y-m-d H:i:s') . "\n" . implode("\n", $torrentsUrls)
-                    );
-                }
-            }
-
-            $progress->finish();
+            $torrentsUrls = $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir);
         }
 
         if (!$input->getOption('dry-run')) {
@@ -127,6 +68,86 @@ EOT
         }
 
         return 0;
+    }
+
+    public function getPopularTorrentsUrls(OutputInterface $output, WeburgClient $weburgClient, $downloadDir)
+    {
+        $torrentsUrls = [];
+
+        $config = $this->getApplication()->getConfig();
+        $logger = $this->getApplication()->getLogger();
+
+        $moviesIds = $weburgClient->getMoviesIds();
+
+        $progress = new ProgressBar($output, count($moviesIds));
+        $progress->start();
+
+        foreach ($moviesIds as $movieId) {
+            $progress->setMessage('Check movie ' . $movieId . '...');
+            $progress->advance();
+
+            $downloadedLogfile = $downloadDir . '/' . $movieId;
+
+            $isDownloaded = file_exists($downloadedLogfile);
+            if ($isDownloaded) {
+                continue;
+            }
+
+            $movieInfo = $weburgClient->getMovieInfoById($movieId);
+            foreach (array_keys($movieInfo) as $infoField) {
+                if (!isset($movieInfo[$infoField])) {
+                    $logger->warning('Cannot find ' . $infoField . ' in movie ' . $movieId);
+                }
+            }
+
+            $isTorrentPopular = $weburgClient->isTorrentPopular(
+                $movieInfo,
+                $config->get('download-comments-min'),
+                $config->get('download-imdb-min'),
+                $config->get('download-kinopoisk-min'),
+                $config->get('download-votes-min')
+            );
+
+            if ($isTorrentPopular) {
+                $progress->setMessage('Download movie ' . $movieId . '...');
+
+                $movieUrls = $weburgClient->getMovieTorrentUrlsById($movieId);
+                $torrentsUrls = array_merge($torrentsUrls, $movieUrls);
+                $logger->info('Download movie ' . $movieId . ': ' . $movieInfo['title']);
+
+                file_put_contents(
+                    $downloadedLogfile,
+                    date('Y-m-d H:i:s') . "\n" . implode("\n", $torrentsUrls)
+                );
+            }
+        }
+
+        $progress->finish();
+        
+        return $torrentsUrls;
+    }
+
+    public function getMovieTorrentsUrls(WeburgClient $weburgClient, $movieId, $daysMax)
+    {
+        $torrentsUrls = [];
+
+        $logger = $this->getApplication()->getLogger();
+
+        $movieInfo = $weburgClient->getMovieInfoById($movieId);
+        $logger->info('Search series ' . $movieId);
+        if (!empty($movieInfo['hashes'])) {
+            $seriesUrls = $weburgClient->getSeriesTorrents($movieId, $movieInfo['hashes'], $daysMax);
+            $torrentsUrls = array_merge($torrentsUrls, $seriesUrls);
+
+            if (count($seriesUrls)) {
+                $logger->info('Download series ' . $movieId . ': '
+                    . $movieInfo['title'] . ' (' . count($seriesUrls) . ')');
+            }
+        } else {
+            $torrentsUrls = array_merge($torrentsUrls, $weburgClient->getMovieTorrentUrlsById($movieId));
+        }
+        
+        return $torrentsUrls;
     }
 
     /**

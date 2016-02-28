@@ -35,14 +35,14 @@ class ConfigTest extends TestCase
 
         $config = new Config();
         $config->set('param', 'value');
-        $this->assertEquals($config->get('param'), 'value');
+        $this->assertEquals('value', $config->get('param'));
 
         $config->saveConfigFile();
         $config->saveConfigFile($configFile);
 
         $config->set('param', 'valueChanged');
         $config->loadConfigFile($configFile);
-        $this->assertEquals($config->get('param'), 'value');
+        $this->assertEquals('value', $config->get('param'));
 
         unlink($configFile);
     }

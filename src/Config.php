@@ -35,7 +35,7 @@ class Config
 
     public function __construct($configFile = null)
     {
-        $this->config = static::$defaultConfig;
+        $this->config = self::$defaultConfig;
 
         if (!isset($configFile)) {
             $configFile = self::getHomeDir() . '/.transmission-cli.yml';
@@ -54,8 +54,8 @@ class Config
         if (!file_exists($configFile)) {
             throw new InvalidArgumentException('Config file not found: ' . $configFile);
         }
-        $yaml = Yaml::parse(file_get_contents($configFile));
-        $this->config = $yaml + $this->config;
+        $yml = Yaml::parse(file_get_contents($configFile));
+        $this->config = $yml + $this->config;
     }
 
     public function saveConfigFile($configFile = null)
@@ -63,8 +63,8 @@ class Config
         if (!isset($configFile)) {
             $configFile = $this->configFile;
         }
-        $config_raw = Yaml::dump($this->config, 2);
-        file_put_contents($configFile, $config_raw);
+        $configRaw = Yaml::dump($this->config, 2);
+        file_put_contents($configFile, $configRaw);
     }
 
     public function get($key)
@@ -96,8 +96,7 @@ class Config
 
     public static function getHomeDir()
     {
-        // Cannot use $_SERVER superglobal since that's empty during UnitUnishTestCase
-        // getenv('HOME') isn't set on Windows and generates a Notice.
+        // environment variable 'HOME' isn't set on Windows and generates a Notice.
         $home = getenv('HOME');
         if (!empty($home)) {
             // home should never end with a trailing slash.

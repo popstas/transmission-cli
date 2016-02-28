@@ -45,11 +45,11 @@ class WeburgClientTest extends TestCase
             $info['title'],
             'Теория большого взрыва (The Big Bang Theory) — Сериалы'
         );
-        $this->assertEquals($info['comments'], 416);
-        $this->assertEquals($info['rating_kinopoisk'], 8.6);
-        $this->assertEquals($info['rating_imdb'], 8.4);
-        $this->assertEquals($info['rating_votes'], 1296);
-        $this->assertEquals(count($info['hashes']), 19);
+        $this->assertEquals(416, $info['comments']);
+        $this->assertEquals(8.6, $info['rating_kinopoisk']);
+        $this->assertEquals(8.4, $info['rating_imdb']);
+        $this->assertEquals(1296, $info['rating_votes']);
+        $this->assertEquals(19, count($info['hashes']));
     }
 
     public function testGetMovieInfoById()
@@ -58,12 +58,12 @@ class WeburgClientTest extends TestCase
 
         $info = $client->getMovieInfoById(12345);
 
-        $this->assertEquals($info['title'], 'Правнуки');
-        $this->assertEquals($info['comments'], 123);
-        $this->assertEquals($info['rating_kinopoisk'], 1.2);
-        $this->assertEquals($info['rating_imdb'], 3.4);
-        $this->assertEquals($info['rating_votes'], 456);
-        $this->assertEquals(count($info['hashes']), 0);
+        $this->assertEquals('Правнуки', $info['title']);
+        $this->assertEquals(123, $info['comments']);
+        $this->assertEquals(1.2, $info['rating_kinopoisk']);
+        $this->assertEquals(3.4, $info['rating_imdb']);
+        $this->assertEquals(456, $info['rating_votes']);
+        $this->assertEquals(0, count($info['hashes']));
 
     }
 

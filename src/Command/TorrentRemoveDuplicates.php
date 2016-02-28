@@ -42,5 +42,6 @@ EOT
         }
         $output->writeln('Found and deleted ' . count($obsoleteList) . ' obsolete torrents from transmission:');
         $client->printTorrentsTable($obsoleteList, $output);
+        return 0;
     }
 }

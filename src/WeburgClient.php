@@ -17,72 +17,72 @@ class WeburgClient
         $this->httpClient = $httpClient;
     }
 
-    public function getMovieInfoById($movie_id)
+    public function getMovieInfoById($movieId)
     {
-        $movie_url = $this->getMovieUrl($movie_id);
-        $body = $this->getUrlBody($movie_url);
+        $movieUrl = $this->getMovieUrl($movieId);
+        $body = $this->getUrlBody($movieUrl);
         $body = iconv('WINDOWS-1251', 'UTF-8', $body);
         $info = $this->getMovieInfo($body);
         return $info;
     }
 
     /**
-     * @param $movie_id
+     * @param $movieId
      * @return array urls of movie (not series)
      */
-    public function getMovieTorrentUrlsById($movie_id)
+    public function getMovieTorrentUrlsById($movieId)
     {
-        $torrent_url = $this->getMovieTorrentUrl($movie_id);
-        $body = $this->getUrlBody($torrent_url);
-        $torrents_urls = $this->getTorrentsUrls($body);
-        return $torrents_urls;
+        $torrentUrl = $this->getMovieTorrentUrl($movieId);
+        $body = $this->getUrlBody($torrentUrl);
+        $torrentsUrls = $this->getTorrentsUrls($body);
+        return $torrentsUrls;
     }
 
     /**
-     * @param $movie_id
+     * @param $movieId
      * @param $hashes array hashes of torrents from movieInfo
-     * @param int $last_days torrents older last days will not matched
+     * @param int $daysMax torrents older last days will not matched
      * @return array urls of matched torrent files
      */
-    public function getSeriesTorrents($movie_id, $hashes, $last_days = 1)
+    public function getSeriesTorrents($movieId, $hashes, $daysMax = 1)
     {
-        $torrents_urls = [];
-        $timestamp_from = strtotime('-' . $last_days . 'days');
+        $torrentsUrls = [];
+        $timestampFrom = strtotime('-' . $daysMax . 'days');
 
         $hashes = array_reverse($hashes);
         foreach ($hashes as $hash) {
-            $torrent_url = $this->getMovieTorrentUrl($movie_id, $hash);
-            $body = $this->getUrlBody($torrent_url);
+            $torrentUrl = $this->getMovieTorrentUrl($movieId, $hash);
+            $body = $this->getUrlBody($torrentUrl);
 
-            if (!$this->checkTorrentDate($body, $timestamp_from)) {
+            if (!$this->checkTorrentDate($body, $timestampFrom)) {
                 break;
             }
-            $torrents_urls = array_merge($torrents_urls, $this->getTorrentsUrls($body));
+            $torrentsUrls = array_merge($torrentsUrls, $this->getTorrentsUrls($body));
         }
 
-        return $torrents_urls;
+        return $torrentsUrls;
     }
 
     public function getMoviesIds()
     {
-        $movies_url = 'http://weburg.net/movies/new/?clever_title=1&template=0&last=0';
+        $moviesUrl = 'http://weburg.net/movies/new/?clever_title=1&template=0&last=0';
 
-        $json_raw = $this->getUrlBody($movies_url, [
+        $jsonRaw = $this->getUrlBody($moviesUrl, [
             'Content-Type'     => 'text/html; charset=utf-8',
             'User-Agent'       => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0',
             'X-Requested-With' => 'XMLHttpRequest',
         ]);
 
-        $movies_json = json_decode($json_raw);
+        $moviesJson = json_decode($jsonRaw);
 
-        $movies_ids = $this->getInfoUrls($movies_json->items);
+        $moviesIds = $this->getInfoUrls($moviesJson->items);
 
-        return $movies_ids;
+        return $moviesIds;
     }
 
-    public function getMovieUrl($movie_id)
+    public function getMovieUrl($movieId)
     {
-        return 'http://weburg.net/movies/info/' . $movie_id;
+        return 'http://weburg.net/movies/info/' . $movieId;
     }
 
     public function getUrlBody($url, $headers = [])
@@ -104,12 +104,12 @@ class WeburgClient
         return $body;
     }
 
-    public function isTorrentPopular($movie_info, $comments_min, $imdb_min, $kinopoisk_min, $votes_min)
+    public function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
     {
-        return $movie_info['comments'] >= $comments_min
-        || $movie_info['rating_imdb'] >= $imdb_min
-        || $movie_info['rating_kinopoisk'] >= $kinopoisk_min
-        || $movie_info['rating_votes'] >= $votes_min;
+        return $movieInfo['comments'] >= $commentsMin
+        || $movieInfo['rating_imdb'] >= $imdbMin
+        || $movieInfo['rating_kinopoisk'] >= $kinopoiskMin
+        || $movieInfo['rating_votes'] >= $votesMin;
     }
 
     public function downloadTorrent($url, $torrentsDir)
@@ -142,31 +142,29 @@ class WeburgClient
         return $movieId;
     }
 
-    private function getMovieTorrentUrl($movie_id, $hash = '')
+    private function getMovieTorrentUrl($movieId, $hash = '')
     {
         return 'http://weburg.net/ajax/download/movie?'
         . ($hash ? 'hash=' . $hash . '&' : '')
-        . 'obj_id=' . $movie_id;
+        . 'obj_id=' . $movieId;
     }
 
     private function getMovieInfo($body)
     {
-        $info = array();
+        $info = [];
 
-        preg_match('/<title>(.*?) — Weburg<\/title>/mis', $body, $res);
-        $info['title'] = count($res) ? $res[1] : null;
+        $checks = [
+            'title'            => '<title>(.*?) — Weburg<\/title>',
+            'comments'         => 'Комментариев:&nbsp;(\d+)',
+            'rating_kinopoisk' => 'external-ratings-link_type_kinopoisk.*?>(\d+\.\d+)',
+            'rating_imdb'      => 'external-ratings-link_type_imdb.*?>(\d+\.\d+)',
+            'rating_votes'     => 'count-votes" value="([0-9]+)"',
+        ];
 
-        preg_match('/Комментариев:&nbsp;(\d+)/mis', $body, $res);
-        $info['comments'] = count($res) ? $res[1] : null;
-
-        preg_match('/external-ratings-link_type_kinopoisk.*?>(\d+\.\d+)/mis', $body, $res);
-        $info['rating_kinopoisk'] = count($res) ? $res[1] : null;
-
-        preg_match('/external-ratings-link_type_imdb.*?>(\d+\.\d+)/mis', $body, $res);
-        $info['rating_imdb'] = count($res) ? $res[1] : null;
-
-        preg_match('/count-votes" value="([0-9]+)"/mis', $body, $res);
-        $info['rating_votes'] = count($res) ? $res[1] : null;
+        foreach ($checks as $name => $regexp) {
+            preg_match('/' . $regexp . '/mis', $body, $res);
+            $info[$name] = count($res) ? $res[1] : null;
+        }
 
         preg_match_all('/js-search-button.*?hash="(.*?)"/mis', $body, $res);
         $info['hashes'] = count($res) ? $res[1] : null;
@@ -176,26 +174,25 @@ class WeburgClient
 
     /**
      * @param $body
-     * @param $from_timestamp
+     * @param $fromTimestamp
      * @return bool|string date if matched, false if not
      */
-    private function checkTorrentDate($body, $from_timestamp)
+    private function checkTorrentDate($body, $fromTimestamp)
     {
         preg_match('/(\d{2})\.(\d{2})\.(\d{4})/mis', $body, $res);
         if (empty($res)) {
             return false;
         }
 
-        $torrent_timestamp = mktime(0, 0, 0, $res[2], $res[1], $res[3]);
-        return $torrent_timestamp >= $from_timestamp ? $res[0] : false;
+        $torrentTimestamp = mktime(0, 0, 0, $res[2], $res[1], $res[3]);
+        return $torrentTimestamp >= $fromTimestamp ? $res[0] : false;
     }
 
     private function getInfoUrls($body)
     {
-        $movie_id_regex = '/\/movies\/info\/([0-9]+)/';
-        preg_match_all($movie_id_regex, $body, $res);
-        $movies_ids = array_unique($res[1]);
-        return $movies_ids;
+        preg_match_all('/\/movies\/info\/([0-9]+)/', $body, $res);
+        $moviesIds = array_unique($res[1]);
+        return $moviesIds;
     }
 
     /**
@@ -205,8 +202,8 @@ class WeburgClient
     private function getTorrentsUrls($body)
     {
         preg_match_all('/(http:\/\/.*?gettorrent.*?)"/', $body, $res);
-        $torrents_urls = $res[1];
-        $torrents_urls = array_unique($torrents_urls);
-        return $torrents_urls;
+        $torrentsUrls = $res[1];
+        $torrentsUrls = array_unique($torrentsUrls);
+        return $torrentsUrls;
     }
 }

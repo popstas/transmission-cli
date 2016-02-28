@@ -41,12 +41,12 @@ EOT
             return in_array($torrent[Torrent\Get::NAME], $blacklist);
         });
 
-        $total_size = $client->getTorrentsSize($blackTorrentList);
-        $size_in_gb = round($total_size / 1024 / 1000 / 1000, 2);
+        $sizeTotal = $client->getTorrentsSize($blackTorrentList);
+        $sizeInGb = round($sizeTotal / 1024 / 1000 / 1000, 2);
 
         $output->writeln('Black Torrent list: ' . count($blackTorrentList));
         $client->printTorrentsTable($blackTorrentList, $output);
-        $output->writeln('Total size: ' . $size_in_gb . ' Gb');
+        $output->writeln('Total size: ' . $sizeInGb . ' Gb');
 
         if (!$input->getOption('dry-run')) {
             $logger->critical('actual delete not implemented!');
@@ -54,20 +54,21 @@ EOT
         } else {
             $output->writeln('dry-run, don\'t really remove');
         }
+        return 0;
     }
 
     /**
-     * @param $blacklist_file
+     * @param $blacklistFile
      * @return array torrent names
      */
-    private function getBlacklistTorrents($blacklist_file)
+    private function getBlacklistTorrents($blacklistFile)
     {
         $blacklist = [];
-        if (!file_exists($blacklist_file)) {
-            throw  new \RuntimeException('file ' . $blacklist_file . ' not found');
+        if (!file_exists($blacklistFile)) {
+            throw  new \RuntimeException('file ' . $blacklistFile . ' not found');
         }
 
-        $handle = fopen($blacklist_file, 'r');
+        $handle = fopen($blacklistFile, 'r');
 
         while (!feof($handle)) {
             $blacklist[] = trim(fgets($handle));

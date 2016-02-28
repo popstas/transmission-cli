@@ -48,48 +48,25 @@ EOT
             return 1;
         }
 
-        $influxDb = $this->getInfluxDb();
-        if (!isset($influxDb)) {
-            $this->setInfluxDb($this->createInfluxDb(
-                $config->overrideConfig($input, 'influxdb-host'),
-                $config->overrideConfig($input, 'influxdb-port'),
-                $config->overrideConfig($input, 'influxdb-user'),
-                $config->overrideConfig($input, 'influxdb-password')
-            ));
-            $influxDb = $this->getInfluxDb();
-        }
-
-        $database_name = $config->overrideConfig($input, 'influxdb-database');
-        if (!$database_name) {
-            $output->writeln('InfluxDb database not defined');
+        try {
+            $database = $this->getDatabase($input);
+        } catch (\Exception $e) {
+            $logger->critical($e->getMessage());
             return 1;
         }
-
-        $database = $influxDb->selectDB($database_name);
 
         $points = [];
 
-        try {
-            $databaseExists = $database->exists();
-        } catch (ConnectException $e) {
-            $logger->critical('InfluxDb connection error: ' . $e->getMessage());
-            return 1;
-        }
-        if (!$databaseExists) {
-            $logger->info('Database ' . $database_name . ' not exists, creating');
-            $database->create();
-        }
-
         $torrentList = $client->getTorrentData();
 
-        $transmission_host = $config->overrideConfig($input, 'transmission-host');
+        $transmissionHost = $config->overrideConfig($input, 'transmission-host');
 
         foreach ($torrentList as $torrent) {
             $point = new InfluxDB\Point(
                 'uploaded',
                 $torrent[Torrent\Get::UPLOAD_EVER],
                 [
-                    'host'         => $transmission_host,
+                    'host'         => $transmissionHost,
                     'torrent_name' => $torrent[Torrent\Get::NAME],
                 ],
                 [],
@@ -129,16 +106,57 @@ EOT
     {
         $logger = $this->getApplication()->getLogger();
 
-        $influx_connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
+        $connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
 
         $influxDb = new InfluxDB\Client(
-            $influx_connect['host'],
-            $influx_connect['port'],
-            $influx_connect['user'],
-            $influx_connect['password']
+            $connect['host'],
+            $connect['port'],
+            $connect['user'],
+            $connect['password']
         );
-        $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $influx_connect);
+        $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $connect);
 
         return $influxDb;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return InfluxDB\Database|bool
+     * @throws InfluxDB\Database\Exception
+     */
+    private function getDatabase(InputInterface $input)
+    {
+        $config = $this->getApplication()->getConfig();
+        $logger = $this->getApplication()->getLogger();
+
+        $influxDb = $this->getInfluxDb();
+        if (!isset($influxDb)) {
+            $this->setInfluxDb($this->createInfluxDb(
+                $config->overrideConfig($input, 'influxdb-host'),
+                $config->overrideConfig($input, 'influxdb-port'),
+                $config->overrideConfig($input, 'influxdb-user'),
+                $config->overrideConfig($input, 'influxdb-password')
+            ));
+            $influxDb = $this->getInfluxDb();
+        }
+
+        $databaseName = $config->overrideConfig($input, 'influxdb-database');
+        if (!$databaseName) {
+            throw new \RuntimeException('InfluxDb database not defined');
+        }
+
+        $database = $influxDb->selectDB($databaseName);
+
+        try {
+            $databaseExists = $database->exists();
+        } catch (ConnectException $e) {
+            throw new \RuntimeException('InfluxDb connection error: ' . $e->getMessage());
+        }
+        if (!$databaseExists) {
+            $logger->info('Database ' . $databaseName . ' not exists, creating');
+            $database->create();
+        }
+        
+        return $database;
     }
 }

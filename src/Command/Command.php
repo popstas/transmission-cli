@@ -84,8 +84,8 @@ class Command extends BaseCommand
 
         $connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
 
-        $base_uri = 'http://' . $connect['host'] . ':' . $connect['port'] . '/transmission/rpc';
-        $httpClient = new GuzzleHttp\Client(['base_uri' => $base_uri]);
+        $baseUri = 'http://' . $connect['host'] . ':' . $connect['port'] . '/transmission/rpc';
+        $httpClient = new GuzzleHttp\Client(['base_uri' => $baseUri]);
 
         $api = new API\RpcClient($httpClient, $connect['user'], $connect['password']);
         $api->setLogger($logger);
