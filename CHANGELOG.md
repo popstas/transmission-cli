@@ -7,6 +7,7 @@ FEATURES:
   * command/weburg-download: download single series for last x days by url or id without popularity check
 
 IMPROVEMENTS:
+  * command/stats-send: broken connection handling and logging
 
 BUG FIXES:
 

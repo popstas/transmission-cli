@@ -2,6 +2,7 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use GuzzleHttp\Exception\ConnectException;
 use InfluxDB;
 use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,11 +60,22 @@ EOT
         }
 
         $database_name = $config->overrideConfig($input, 'influxdb-database');
+        if (!$database_name) {
+            $output->writeln('InfluxDb database not defined');
+            return 1;
+        }
+
         $database = $influxDb->selectDB($database_name);
 
         $points = [];
 
-        if (!$database->exists()) {
+        try {
+            $databaseExists = $database->exists();
+        } catch (ConnectException $e) {
+            $logger->critical('InfluxDb connection error: ' . $e->getMessage());
+            return 1;
+        }
+        if (!$databaseExists) {
             $logger->info('Database ' . $database_name . ' not exists, creating');
             $database->create();
         }

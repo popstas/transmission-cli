@@ -26,6 +26,13 @@ class StatsSendTest extends CommandTestCase
         $this->setCommandName('stats-send');
         parent::setUp();
 
+        $config = new Config();
+        $config->set('influxdb-host', 'devnull');
+        $config->set('influxdb-port', 1234);
+        $config->set('influxdb-user', 'user');
+        $config->set('influxdb-password', 'pass');
+        $this->app->setConfig($config);
+
         $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
          ->setMethods([])
          ->setConstructorArgs([''])
@@ -44,20 +51,43 @@ class StatsSendTest extends CommandTestCase
         $this->executeCommand();
     }
 
-    /**
-     * @expectedException \GuzzleHttp\Exception\ConnectException;
-     */
-    public function testInfluxDbConnectionError()
+    public function testInfluxDbCreateInfluxDbWithoutDatabase()
     {
-        $this->markTestIncomplete('It pass always');
-        $config = new Config();
-        $config->set('influxdb-host', 'null');
-        $this->app->setConfig($config);
+        $this->getCommand()->setInfluxDb(null);
 
-        $this->executeCommand();
+        $config = $this->app->getConfig();
+        $config->set('influxdb-database', '');
+        $influx_connect = [
+            'host' => $config->get('influxdb-host'),
+            'port' => $config->get('influxdb-port'),
+            'user' => $config->get('influxdb-user'),
+            'password' => $config->get('influxdb-password')
+        ];
+
+        $logText = 'Connect InfluxDB using: {user}:{password}@{host}:{port}';
+        $this->app->getLogger()->expects($this->at(1))->method('debug')->with(
+            $this->equalTo($logText),
+            $this->equalTo($influx_connect)
+        );
+
+        $result = $this->executeCommand();
+        $this->assertEquals(1, $result);
+        $this->assertRegExp('/InfluxDb database not defined/', $this->getDisplay());
     }
 
-    public function testInfluxDbCreate()
+    public function testInfluxDbConnectionError()
+    {
+        $this->getCommand()->setInfluxDb(null);
+        $this->app->getConfig()->set('influxdb-database', 'test');
+
+        $this->app->getLogger()->expects($this->once())->method('critical');
+        $result = $this->executeCommand();
+        // TODO: output log errors as real app
+        //$this->assertRegExp('/InfluxDb connection error/', $this->getDisplay());
+        $this->assertEquals(1, $result);
+    }
+
+    public function testInfluxDbCreateDatabase()
     {
         $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
             ->setMethods([])
