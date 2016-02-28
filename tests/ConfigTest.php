@@ -20,7 +20,8 @@ class ConfigTest extends TestCase
             unlink($configFile);
         }
 
-        new Config(); // creates config on default path
+        $config = new Config(); // creates config on default path
+        $config->saveConfigFile();
 
         $this->assertTrue(file_exists($configFile));
 
@@ -37,7 +38,6 @@ class ConfigTest extends TestCase
         $config->set('param', 'value');
         $this->assertEquals('value', $config->get('param'));
 
-        $config->saveConfigFile();
         $config->saveConfigFile($configFile);
 
         $config->set('param', 'valueChanged');

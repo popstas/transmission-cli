@@ -38,14 +38,15 @@ class Config
         $this->config = self::$defaultConfig;
 
         if (!isset($configFile)) {
-            $configFile = self::getHomeDir() . '/.transmission-cli.yml';
-            if (!file_exists($configFile)) {
-                $this->saveConfigFile($configFile);
+            $this->configFile = self::getHomeDir() . '/.transmission-cli.yml';
+            if (!file_exists($this->configFile)) {
+                //$this->saveConfigFile($this->configFile);
             }
-        }
-        $this->configFile = $configFile;
-        if ($configFile) {
-            $this->loadConfigFile($configFile);
+        } else {
+            $this->configFile = $configFile;
+            if ($configFile) {
+                $this->loadConfigFile($configFile);
+            }
         }
     }
 

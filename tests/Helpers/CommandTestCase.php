@@ -15,6 +15,8 @@ abstract class CommandTestCase extends TestCase
 
     private $commandName;
 
+    private $configFile;
+
     /**
      * @var CommandTester
      */
@@ -30,9 +32,9 @@ abstract class CommandTestCase extends TestCase
 
         // config
         $homeDir = sys_get_temp_dir();
-        $configFile = $homeDir . '/.transmission-cli.yml';
-        if (file_exists($configFile)) {
-            unlink($configFile);
+        $this->configFile = tempnam($homeDir, 'transmission-cli.yml');
+        if (file_exists($this->configFile)) {
+            unlink($this->configFile);
         }
         putenv('HOME=' . $homeDir);
         $config = new Config();
@@ -50,6 +52,14 @@ abstract class CommandTestCase extends TestCase
         $this->commandTester = new CommandTester($this->command);
 
         parent::setUp();
+    }
+
+    public function tearDown()
+    {
+        if (file_exists($this->configFile)) {
+            unlink($this->configFile);
+        }
+        parent::tearDown();
     }
 
     public function setCommandName($name)

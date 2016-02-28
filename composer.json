@@ -12,8 +12,9 @@
         "mockery/mockery": "~0.9.4",
         "satooshi/php-coveralls": "2.0.x-dev",
         "kherge/box": "~2.6",
-        "phpmd/phpmd": "1.4.*",
-        "squizlabs/php_codesniffer": "2.*"
+        "phpmd/phpmd": "~2.3",
+        "squizlabs/php_codesniffer": "2.*",
+        "brianium/paratest": "dev-master"
     },
     "autoload": {
         "psr-4": {
