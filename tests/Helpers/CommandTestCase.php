@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Tests\Helpers;
 
 use Popstas\Transmission\Console\Application;
+use Popstas\Transmission\Console\Config;
 use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class CommandTestCase extends TestCase
@@ -27,13 +28,22 @@ abstract class CommandTestCase extends TestCase
 
         $this->app->setLogger($this->getMock('\Psr\Log\LoggerInterface'));
 
+        // config
+        $homeDir = sys_get_temp_dir();
+        $configFile = $homeDir . '/.transmission-cli.yml';
+        if (file_exists($configFile)) {
+            unlink($configFile);
+        }
+        putenv('HOME=' . $homeDir);
+        $config = new Config();
+        $config->saveConfigFile();
+
+        // weburgClient
         $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
         $api = $this->getMock('Martial\Transmission\API\RpcClient', [], [$httpClient, '', '']);
-
         $client = $this->getMock('Popstas\Transmission\Console\TransmissionClient', [], [$api]);
         $client->method('getTorrentData')->will($this->returnValue($this->expectedTorrentList));
         $client->method('getTorrentsField')->will($this->returnValue(['a', 'b', 'c', 'd']));
-
         $this->app->setClient($client);
 
         $this->command = $this->app->find($this->commandName);

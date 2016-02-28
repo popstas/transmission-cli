@@ -9,26 +9,19 @@ class WeburgDownloadTest extends CommandTestCase
 {
     private $dest;
 
-    private function rmdir($path)
-    {
-        $files = glob($path . '/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
-        }
-        if (is_dir($path)) {
-            rmdir($path);
-        }
-    }
-
     public function setUp()
     {
         $this->setCommandName('weburg-download');
         parent::setUp();
 
-        $this->app->setConfig(new Config());
-        $this->dest = sys_get_temp_dir();
+        $this->dest = sys_get_temp_dir() . 'transmission-cli-torrents';
+        if (!file_exists($this->dest)) {
+            mkdir($this->dest);
+        }
+        $config = new Config();
+        $config->set('download-torrents-dir', $this->dest);
+        $this->app->setConfig($config);
+
 
         $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
         $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);

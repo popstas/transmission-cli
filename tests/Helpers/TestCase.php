@@ -29,6 +29,19 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
+    public function rmdir($path)
+    {
+        $files = glob($path . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+        if (is_dir($path)) {
+            rmdir($path);
+        }
+    }
+
     public function getTestPage($name)
     {
         $body = file_get_contents('tests/data/' . $name . '.html');
