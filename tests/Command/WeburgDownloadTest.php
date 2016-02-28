@@ -22,11 +22,11 @@ class WeburgDownloadTest extends CommandTestCase
         $config->set('download-torrents-dir', $this->dest);
         $this->app->setConfig($config);
 
-
         $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
         $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
         $client->method('getMoviesIds')->will($this->returnValue([1, 2, 3]));
         $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
+        $client->method('getMovieInfoById')->willReturn(['title' => 'movie', 'comments' => 123, 'rating_imdb' => null]);
 
         $this->app->setWeburgClient($client);
     }
@@ -102,12 +102,15 @@ class WeburgDownloadTest extends CommandTestCase
 
     public function testDownloadOneSeries()
     {
-        $client = $this->app->getWeburgClient();
+        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
         $client->method('getSeriesTorrents')->willReturn(['url-1', 'url-2']);
         $client->method('cleanMovieId')->willReturn(12345);
         $client->method('getMovieInfoById')->willReturn(['title' => 'series', 'hashes' => [1, 2]]);
         $client->expects($this->once())->method('getSeriesTorrents');
         $client->expects($this->exactly(2))->method('downloadTorrent');
+        $this->app->setWeburgClient($client);
+
         $this->executeCommand(['movie-id' => 12345]);
     }
 

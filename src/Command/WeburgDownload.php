@@ -87,13 +87,10 @@ EOT
                 }
 
                 $movieInfo = $weburgClient->getMovieInfoById($movieId);
-                if (!isset($movieInfo['title'])
-                    || !isset($movieInfo['comments'])
-                    || !isset($movieInfo['rating_kinopoisk'])
-                    || !isset($movieInfo['rating_imdb'])
-                    || !isset($movieInfo['rating_votes'])
-                ) {
-                    $logger->warning('Cannot find all information about movie ' . $movieId);
+                foreach (array_keys($movieInfo) as $infoField) {
+                    if (!isset($movieInfo[$infoField])) {
+                        $logger->warning('Cannot find ' . $infoField . ' in movie ' . $movieId);
+                    }
                 }
 
                 $isTorrentPopular = $weburgClient->isTorrentPopular(
