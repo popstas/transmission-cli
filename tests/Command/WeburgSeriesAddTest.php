@@ -27,21 +27,11 @@ class WeburgSeriesAddTest extends CommandTestCase
         parent::tearDown();
     }
 
-    public function testAddById()
-    {
-        $this->executeCommand(['series-id' => '12345']);
-        $this->assertRegExp('/Series 12345 added to list/', $this->getDisplay());
-    }
-
-    public function testAddByUrl()
-    {
-        $this->executeCommand(['series-id' => 'http://weburg.net/series/info/12345']);
-        $this->assertRegExp('/Series 12345 added to list/', $this->getDisplay());
-    }
-
     public function testAddTwice()
     {
         $this->executeCommand(['series-id' => '12345']);
+        $this->assertRegExp('/Series 12345 added to list/', $this->getDisplay());
+
         $this->executeCommand(['series-id' => 'http://weburg.net/series/info/12345']);
         $this->assertRegExp('/already in list/', $this->getDisplay());
     }

@@ -76,6 +76,16 @@ class WeburgClientTest extends TestCase
         $this->assertNull($info['rating_imdb']);
     }
 
+    public function testCleanMovieId()
+    {
+        $client = $this->getClientWithBodyResponse('');
+
+        $this->assertEquals('12345', $client->cleanMovieId(12345));
+        $this->assertEquals('12345', $client->cleanMovieId('http://weburg.net/movies/info/12345'));
+        $this->assertEquals('12345', $client->cleanMovieId('http://weburg.net/series/info/12345'));
+        $this->assertNull($client->cleanMovieId('http://other-url/12345'));
+    }
+
     public function testGetMovieTorrentUrlsById()
     {
         $client = $this->getClientWithBodyResponse($this->getTestPage('movie_torrents'));

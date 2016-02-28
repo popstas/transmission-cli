@@ -20,7 +20,7 @@ class ConfigTest extends TestCase
             unlink($configFile);
         }
 
-        $config = new Config();
+        new Config(); // creates config on default path
 
         $this->assertTrue(file_exists($configFile));
 
@@ -29,11 +29,15 @@ class ConfigTest extends TestCase
 
     public function testSaveLoadConfig()
     {
+        $homeDir = sys_get_temp_dir();
+        $configFile = $homeDir . '/.transmission-cli.yml';
+        putenv('HOME=' . $homeDir);
+
         $config = new Config();
         $config->set('param', 'value');
         $this->assertEquals($config->get('param'), 'value');
 
-        $configFile = tempnam(sys_get_temp_dir(), 'config');
+        $config->saveConfigFile();
         $config->saveConfigFile($configFile);
 
         $config->set('param', 'valueChanged');

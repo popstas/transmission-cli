@@ -31,6 +31,7 @@ class WeburgDownloadTest extends CommandTestCase
         $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
         $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
         $client->method('getMoviesIds')->will($this->returnValue([1, 2, 3]));
+        $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
 
         $this->app->setWeburgClient($client);
     }
@@ -39,7 +40,6 @@ class WeburgDownloadTest extends CommandTestCase
     {
         $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
-        $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->expects($this->exactly(2))->method('downloadTorrent');
 
         $this->executeCommand(['--download-torrents-dir' => $this->dest]);
@@ -53,7 +53,6 @@ class WeburgDownloadTest extends CommandTestCase
     {
         $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
-        $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->expects($this->exactly(1))->method('downloadTorrent');
 
         mkdir($this->dest . '/downloaded');
