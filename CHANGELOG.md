@@ -8,6 +8,7 @@ FEATURES:
 
 IMPROVEMENTS:
   * command/stats-send: broken connection handling and logging
+  * core: 100% test coverage
 
 BUG FIXES:
 
