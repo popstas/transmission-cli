@@ -85,7 +85,13 @@ class WeburgClient
         return 'http://weburg.net/movies/info/' . $movieId;
     }
 
-    public function getUrlBody($url, $headers = [])
+    /**
+     * @param $url
+     * @param array $headers
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws \RuntimeException
+     */
+    private function getUrl($url, $headers = [])
     {
         $jar = new CookieJar();
 
@@ -94,34 +100,34 @@ class WeburgClient
             'cookies' => $jar,
         ]);
 
-        // TODO: it should return 200 or not 200 code, never 0
         if ($res->getStatusCode() != 200) {
             throw new \RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
         }
 
-        $body = $res->getBody();
+        return $res;
+    }
 
+    /**
+     * @param $url
+     * @param array $headers
+     * @return \Psr\Http\Message\StreamInterface
+     * @throws \RuntimeException
+     */
+    public function getUrlBody($url, $headers = [])
+    {
+        $res = $this->getUrl($url, $headers);
+        $body = $res->getBody();
         return $body;
     }
 
-    public function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
-    {
-        return $movieInfo['comments'] >= $commentsMin
-        || $movieInfo['rating_imdb'] >= $imdbMin
-        || $movieInfo['rating_kinopoisk'] >= $kinopoiskMin
-        || $movieInfo['rating_votes'] >= $votesMin;
-    }
-
+    /**
+     * @param $url
+     * @param $torrentsDir
+     * @throws \RuntimeException
+     */
     public function downloadTorrent($url, $torrentsDir)
     {
-        $jar = new CookieJar();
-
-        $res = $this->httpClient->request('GET', $url, ['cookies' => $jar]);
-
-        if ($res->getStatusCode() != 200) {
-            throw new \RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
-        }
-
+        $res = $this->getUrl($url);
         $torrentBody = $res->getBody();
 
         $disposition = $res->getHeader('content-disposition');
@@ -130,6 +136,14 @@ class WeburgClient
 
         $filePath = $torrentsDir . '/' . $filename;
         file_put_contents($filePath, $torrentBody);
+    }
+
+    public function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
+    {
+        return $movieInfo['comments'] >= $commentsMin
+        || $movieInfo['rating_imdb'] >= $imdbMin
+        || $movieInfo['rating_kinopoisk'] >= $kinopoiskMin
+        || $movieInfo['rating_votes'] >= $votesMin;
     }
 
     public function cleanMovieId($idOrUrl)
