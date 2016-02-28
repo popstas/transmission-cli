@@ -15,6 +15,10 @@ class TransmissionClient
     public function __construct(API\TransmissionAPI $api)
     {
         $this->api = $api;
+    }
+
+    public function createSession()
+    {
         $this->sessionId = $this->getSessionId($this->sessionId);
     }
 
@@ -32,6 +36,7 @@ class TransmissionClient
 
     public function getTorrentData(array $ids = [])
     {
+        $this->createSession();
         $torrentList = $this->api->torrentGet($this->sessionId, $ids, [
             API\Argument\Torrent\Get::ID,
             API\Argument\Torrent\Get::NAME,
@@ -118,6 +123,7 @@ class TransmissionClient
             $torrent_ids[] = $torrent[Torrent\Get::ID];
         }
 
+        $this->createSession();
         $this->api->torrentRemove($this->sessionId, $torrent_ids, $deleteLocalData);
 
         return true;

@@ -61,12 +61,13 @@ class Command extends BaseCommand
         // client
         $client = $this->getApplication()->getClient();
         if (!isset($client)) {
-            $this->getApplication()->setClient($this->createTransmissionClient(
+            $client = $this->createTransmissionClient(
                 $config->overrideConfig($input, 'transmission-host'),
                 $config->overrideConfig($input, 'transmission-port'),
                 $config->overrideConfig($input, 'transmission-user'),
                 $config->overrideConfig($input, 'transmission-password')
-            ));
+            );
+            $this->getApplication()->setClient($client);
         }
 
         $logger->info('[{date}] command: {args}', [
