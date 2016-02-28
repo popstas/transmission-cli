@@ -14,7 +14,7 @@ class WeburgDownloadTest extends CommandTestCase
         $this->setCommandName('weburg-download');
         parent::setUp();
 
-        $this->dest = sys_get_temp_dir() . 'transmission-cli-torrents';
+        $this->dest = sys_get_temp_dir() . '/transmission-cli-torrents';
         if (!file_exists($this->dest)) {
             mkdir($this->dest);
         }
