@@ -17,7 +17,9 @@ class WeburgDownloadTest extends CommandTestCase
                 unlink($file);
             }
         }
-        rmdir($path);
+        if (is_dir($path)) {
+            rmdir($path);
+        }
     }
 
     public function setUp()
@@ -36,6 +38,14 @@ class WeburgDownloadTest extends CommandTestCase
         $this->app->setWeburgClient($client);
     }
 
+    public function tearDown()
+    {
+        // TODO: dirty downloaded variable define
+        $this->rmdir($this->dest . '/downloaded');
+
+        parent::tearDown();
+    }
+
     public function testDownloadPopular()
     {
         $client = $this->app->getWeburgClient();
@@ -43,12 +53,8 @@ class WeburgDownloadTest extends CommandTestCase
         $client->expects($this->exactly(2))->method('downloadTorrent');
 
         $this->executeCommand(['--download-torrents-dir' => $this->dest]);
-
-        // TODO: dirty downloaded variable define
-        $this->rmdir($this->dest . '/downloaded');
     }
 
-    // TODO: check that all skipped
     public function testDownloadDownloaded()
     {
         $client = $this->app->getWeburgClient();
@@ -59,15 +65,13 @@ class WeburgDownloadTest extends CommandTestCase
         file_put_contents($this->dest . '/downloaded/1', '');
 
         $this->executeCommand(['--download-torrents-dir' => $this->dest]);
-
-        $this->rmdir($this->dest . '/downloaded');
     }
 
     public function testAllPopularDryRun()
     {
         $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->returnValue(true));
-        $client->expects($this->never())->method('downloadTorrents');
+        $client->expects($this->never())->method('downloadTorrent');
 
         $this->executeCommand(['--dry-run' => true, '--download-torrents-dir' => $this->dest]);
         $this->assertRegExp('/dry-run/', $this->getDisplay());
@@ -93,5 +97,34 @@ class WeburgDownloadTest extends CommandTestCase
         $result = $this->executeCommand();
         $this->assertEquals(1, $result);
         $this->assertRegExp('/Destination directory not defined/', $this->getDisplay());
+    }
+
+    public function testDownloadOneMovie()
+    {
+        $client = $this->app->getWeburgClient();
+        $client->method('cleanMovieId')->willReturn(12345);
+        $client->expects($this->once())->method('downloadTorrent');
+        $this->executeCommand(['movie-id' => 12345]);
+    }
+
+    public function testDownloadOneSeries()
+    {
+        $client = $this->app->getWeburgClient();
+        $client->method('getSeriesTorrents')->willReturn(['url-1', 'url-2']);
+        $client->method('cleanMovieId')->willReturn(12345);
+        $client->method('getMovieInfoById')->willReturn(['title' => 'series', 'hashes' => [1, 2]]);
+        $client->expects($this->once())->method('getSeriesTorrents');
+        $client->expects($this->exactly(2))->method('downloadTorrent');
+        $this->executeCommand(['movie-id' => 12345]);
+    }
+
+    public function testDownloadOneMovieInvalid()
+    {
+        $client = $this->app->getWeburgClient();
+        $client->method('cleanMovieId')->willReturn(false);
+
+        $result = $this->executeCommand(['movie-id' => 12345]);
+        $this->assertEquals(1, $result);
+        $this->assertRegExp('/seems not weburg movie/', $this->getDisplay());
     }
 }

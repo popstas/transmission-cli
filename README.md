@@ -32,7 +32,9 @@ Based on:
 - `torrent-list`, `tl`               - List torrents
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
-- `weburg-download`, `wd`            - Download torrents from weburg.net
+- `weburg-download`, `wd`            - Download popular torrents from weburg.net
+- `weburg-download [movie url or id]` - Download movie without popularity check
+- `weburg-download [series url or id] [--days=1]` - Download series for last x days
 - `weburg-series-add`, `wsa`         - Add series to monitoring list
 
 #### Global command options

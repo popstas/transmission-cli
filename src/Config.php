@@ -26,7 +26,8 @@ class Config
         'download-comments-min'  => 10,
         'download-votes-min'     => 25,
         
-        'weburg-series-list' => []
+        'weburg-series-list' => [],
+        'weburg-series-max-age' => 1
     );
 
     private $config;
