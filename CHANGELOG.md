@@ -3,6 +3,14 @@
 BREAKING CHANGES:
 
 FEATURES:
+
+IMPROVEMENTS:
+
+BUG FIXES:
+
+## 0.4.0 (February 29, 2016)
+
+FEATURES:
   * command/weburg-download: download single movie by url or id without popularity check
   * command/weburg-download: download single series for last x days by url or id without popularity check
   * **command/weburg-download**: now weburg-download also downloads new series for torrents added through weburg-series-add.

@@ -70,14 +70,23 @@ ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
 #### Configure
 Default config placement: `~/.transmission-cli.yml`. It creates on first `weburg-series-add` command.
 You can change some parameters here.
+
 Also, you can pass config to command: `transmission-cli --config /path/to/config.yml`
+
+Commands `weburg-download`, `weburg-series-add`, interacts only with weburg.net and not requests to Transmission or InfluxDb.
 
 
 #### Transmission
-You need to enable remote access in Transmission
+If you want to make commands `torrent-` working, you should enable remote access in Transmission
 and add host, port, username, password if it not defaults.
-You can change it in `~/.transmission-cli.yml`.
+
+By default, transmission-cli request to Transmission on localhost:9091 without user and password. You can change it in `~/.transmission-cli.yml`.
+
 You can override default config: `--transmission-host`, `--transmission-port`, `--transmission-user`, `--transmission-password`
+
+Also, maybe you want to automatically download movies, not only torrent files. To do that, enable autodownload in Transmission
+and point to same directory in `--dest=` option.
+
 
 #### InfluxDB and Grafana
 You need to install it for drawing torrent graphics.
@@ -107,6 +116,25 @@ PATH="$PATH:/usr/local/bin"
 0  * * * * transmission-cli stats-send --transmission-host=wrtnsq
 1  2 * * * transmission-cli weburg-download --download-torrents-dir=/Volumes/media/_planeta/_torrents
 ```
+
+
+# Download torrents from Weburg.net
+You can automatically download popular torrents from http://weburg.net/movies/new out of the box, use command:
+```
+transmission-cli weburg-download --dest=/path/to/torrents/directory
+```
+
+Also you can automatically download new series. To do this, you should add series to download list:
+```
+transmission-cli weburg-series-add http://weburg.net/series/info/12345
+```
+
+After that command `weburg-download also will download series from list for last day.
+If you don't want to download popular torrents, but only new series, use command:
+```
+transmission-cli weburg-download --dest=/path/to/torrents/directory --series
+```
+
 
 
 # Check code style
