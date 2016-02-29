@@ -15,10 +15,10 @@ class WeburgSeriesAddTest extends CommandTestCase
         parent::setUp();
 
         $this->configFile = tempnam(sys_get_temp_dir(), 'config');
-        $config = new Config('');
-        $config->saveConfigFile($this->configFile);
+        $config = new Config($this->configFile);
+        $config->saveConfigFile();
 
-        $this->app->setConfig(new Config($this->configFile));
+        $this->app->setConfig($config);
     }
 
     public function tearDown()

@@ -2,8 +2,10 @@
 
 namespace Popstas\Transmission\Console\Tests\Command;
 
+use Popstas\Transmission\Console\Application;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
+use Symfony\Component\Console\Tester\CommandTester;
 
 class CommandTest extends CommandTestCase
 {
@@ -11,6 +13,33 @@ class CommandTest extends CommandTestCase
     {
         $this->setCommandName('torrent-list');
         parent::setUp();
+    }
+
+    /**
+     * test only for cover $Application::getConfig and Command::initialize
+     */
+    public function testWithoutAnyMock()
+    {
+        $app = new Application();
+        $command = $app->find('torrent-list');
+        $commandTester = new CommandTester($command);
+        $result = $commandTester->execute(['command' => 'torrent-list', '--config' => 'a/b/c/nonexists']);
+        $this->assertEquals(1, $result);
+    }
+
+    public function testNonExistConfigAsOption()
+    {
+        $result = $this->executeCommand(['--config'  => '/a/b/c/transmission-cli.yml']);
+        // TODO: check message 'Config file not found'
+        $this->assertEquals(1, $result);
+    }
+
+    public function testCorruptedConfigAsOption()
+    {
+        $configFile = tempnam(sys_get_temp_dir(), 'config');
+        $result = $this->executeCommand(['--config'  => $configFile]);
+        // TODO: check message 'Config file corrupted'
+        $this->assertEquals(1, $result);
     }
 
     /**

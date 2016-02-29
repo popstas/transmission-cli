@@ -2,11 +2,8 @@
 
 namespace Popstas\Transmission\Console\Tests;
 
-use InvalidArgumentException;
 use Popstas\Transmission\Console\Config;
-use Popstas\Transmission\Console\Application;
 use Popstas\Transmission\Console\Tests\Helpers\TestCase;
-use Symfony\Component\Console\Tester\CommandTester;
 
 class ConfigTest extends TestCase
 {
@@ -28,47 +25,43 @@ class ConfigTest extends TestCase
         unlink($configFile);
     }
 
+    public function testDefaultConfigRead()
+    {
+        $config = new Config();
+        $config->set('param', 'value');
+        $config->saveConfigFile();
+
+        $config = new Config();
+        $config->loadConfigFile();
+        $this->assertEquals('value', $config->get('param'));
+    }
+
     public function testSaveLoadConfig()
     {
         $homeDir = sys_get_temp_dir();
         $configFile = $homeDir . '/.transmission-cli.yml';
         putenv('HOME=' . $homeDir);
 
-        $config = new Config();
+        $config = new Config($configFile);
         $config->set('param', 'value');
         $this->assertEquals('value', $config->get('param'));
 
-        $config->saveConfigFile($configFile);
+        $config->saveConfigFile();
 
         $config->set('param', 'valueChanged');
-        $config->loadConfigFile($configFile);
+        $config->loadConfigFile();
         $this->assertEquals('value', $config->get('param'));
 
         unlink($configFile);
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \RuntimeException
      */
     public function testNonExistConfig()
     {
-        $config = new Config();
-        $config->loadConfigFile('/a/b/c/transmission-cli.yml');
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testConfigAsOption()
-    {
-        $application = new Application();
-
-        $command = $application->find('torrent-list');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(array(
-            'command'   => $command->getName(),
-            '--config'  => '/a/b/c/transmission-cli.yml',
-        ));
+        $config = new Config('/a/b/c/transmission-cli.yml');
+        $config->loadConfigFile();
     }
 
     public function testGet()

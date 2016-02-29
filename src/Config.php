@@ -2,7 +2,6 @@
 
 namespace Popstas\Transmission\Console;
 
-use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -37,35 +36,28 @@ class Config
     {
         $this->config = self::$defaultConfig;
 
+        $this->configFile = $configFile;
         if (!isset($configFile)) {
             $this->configFile = self::getHomeDir() . '/.transmission-cli.yml';
-            if (!file_exists($this->configFile)) {
-                //$this->saveConfigFile($this->configFile);
-            }
-        } else {
-            $this->configFile = $configFile;
-            if ($configFile) {
-                $this->loadConfigFile($configFile);
-            }
         }
     }
 
-    public function loadConfigFile($configFile)
+    public function loadConfigFile()
     {
-        if (!file_exists($configFile)) {
-            throw new InvalidArgumentException('Config file not found: ' . $configFile);
+        if (!file_exists($this->configFile)) {
+            throw new \RuntimeException('Config file not found: ' . $this->configFile);
         }
-        $yml = Yaml::parse(file_get_contents($configFile));
+        $yml = Yaml::parse(file_get_contents($this->configFile));
+        if (!is_array($yml)) {
+            throw new \RuntimeException('Config file corrupted: ' . $this->configFile);
+        }
         $this->config = $yml + $this->config;
     }
 
-    public function saveConfigFile($configFile = null)
+    public function saveConfigFile()
     {
-        if (!isset($configFile)) {
-            $configFile = $this->configFile;
-        }
         $configRaw = Yaml::dump($this->config, 2);
-        file_put_contents($configFile, $configRaw);
+        file_put_contents($this->configFile, $configRaw);
     }
 
     public function get($key)

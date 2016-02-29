@@ -69,7 +69,7 @@ abstract class CommandTestCase extends TestCase
 
     public function executeCommand($options = [])
     {
-        $args = [ 'command' => $this->command->getName() ] + $options;
+        $args = ['command' => $this->command->getName()] + $options;
         return $this->commandTester->execute($args);
     }
 

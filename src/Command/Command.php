@@ -54,6 +54,15 @@ class Command extends BaseCommand
         $config = $this->getApplication()->getConfig();
         if (!isset($config)) {
             $config = new Config($input->getOption('config'));
+            try {
+                $config->loadConfigFile();
+            } catch (\RuntimeException $e) {
+                $logger->critical($e->getMessage());
+                $this->setCode(function () {
+                    return 1;
+                });
+                return;
+            }
             $this->getApplication()->setConfig($config);
         }
 
