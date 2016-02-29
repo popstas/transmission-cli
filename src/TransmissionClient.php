@@ -136,7 +136,6 @@ class TransmissionClient
         }
 
         return $torrentInList[Torrent\Get::TOTAL_SIZE] < $torrentNotInList[Torrent\Get::TOTAL_SIZE] ?
-            $torrentInList :
-            $torrentNotInList;
+            $torrentInList : $torrentNotInList;
     }
 }
