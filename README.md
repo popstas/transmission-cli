@@ -162,7 +162,3 @@ transmission-cli weburg-download --dest=/path/to/torrents/directory --series
 ```
 ./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
 ```
-
-### TODO:
-- test phar
-- docs
