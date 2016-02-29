@@ -13,6 +13,7 @@ IMPROVEMENTS:
   * core: 100% test coverage
   * core: config anymore not creating if all parameters are default
   * core: added phpmd and scrutinizer metrics for better code quality
+  * WeburgClient: add request delay between requests, default 2 seconds, changes by config parameter weburg-request-delay
 
 BUG FIXES:
   * many possibly bugs fixed while code coverage and follow phpmd and scrutinizer hints

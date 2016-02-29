@@ -118,7 +118,9 @@ class Application extends BaseApplication
 
     public function createWeburgClient()
     {
+        $config = $this->getConfig();
+        $requestDelay = $config->get('weburg-request-delay');
         $httpClient = new GuzzleHttp\Client();
-        return new WeburgClient($httpClient);
+        return new WeburgClient($httpClient, $requestDelay);
     }
 }

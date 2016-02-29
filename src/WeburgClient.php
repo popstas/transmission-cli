@@ -12,9 +12,12 @@ class WeburgClient
      */
     private $httpClient;
 
-    public function __construct(ClientInterface $httpClient)
+    private $requestDelay;
+
+    public function __construct(ClientInterface $httpClient, $requestDelay = 0)
     {
         $this->httpClient = $httpClient;
+        $this->requestDelay = $requestDelay;
     }
 
     public function getMovieInfoById($movieId)
@@ -103,6 +106,8 @@ class WeburgClient
         if ($res->getStatusCode() != 200) {
             throw new \RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
         }
+
+        sleep($this->requestDelay);
 
         return $res;
     }
