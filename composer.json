@@ -1,4 +1,6 @@
 {
+    "name": "popstas/transmission-cli",
+    "description": "Transmission client for automate weburg.net downloads",
     "require": {
         "php": ">=5.6",
         "symfony/console": "~2.1",
