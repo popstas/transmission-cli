@@ -2,6 +2,7 @@
 
 namespace Popstas\Transmission\Console;
 
+use GuzzleHttp;
 use Popstas\Transmission\Console\Command;
 use Psr\Log\LoggerInterface;
 use Stecman\Component\Symfony\Console\BashCompletion;
@@ -36,19 +37,21 @@ class Application extends BaseApplication
         parent::__construct($name, $version);
     }
 
+    /**
+     * @return array|\Symfony\Component\Console\Command\Command[]
+     */
     protected function getDefaultCommands()
     {
-        $commands = parent::getDefaultCommands();
+        $commands = array_merge(parent::getDefaultCommands(), [
+            new BashCompletion\CompletionCommand(),
 
-        $commands[] = new Command\StatsSend();
-        $commands[] = new Command\TorrentClean();
-        $commands[] = new Command\TorrentList();
-        $commands[] = new Command\TorrentRemoveDuplicates();
-        $commands[] = new Command\WeburgDownload();
-        $commands[] = new Command\WeburgSeriesAdd();
-
-        $commands[] = new BashCompletion\CompletionCommand();
-
+            new Command\StatsSend(),
+            new Command\TorrentClean(),
+            new Command\TorrentList(),
+            new Command\TorrentRemoveDuplicates(),
+            new Command\WeburgDownload(),
+            new Command\WeburgSeriesAdd(),
+        ]);
         return $commands;
     }
 
@@ -102,11 +105,20 @@ class Application extends BaseApplication
 
     public function getWeburgClient()
     {
+        if (!isset($this->weburgClient)) {
+            $this->weburgClient = $this->createWeburgClient();
+        }
         return $this->weburgClient;
     }
 
     public function setWeburgClient($weburgClient)
     {
         $this->weburgClient = $weburgClient;
+    }
+
+    public function createWeburgClient()
+    {
+        $httpClient = new GuzzleHttp\Client();
+        return new WeburgClient($httpClient);
     }
 }

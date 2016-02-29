@@ -32,14 +32,12 @@ EOT
             return 0;
         }
 
-        if (!$input->getOption('dry-run')) {
+        $this->dryRun($input, $output, function () use ($logger, $client, $obsoleteList) {
             $client->removeTorrents($obsoleteList);
-
             $names = $client->getTorrentsField($obsoleteList, Torrent\Get::NAME);
             $logger->info('Removed torrents:' . implode(', ', $names));
-        } else {
-            $output->writeln('dry-run, don\'t really remove');
-        }
+        }, 'dry-run, don\'t really remove');
+
         $output->writeln('Found and deleted ' . count($obsoleteList) . ' obsolete torrents from transmission:');
         $client->printTorrentsTable($obsoleteList, $output);
         return 0;

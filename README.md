@@ -114,8 +114,6 @@ PATH="$PATH:/usr/local/bin"
 
 # TODO:
 - test phar
-- paratest
-- scrutinizer
 - docs
 - packagist
 - track deleted torrents

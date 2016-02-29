@@ -9,7 +9,6 @@ use Popstas\Transmission\Console;
 use Popstas\Transmission\Console\Application;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\TransmissionClient;
-use Popstas\Transmission\Console\WeburgClient;
 use Psr\Log\LogLevel;
 use Symfony\Component\Console\Command\Command as BaseCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -95,9 +94,16 @@ class Command extends BaseCommand
         return new TransmissionClient($api);
     }
 
-    public function createWeburgClient()
-    {
-        $httpClient = new GuzzleHttp\Client();
-        return new WeburgClient($httpClient);
+    public function dryRun(
+        InputInterface $input,
+        OutputInterface $output,
+        \Closure $callback,
+        $message = 'dry-run, don\'t doing anytning'
+    ) {
+        if (!$input->getOption('dry-run')) {
+            $callback();
+        } else {
+            $output->writeln($message);
+        }
     }
 }

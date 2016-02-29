@@ -76,12 +76,10 @@ EOT
             $logger->debug('Send point: {point}', ['point' => $point]);
         }
 
-        if (!$input->getOption('dry-run')) {
+        $this->dryRun($input, $output, function () use ($database, $points, $logger) {
             $isSuccess = $database->writePoints($points, InfluxDB\Database::PRECISION_SECONDS);
             $logger->info('InfluxDB write ' . ($isSuccess ? 'success' : 'failed'));
-        } else {
-            $logger->info('dry-run, don\'t really send points');
-        }
+        }, 'dry-run, don\'t really send points');
 
         return 0;
     }

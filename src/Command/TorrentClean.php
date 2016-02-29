@@ -48,12 +48,11 @@ EOT
         $client->printTorrentsTable($blackTorrentList, $output);
         $output->writeln('Total size: ' . $sizeInGb . ' Gb');
 
-        if (!$input->getOption('dry-run')) {
+        $this->dryRun($input, $output, function () use ($logger) {
             $logger->critical('actual delete not implemented!');
             //$client->removeTorrents($blackTorrentList, true);
-        } else {
-            $output->writeln('dry-run, don\'t really remove');
-        }
+        }, 'dry-run, don\'t really remove');
+
         return 0;
     }
 

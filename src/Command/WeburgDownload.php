@@ -29,42 +29,27 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $config = $this->getApplication()->getConfig();
-
         $weburgClient = $this->getApplication()->getWeburgClient();
-        if (!isset($weburgClient)) {
-            $this->getApplication()->setWeburgClient($this->createWeburgClient());
-            $weburgClient = $this->getApplication()->getWeburgClient();
-        }
 
         try {
             list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
+
+            $movieArgument = $input->getArgument('movie-id');
+            if (isset($movieArgument)) {
+                $daysMax = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
+                $torrentsUrls = $this->getMovieTorrentsUrls($weburgClient, $movieArgument, $daysMax);
+            } else {
+                $torrentsUrls = $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir);
+            }
+
+            $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
+                foreach ($torrentsUrls as $torrentUrl) {
+                    $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
+                }
+            }, 'dry-run, don\'t really download');
         } catch (\RuntimeException $e) {
             $output->writeln($e->getMessage());
             return 1;
-        }
-
-        $movieArgument = $input->getArgument('movie-id');
-        if (isset($movieArgument)) {
-            $movieId = $weburgClient->cleanMovieId($movieArgument);
-            if (!$movieId) {
-                $output->writeln($movieArgument . ' seems not weburg movie ID or URL');
-                return 1;
-            }
-
-            $daysMax = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
-
-            $torrentsUrls = $this->getMovieTorrentsUrls($weburgClient, $movieId, $daysMax);
-
-        } else {
-            $torrentsUrls = $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir);
-        }
-
-        if (!$input->getOption('dry-run')) {
-            foreach ($torrentsUrls as $torrentUrl) {
-                $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
-            }
-        } else {
-            $output->writeln('dry-run, don\'t really download');
         }
 
         return 0;
@@ -127,11 +112,22 @@ EOT
         return $torrentsUrls;
     }
 
+    /**
+     * @param WeburgClient $weburgClient
+     * @param $movieId
+     * @param $daysMax
+     * @return array
+     * @throws \RuntimeException
+     */
     public function getMovieTorrentsUrls(WeburgClient $weburgClient, $movieId, $daysMax)
     {
         $torrentsUrls = [];
-
         $logger = $this->getApplication()->getLogger();
+
+        $movieId = $weburgClient->cleanMovieId($movieId);
+        if (!$movieId) {
+            throw new \RuntimeException($movieId . ' seems not weburg movie ID or URL');
+        }
 
         $movieInfo = $weburgClient->getMovieInfoById($movieId);
         $logger->info('Search series ' . $movieId);

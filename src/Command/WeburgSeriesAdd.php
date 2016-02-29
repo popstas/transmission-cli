@@ -27,10 +27,6 @@ EOT
         $config = $this->getApplication()->getConfig();
 
         $weburgClient = $this->getApplication()->getWeburgClient();
-        if (!isset($weburgClient)) {
-            $this->getApplication()->setWeburgClient($this->createWeburgClient());
-            $weburgClient = $this->getApplication()->getWeburgClient();
-        }
 
         $seriesArgument = $input->getArgument('series-id');
         $seriesId = $weburgClient->cleanMovieId($seriesArgument);
