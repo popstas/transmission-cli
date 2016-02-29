@@ -119,7 +119,7 @@ EOT
 
     /**
      * @param InputInterface $input
-     * @return InfluxDB\Database|bool
+     * @return InfluxDB\Database
      * @throws InfluxDB\Database\Exception
      */
     private function getDatabase(InputInterface $input)
