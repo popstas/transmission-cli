@@ -12,8 +12,18 @@ class TorrentListTest extends CommandTestCase
         parent::setUp();
     }
 
-    public function testListTorrents()
+    public function testSortList()
     {
+        $this->executeCommand(['--sort' => 'asd']);
+        $display1 = $this->getDisplay();
+        $this->executeCommand(['--sort' => 0]);
+        $display2 = $this->getDisplay();
+        $this->assertEquals($display1, $display2);
+
         $this->executeCommand();
+        $display1 = $this->getDisplay();
+        $this->executeCommand(['--sort' => 4]);
+        $display2 = $this->getDisplay();
+        $this->assertEquals($display1, $display2);
     }
 }

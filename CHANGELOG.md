@@ -4,6 +4,7 @@ BREAKING CHANGES:
 
 FEATURES:
   * packagist.org package: now able install with composer
+  * torrent-list: add columns 'Age', 'Uploaded', 'Per day', add --sort option
 
 IMPROVEMENTS:
 

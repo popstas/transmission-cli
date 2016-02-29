@@ -34,24 +34,30 @@ class TransmissionClient
         return $sessionId;
     }
 
-    public function getTorrentData(array $ids = [])
+    public function getTorrentData(array $ids = [], $fields = [])
     {
+        if (empty($fields)) {
+            $fields = [
+                Torrent\Get::ID,
+                Torrent\Get::NAME,
+                Torrent\Get::TOTAL_SIZE,
+                Torrent\Get::DOWNLOAD_DIR,
+                Torrent\Get::UPLOAD_EVER,
+                Torrent\Get::DOWNLOAD_EVER,
+                Torrent\Get::DONE_DATE,
+            ];
+        }
+
         $this->createSession();
-        $torrentList = $this->api->torrentGet($this->sessionId, $ids, [
-            API\Argument\Torrent\Get::ID,
-            API\Argument\Torrent\Get::NAME,
-            API\Argument\Torrent\Get::TOTAL_SIZE,
-            API\Argument\Torrent\Get::DOWNLOAD_DIR,
-            API\Argument\Torrent\Get::UPLOAD_EVER,
-        ]);
+        $torrentList = $this->api->torrentGet($this->sessionId, $ids, $fields);
         return $torrentList;
     }
 
-    public function getTorrentsSize(array $torrentList)
+    public function getTorrentsSize(array $torrentList, $fieldName = Torrent\Get::TOTAL_SIZE)
     {
         $torrentSize = 0;
         foreach ($torrentList as $torrent) {
-            $torrentSize += $torrent[Torrent\Get::TOTAL_SIZE];
+            $torrentSize += $torrent[$fieldName];
         }
         return $torrentSize;
     }
