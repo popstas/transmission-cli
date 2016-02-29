@@ -16,7 +16,7 @@ class CommandTest extends CommandTestCase
     }
 
     /**
-     * test only for cover $Application::getConfig and Command::initialize
+     * test only for cover Application::getConfig and Command::initialize
      */
     public function testWithoutAnyMock()
     {
@@ -43,7 +43,7 @@ class CommandTest extends CommandTestCase
     }
 
     /**
-     * @expectedException Martial\Transmission\API\TransmissionException
+     * @expectedException \Martial\Transmission\API\TransmissionException
      */
     public function testCreateTransmissionClientError()
     {

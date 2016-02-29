@@ -5,12 +5,17 @@ BREAKING CHANGES:
 FEATURES:
   * command/weburg-download: download single movie by url or id without popularity check
   * command/weburg-download: download single series for last x days by url or id without popularity check
+  * **command/weburg-download**: now weburg-download also downloads new series for torrents added through weburg-series-add.
+    You can select command behaviour by --popular and --series flags if you want to download something one. 
 
 IMPROVEMENTS:
   * command/stats-send: broken connection handling and logging
   * core: 100% test coverage
+  * core: config anymore not creating if all parameters are default
+  * core: added phpmd and scrutinizer metrics for better code quality
 
 BUG FIXES:
+  * many possibly bugs fixed while code coverage and follow phpmd and scrutinizer hints
 
 ## 0.3.1 (February 28, 2016)
 

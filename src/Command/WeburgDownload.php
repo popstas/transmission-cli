@@ -18,7 +18,9 @@ class WeburgDownload extends Command
             ->setAliases(['wd'])
             ->setDescription('Download torrents from weburg.net')
             ->addOption('download-torrents-dir', null, InputOption::VALUE_OPTIONAL, 'Torrents destination directory')
-            ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Max age of series torrent', 3)
+            ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Max age of series torrent')
+            ->addOption('popular', null, InputOption::VALUE_NONE, 'Download only popular')
+            ->addOption('series', null, InputOption::VALUE_NONE, 'Download only tracked series')
             ->addArgument('movie-id', null, 'Movie ID or URL')
             ->setHelp(<<<EOT
 The <info>weburg-download</info> scans weburg.net top page and downloads popular torrents.
@@ -31,22 +33,44 @@ EOT
         $config = $this->getApplication()->getConfig();
         $weburgClient = $this->getApplication()->getWeburgClient();
 
+        $torrentsUrls = [];
+
         try {
             list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
 
+            $daysMax = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
+
             $movieArgument = $input->getArgument('movie-id');
             if (isset($movieArgument)) {
-                $daysMax = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
                 $torrentsUrls = $this->getMovieTorrentsUrls($weburgClient, $movieArgument, $daysMax);
             } else {
-                $torrentsUrls = $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir);
+                if (!$input->getOption('popular') && !$input->getOption('series')) {
+                    $input->setOption('popular', true);
+                    $input->setOption('series', true);
+                }
+
+                if ($input->getOption('popular')) {
+                    $torrentsUrls = array_merge(
+                        $torrentsUrls,
+                        $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir)
+                    );
+                }
+
+                if ($input->getOption('series')) {
+                    $torrentsUrls = array_merge(
+                        $torrentsUrls,
+                        $this->getTrackedSeriesUrls($output, $weburgClient, $daysMax)
+                    );
+                }
             }
 
-            $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
-                foreach ($torrentsUrls as $torrentUrl) {
-                    $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
-                }
-            }, 'dry-run, don\'t really download');
+            if (!empty($torrentsUrls)) {
+                $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
+                    foreach ($torrentsUrls as $torrentUrl) {
+                        $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
+                    }
+                }, 'dry-run, don\'t really download');
+            }
         } catch (\RuntimeException $e) {
             $output->writeln($e->getMessage());
             return 1;
@@ -63,6 +87,8 @@ EOT
         $logger = $this->getApplication()->getLogger();
 
         $moviesIds = $weburgClient->getMoviesIds();
+
+        $output->writeln("Downloading popular torrents");
 
         $progress = new ProgressBar($output, count($moviesIds));
         $progress->start();
@@ -109,6 +135,42 @@ EOT
 
         $progress->finish();
         
+        return $torrentsUrls;
+    }
+
+    /**
+     * @param OutputInterface $output
+     * @param WeburgClient $weburgClient
+     * @param $daysMax
+     * @return array
+     */
+    public function getTrackedSeriesUrls(OutputInterface $output, WeburgClient $weburgClient, $daysMax)
+    {
+        $torrentsUrls = [];
+
+        $config = $this->getApplication()->getConfig();
+
+        $seriesIds = $config->get('weburg-series-list');
+        if (!$seriesIds) {
+            return [];
+        }
+
+        $output->writeln("Downloading tracked series");
+
+        $progress = new ProgressBar($output, count($seriesIds));
+        $progress->start();
+
+        foreach ($seriesIds as $seriesId) {
+            $progress->setMessage('Check series ' . $seriesId . '...');
+            $progress->advance();
+
+            $movieInfo = $weburgClient->getMovieInfoById($seriesId);
+            $seriesUrls = $weburgClient->getSeriesTorrents($seriesId, $movieInfo['hashes'], $daysMax);
+            $torrentsUrls = array_merge($torrentsUrls, $seriesUrls);
+        }
+
+        $progress->finish();
+
         return $torrentsUrls;
     }
 

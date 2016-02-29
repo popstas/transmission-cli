@@ -13,6 +13,7 @@ Based on:
 # Features
 - send metrics to InfluxDB, torrent monitoring trends with Grafana
 - download popular (rating, comment and votes based) movies from http://weburg.net
+- download tracked series from http://weburg.net
 - delete not popular uploads from transmission
 - working with multiple transmission instances
 - command line autocompletion
@@ -32,7 +33,9 @@ Based on:
 - `torrent-list`, `tl`               - List torrents
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
-- `weburg-download`, `wd`            - Download popular torrents from weburg.net
+- `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
+- `weburg-download --popular`        - Download only popular
+- `weburg-download --series`         - Download only series
 - `weburg-download [movie url or id]` - Download movie without popularity check
 - `weburg-download [series url or id] [--days=1]` - Download series for last x days
 - `weburg-series-add`, `wsa`         - Add series to monitoring list
@@ -115,5 +118,3 @@ PATH="$PATH:/usr/local/bin"
 # TODO:
 - test phar
 - docs
-- packagist
-- track deleted torrents
