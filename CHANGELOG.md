@@ -3,6 +3,7 @@
 BREAKING CHANGES:
 
 FEATURES:
+  * packagist.org package: now able install with composer
 
 IMPROVEMENTS:
 

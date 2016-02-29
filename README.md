@@ -51,15 +51,26 @@ Based on:
 
 
 # Install
-Download latest transmission-cli.phar [here](https://github.com/popstas/transmission-cli/releases/latest)
-make it executable and put it to bin directory:
+
+### PHAR automatic (Recommended)
 ```
 latest_phar=$(curl -s https://api.github.com/repos/popstas/transmission-cli/releases/latest | grep 'browser_' | cut -d\" -f4)
 wget -O /usr/local/bin/transmission-cli "$latest_phar"
 chmod +x /usr/local/bin/transmission-cli
 ```
 
-Or build with composer:
+### PHAR manually
+Download latest transmission-cli.phar [here](https://github.com/popstas/transmission-cli/releases/latest), make it executable and put it to bin directory.
+
+### Composer global
+```
+composer global require popstas/transmission-cli
+```
+If you cannot execute `transmission-cli` after that, probably you should add ~/.composer/vendor/bin to your PATH environment variable
+as described [here](https://akrabat.com/global-installation-of-php-tools-with-composer/).
+ 
+
+### Composer from source:
 ```
 git clone https://github.com/popstas/transmission-cli
 cd transmission-cli
@@ -67,7 +78,7 @@ composer install
 ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
 ```
 
-#### Configure
+# Configure
 Default config placement: `~/.transmission-cli.yml`. It creates on first `weburg-series-add` command.
 You can change some parameters here.
 
@@ -118,7 +129,9 @@ PATH="$PATH:/usr/local/bin"
 ```
 
 
-# Download torrents from Weburg.net
+# Usage
+
+## Download torrents from Weburg.net
 You can automatically download popular torrents from http://weburg.net/movies/new out of the box, use command:
 ```
 transmission-cli weburg-download --dest=/path/to/torrents/directory
@@ -137,12 +150,19 @@ transmission-cli weburg-download --dest=/path/to/torrents/directory --series
 
 
 
-# Check code style
+# Contribution
+
+### Required for pass build:
 ```
- ./vendor/bin/phpcs --standard=psr2 ./src ./tests
- ./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
+./vendor/bin/phpcs --standard=psr2 ./src ./tests
+./vendor/bin/paratest
 ```
 
-# TODO:
+### Recommended
+```
+./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
+```
+
+### TODO:
 - test phar
 - docs

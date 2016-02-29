@@ -32,7 +32,7 @@ class Application extends BaseApplication
      */
     private $weburgClient;
 
-    public function __construct($name = 'Transmission CLI', $version = self::VERSION)
+    public function __construct($name = 'Transmission CLI', $version = '@git-version@')
     {
         parent::__construct($name, $version);
     }
@@ -53,6 +53,19 @@ class Application extends BaseApplication
             new Command\WeburgSeriesAdd(),
         ]);
         return $commands;
+    }
+
+    public function getLongVersion()
+    {
+        if (('@' . 'git-version@') !== $this->getVersion()) {
+            return sprintf(
+                '<info>%s</info> version <comment>%s</comment> build <comment>%s</comment>',
+                $this->getName(),
+                $this->getVersion(),
+                '@git-commit@'
+            );
+        }
+        return '<info>' . $this->getName() . '</info> (repo)';
     }
 
     /**

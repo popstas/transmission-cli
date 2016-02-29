@@ -17,8 +17,6 @@ before_install:
   - chmod 755 box
 
 install:
-  - version=$(git tag | grep '^v.' | tail -n1)
-  - sed -i "s/const VERSION = 'dev'/const VERSION = '$version'/g" src/Application.php
   - composer install --no-dev
   - php box build
   - composer update
@@ -39,5 +37,3 @@ deploy:
 
 after_script:
   - travis_retry php vendor/bin/coveralls
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml

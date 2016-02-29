@@ -3,14 +3,18 @@
 if (PHP_SAPI !== 'cli') {
     echo 'Warning: Program should be invoked via the CLI version of PHP, not the '.PHP_SAPI.' SAPI'.PHP_EOL;
 }
-require __DIR__.'/../vendor/autoload.php';
-
-use Popstas\Transmission\Console\Application;
 
 error_reporting(-1);
 if (function_exists('ini_set')) {
     @ini_set('display_errors', 1);
 }
 
-$application = new Application();
+foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../vendor/autoload.php') as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
+
+$application = new Popstas\Transmission\Console\Application();
 $application->run();

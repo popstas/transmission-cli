@@ -1,6 +1,7 @@
 {
     "chmod": "0755",
     "directories": ["src"],
+    "git-version": "git-version",
     "finder": [
     {
         "name": "*.php",
