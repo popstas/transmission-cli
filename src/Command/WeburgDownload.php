@@ -33,8 +33,6 @@ EOT
         $config = $this->getApplication()->getConfig();
         $weburgClient = $this->getApplication()->getWeburgClient();
 
-        $torrentsUrls = [];
-
         try {
             list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
 
@@ -44,39 +42,52 @@ EOT
             if (isset($movieArgument)) {
                 $torrentsUrls = $this->getMovieTorrentsUrls($weburgClient, $movieArgument, $daysMax);
             } else {
-                if (!$input->getOption('popular') && !$input->getOption('series')) {
-                    $input->setOption('popular', true);
-                    $input->setOption('series', true);
-                }
-
-                if ($input->getOption('popular')) {
-                    $torrentsUrls = array_merge(
-                        $torrentsUrls,
-                        $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir)
-                    );
-                }
-
-                if ($input->getOption('series')) {
-                    $torrentsUrls = array_merge(
-                        $torrentsUrls,
-                        $this->getTrackedSeriesUrls($output, $weburgClient, $daysMax)
-                    );
-                }
+                $torrentsUrls = $this->getTorrentsUrls($input, $output, $weburgClient, $downloadDir, $daysMax);
             }
 
-            if (!empty($torrentsUrls)) {
-                $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
-                    foreach ($torrentsUrls as $torrentUrl) {
-                        $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
-                    }
-                }, 'dry-run, don\'t really download');
-            }
+            $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
+                foreach ($torrentsUrls as $torrentUrl) {
+                    $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
+                }
+            }, 'dry-run, don\'t really download');
+
         } catch (\RuntimeException $e) {
             $output->writeln($e->getMessage());
             return 1;
         }
 
         return 0;
+    }
+
+    private function getTorrentsUrls(
+        InputInterface $input,
+        OutputInterface $output,
+        WeburgClient $weburgClient,
+        $downloadDir,
+        $daysMax
+    ) {
+        $torrentsUrls = [];
+
+        if (!$input->getOption('popular') && !$input->getOption('series')) {
+            $input->setOption('popular', true);
+            $input->setOption('series', true);
+        }
+
+        if ($input->getOption('popular')) {
+            $torrentsUrls = array_merge(
+                $torrentsUrls,
+                $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir)
+            );
+        }
+
+        if ($input->getOption('series')) {
+            $torrentsUrls = array_merge(
+                $torrentsUrls,
+                $this->getTrackedSeriesUrls($output, $weburgClient, $daysMax)
+            );
+        }
+
+        return $torrentsUrls;
     }
 
     public function getPopularTorrentsUrls(OutputInterface $output, WeburgClient $weburgClient, $downloadDir)
@@ -134,7 +145,7 @@ EOT
         }
 
         $progress->finish();
-        
+
         return $torrentsUrls;
     }
 
@@ -204,7 +215,7 @@ EOT
         } else {
             $torrentsUrls = array_merge($torrentsUrls, $weburgClient->getMovieTorrentUrlsById($movieId));
         }
-        
+
         return $torrentsUrls;
     }
 
