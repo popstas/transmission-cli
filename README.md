@@ -195,14 +195,14 @@ transmission-cli torrent-list --name '.mkv|.avi'
 ### Required checks for pass build:
 ```
 ./vendor/bin/phpcs --standard=psr2 ./src ./tests
-./vendor/bin/paratest
+phpunit
 ```
 
 ### Recommended
 - support code full coverage
-- check code with PHP Mess Detector:
+- check code with PHP Mess Detector:hich 
 ```
-./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
+phpmd src/ text codesize,controversial,design,naming,unusedcode
 ```
 
 ### TODO
