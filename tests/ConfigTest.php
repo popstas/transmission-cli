@@ -7,6 +7,16 @@ use Popstas\Transmission\Console\Tests\Helpers\TestCase;
 
 class ConfigTest extends TestCase
 {
+    private $configFile;
+
+    public function tearDown()
+    {
+        if (file_exists($this->configFile)) {
+            unlink($this->configFile);
+        }
+        parent::tearDown();
+    }
+
     public function testDefaultConfigWrite()
     {
         $homeDir = sys_get_temp_dir();
@@ -61,6 +71,16 @@ class ConfigTest extends TestCase
     public function testNonExistConfig()
     {
         $config = new Config('/a/b/c/transmission-cli.yml');
+        $config->loadConfigFile();
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testCorruptedConfig()
+    {
+        $this->configFile = tempnam(sys_get_temp_dir(), 'config');
+        $config = new Config($this->configFile);
         $config->loadConfigFile();
     }
 

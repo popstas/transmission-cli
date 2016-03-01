@@ -80,6 +80,38 @@ class TransmissionClientTest extends TestCase
         $this->assertEquals(['name.ext', 'name.ext', 'name2.ext', 'name.ext'], $torrentField);
     }
 
+    public function testFilterTorrentsByAge()
+    {
+        $torrentList = [
+            ['doneDate' => time() - 86400 * 0],
+            ['doneDate' => time() - 86400 * 1],
+            ['doneDate' => time() - 86400 * 2],
+            ['doneDate' => time() - 86400 * 3],
+        ];
+
+        $this->assertEquals($torrentList, $this->client->filterTorrents($torrentList, []));
+        $this->assertEquals([1, 2, 3], array_keys($this->client->filterTorrents($torrentList, ['age' => '>0'])));
+        $this->assertEquals([0, 1, 2], array_keys($this->client->filterTorrents($torrentList, ['age' => '< 3'])));
+        $this->assertEquals([1, 2, 3], array_keys($this->client->filterTorrents($torrentList, ['age_min' => '1'])));
+        $this->assertEquals([0, 1, 2], array_keys($this->client->filterTorrents($torrentList, ['age_max' => '2'])));
+        $this->assertEquals([1, 2], array_keys($this->client->filterTorrents($torrentList, ['age' => '>0 < 3'])));
+    }
+
+    public function testGetTorrentAgeInDays()
+    {
+        // without doneDate
+        $this->assertEquals(1, $this->client->getTorrentAgeInDays([
+            'doneDate' => 0,
+            'addedDate' => time() - 86400
+        ]));
+
+        // with doneDate
+        $this->assertEquals(2, $this->client->getTorrentAgeInDays([
+            'doneDate' => time() - 86400 * 2,
+            'addedDate' => time() - 86400
+        ]));
+    }
+
     // TODO: it asserts nothing
     public function testPrintTorrentsTable()
     {

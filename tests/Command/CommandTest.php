@@ -40,6 +40,7 @@ class CommandTest extends CommandTestCase
         $result = $this->executeCommand(['--config'  => $configFile]);
         // TODO: check message 'Config file corrupted'
         $this->assertEquals(1, $result);
+        unlink($configFile);
     }
 
     /**

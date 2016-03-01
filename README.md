@@ -30,7 +30,7 @@ Based on:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
 - `torrent-clean`, `tc`              - Clean not popular torrents
-- `torrent-list [--sort=1]`, `tl`    - List torrents
+- `torrent-list [--sort=1] [--age='>1 <2']`, `tl` - List torrents
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
@@ -154,18 +154,28 @@ You can list torrents from transmission with `torrent-list` command:
 transmission-cli torrent-list [--sort=column_name]
 ```
 
-You can sort torrents by `Per day` column and estimate unpopular torrents:
-```
-transmission-cli torrent-list --sort=6
-```
-
-##### Columns:
+##### List columns:
 - Name
 - Id - maybe need for `torrent-remove` command
 - Age - days from torrent done date
 - Size - size of downloaded data
 - Uploaded - size of uploaded data
 - Per day - average uploaded GB per day
+
+#### Sorting list
+You can sort torrents by `Per day` column and estimate unpopular torrents:
+```
+transmission-cli torrent-list --sort=6
+```
+
+#### Filtering torrent list
+By age:
+```
+transmission-cli torrent-list --age '>10'
+transmission-cli torrent-list --age '< 20'
+transmission-cli torrent-list --age '>0 <5'
+```
+
 
 
 

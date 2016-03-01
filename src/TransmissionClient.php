@@ -45,6 +45,7 @@ class TransmissionClient
                 Torrent\Get::UPLOAD_EVER,
                 Torrent\Get::DOWNLOAD_EVER,
                 Torrent\Get::DONE_DATE,
+                Torrent\Get::ADDED_DATE,
             ];
         }
 
@@ -69,6 +70,57 @@ class TransmissionClient
             $fields[] = $torrent[$fieldName];
         }
         return $fields;
+    }
+
+    /**
+     * @param array $torrentList
+     *
+     * @param array $filters
+     * filters[
+     * - age
+     * - age_min
+     * - age_max
+     * ]
+     *
+     * @return array
+     */
+    public function filterTorrents(array $torrentList, array $filters)
+    {
+        $filters += ['age_min' => 0, 'age_max' => 99999];
+
+        if (isset($filters['age'])) {
+            preg_match_all('/([<>])\s?(\d+)/', $filters['age'], $results, PREG_SET_ORDER);
+            if (count($results)) {
+                foreach ($results as $result) {
+                    $ageOperator = $result[1];
+                    $ageValue = $result[2];
+                    if ($ageOperator == '<') {
+                        $filters['age_max'] = $ageValue - 1;
+                    }
+                    if ($ageOperator == '>') {
+                        $filters['age_min'] = $ageValue + 1;
+                    }
+                }
+            }
+        }
+
+        return array_filter($torrentList, function ($torrent) use ($filters) {
+            $age = $this->getTorrentAgeInDays($torrent);
+            if ($age < $filters['age_min'] || $age > $filters['age_max']) {
+                return false;
+            }
+            return true;
+        });
+    }
+
+    /**
+     * @param $torrent
+     * @return int days from torrent finish download
+     */
+    public function getTorrentAgeInDays($torrent)
+    {
+        $date = $torrent[Torrent\Get::DONE_DATE] ? $torrent[Torrent\Get::DONE_DATE] : $torrent[Torrent\Get::ADDED_DATE];
+        return $date ? round((time() - $date) / 86400) : 0;
     }
 
     public function printTorrentsTable(array $torrentList, OutputInterface $output)

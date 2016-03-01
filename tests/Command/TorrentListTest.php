@@ -14,6 +14,8 @@ class TorrentListTest extends CommandTestCase
 
     public function testSortList()
     {
+        $this->app->getClient()->method('filterTorrents')->willReturn($this->expectedTorrentList);
+
         $this->executeCommand(['--sort' => 'asd']);
         $display1 = $this->getDisplay();
         $this->executeCommand(['--sort' => 0]);
