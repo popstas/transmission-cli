@@ -204,3 +204,7 @@ transmission-cli torrent-list --name '.mkv|.avi'
 ```
 ./vendor/bin/phpmd src/ text codesize,controversial,design,naming,unusedcode
 ```
+
+### TODO
+- symfony/config
+- automatic docs: now each feature should documented at Command help, README.md, CHANGELOG.md

@@ -111,7 +111,7 @@ class TransmissionClient
     {
         $filters = [];
         preg_match_all('/([<>])\s?(\d+)/', $age, $results, PREG_SET_ORDER);
-        if (count($results)) {
+        if ($results) {
             foreach ($results as $result) {
                 $ageOperator = $result[1];
                 $ageValue = $result[2];
