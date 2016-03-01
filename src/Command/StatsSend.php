@@ -5,6 +5,7 @@ namespace Popstas\Transmission\Console\Command;
 use GuzzleHttp\Exception\ConnectException;
 use InfluxDB;
 use Martial\Transmission\API\Argument\Torrent;
+use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -41,7 +42,8 @@ EOT
         $logger = $this->getApplication()->getLogger();
         $client = $this->getApplication()->getClient();
 
-        $obsoleteList = $client->getObsoleteTorrents();
+        $torrentList = $client->getTorrentData();
+        $obsoleteList = TorrentUtils::getObsoleteTorrents($torrentList);
         if (!empty($obsoleteList)) {
             $output->writeln('<comment>Found obsolete torrents,
                               remove it using transmission-cli torrent-remove-duplicates</comment>');

@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
+use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,7 +27,8 @@ EOT
         $logger = $this->getApplication()->getLogger();
         $client = $this->getApplication()->getClient();
 
-        $obsoleteList = $client->getObsoleteTorrents();
+        $torrentList = $client->getTorrentData();
+        $obsoleteList = TorrentUtils::getObsoleteTorrents($torrentList);
         if (empty($obsoleteList)) {
             $output->writeln('There are no obsolete torrents in Transmission.');
             return 0;
@@ -34,12 +36,12 @@ EOT
 
         $this->dryRun($input, $output, function () use ($logger, $client, $obsoleteList) {
             $client->removeTorrents($obsoleteList);
-            $names = $client->getTorrentsField($obsoleteList, Torrent\Get::NAME);
+            $names = TorrentUtils::getTorrentsField($obsoleteList, Torrent\Get::NAME);
             $logger->info('Removed torrents:' . implode(', ', $names));
         }, 'dry-run, don\'t really remove');
 
         $output->writeln('Found and deleted ' . count($obsoleteList) . ' obsolete torrents from transmission:');
-        $client->printTorrentsTable($obsoleteList, $output);
+        TorrentUtils::printTorrentsTable($obsoleteList, $output);
         return 0;
     }
 }

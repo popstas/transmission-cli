@@ -107,7 +107,7 @@ class Command extends BaseCommand
         InputInterface $input,
         OutputInterface $output,
         \Closure $callback,
-        $message = 'dry-run, don\'t doing anytning'
+        $message = 'dry-run, don\'t doing anything'
     ) {
         if (!$input->getOption('dry-run')) {
             $callback();

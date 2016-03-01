@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
+use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,14 +36,14 @@ EOT
 
         $torrentList = $client->getTorrentData();
 
-        $torrentList = $client->filterTorrents($torrentList, [
+        $torrentList = TorrentUtils::filterTorrents($torrentList, [
             'age' => $input->getOption('age'),
             'name' => $input->getOption('name'),
         ]);
 
         $rows = [];
         foreach ($torrentList as $torrent) {
-            $age = $client->getTorrentAgeInDays($torrent);
+            $age = TorrentUtils::getTorrentAgeInDays($torrent);
             $perDay = $age ? round($torrent[Torrent\Get::UPLOAD_EVER] / $age / 1024 / 1000 / 1000, 2) : 0;
 
             $rows[] = [
@@ -59,8 +60,8 @@ EOT
             'Total',
             '',
             '',
-            round($client->getTorrentsSize($torrentList) / 1024 / 1000 / 1000, 2),
-            round($client->getTorrentsSize($torrentList, Torrent\Get::UPLOAD_EVER) / 1024 / 1000 / 1000, 2),
+            round(TorrentUtils::getTorrentsSize($torrentList) / 1024 / 1000 / 1000, 2),
+            round(TorrentUtils::getTorrentsSize($torrentList, Torrent\Get::UPLOAD_EVER) / 1024 / 1000 / 1000, 2),
             ''
         ];
 

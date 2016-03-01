@@ -20,10 +20,16 @@ class StatsSendTest extends CommandTestCase
      * @var PHPUnit_Framework_MockObject_MockObject $database
      */
     private $database;
+    private $obsoleteTorrent;
 
     public function setUp()
     {
         $this->setCommandName('stats-send');
+
+        // remove obsolete torrent from test array before setUp
+        $this->obsoleteTorrent = $this->expectedTorrentList[1];
+        unset($this->expectedTorrentList[1]);
+
         parent::setUp();
 
         $config = new Config();
@@ -65,7 +71,7 @@ class StatsSendTest extends CommandTestCase
         ];
 
         $logText = 'Connect InfluxDB using: {user}:{password}@{host}:{port}';
-        $this->app->getLogger()->expects($this->at(1))->method('debug')->with(
+        $this->app->getLogger()->expects($this->once())->method('debug')->with(
             $this->equalTo($logText),
             $this->equalTo($influx_connect)
         );
@@ -124,7 +130,14 @@ class StatsSendTest extends CommandTestCase
 
     public function testObsoleteTorrentsExists()
     {
-        $this->app->getClient()->method('getObsoleteTorrents')->will($this->returnValue($this->expectedTorrentList));
+        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
+        $api = $this->getMock('Martial\Transmission\API\RpcClient', [], [$httpClient, '', '']);
+        $client = $this->getMock('Popstas\Transmission\Console\TransmissionClient', [], [$api]);
+        // put back obsolete torrent
+        $this->expectedTorrentList[1] = $this->obsoleteTorrent;
+        $client->method('getTorrentData')->will($this->returnValue($this->expectedTorrentList));
+        $this->app->setClient($client);
+
         $this->influxDb->expects($this->never())->method('getInfluxDb');
         $this->executeCommand();
         $this->assertRegExp('/Found obsolete torrents/', $this->getDisplay());
