@@ -97,6 +97,29 @@ class TransmissionClientTest extends TestCase
         $this->assertEquals([1, 2], array_keys($this->client->filterTorrents($torrentList, ['age' => '>0 < 3'])));
     }
 
+    public function testFilterTorrentsByName()
+    {
+        $torrentList = [
+            ['name' => 'file'],
+            ['name' => 'other file'],
+            ['name' => 'movie.mkv'],
+            ['name' => 'Movie Season_1080p'],
+        ];
+
+        $this->assertEquals(
+            [0, 1],
+            array_keys($this->client->filterTorrents($torrentList, ['name' => 'file']))
+        );
+        $this->assertEquals(
+            [0, 1, 2, 3],
+            array_keys($this->client->filterTorrents($torrentList, ['name' => 'fil|mov']))
+        );
+        $this->assertEquals(
+            [3],
+            array_keys($this->client->filterTorrents($torrentList, ['name' => 'season*1080']))
+        );
+    }
+
     public function testGetTorrentAgeInDays()
     {
         // without doneDate

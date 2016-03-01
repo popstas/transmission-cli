@@ -20,6 +20,7 @@ class TorrentList extends Command
             ->setDescription('List torrents')
             ->addOption('sort', null, InputOption::VALUE_OPTIONAL, 'Sort by column number', 4)
             ->addOption('age', null, InputOption::VALUE_OPTIONAL, 'Sort by torrent age, ex. \'>1 <5\'')
+            ->addOption('name', null, InputOption::VALUE_OPTIONAL, 'Sort by torrent name (regexp)')
             ->setHelp(<<<EOT
 The <info>torrent-list</info> list torrents.
 EOT
@@ -36,6 +37,7 @@ EOT
 
         $torrentList = $client->filterTorrents($torrentList, [
             'age' => $input->getOption('age'),
+            'name' => $input->getOption('name'),
         ]);
 
         $rows = [];

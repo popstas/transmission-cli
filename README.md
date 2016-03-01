@@ -30,7 +30,7 @@ Based on:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
 - `torrent-clean`, `tc`              - Clean not popular torrents
-- `torrent-list [--sort=1] [--age='>1 <2']`, `tl` - List torrents
+- `torrent-list [--sort=1] [--age='>1 <2'] [--name='series*1080']`, `tl` - List, filter and sort torrents
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
@@ -169,15 +169,25 @@ transmission-cli torrent-list --sort=6
 ```
 
 #### Filtering torrent list
-By age:
+**By age:**
 ```
 transmission-cli torrent-list --age '>10'
 transmission-cli torrent-list --age '< 20'
 transmission-cli torrent-list --age '>0 <5'
 ```
 
+**By name:**
+You can use simple regular expression except `.` and `/` symbols.
 
+Filter FullHD series:
+```
+transmission-cli torrent-list --name 'season*1080*'
+```
 
+Filter all mkv and avi:
+```
+transmission-cli torrent-list --name '.mkv|.avi'
+```
 
 
 # Contribution

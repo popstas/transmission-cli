@@ -86,22 +86,11 @@ class TransmissionClient
      */
     public function filterTorrents(array $torrentList, array $filters)
     {
-        $filters += ['age_min' => 0, 'age_max' => 99999];
+        $filters += ['age_min' => 0, 'age_max' => 99999, 'name' => ''];
+        $filters['name'] = str_replace(['/', '.', '*'], ['\/', '\.', '.*?'], $filters['name']);
 
         if (isset($filters['age'])) {
-            preg_match_all('/([<>])\s?(\d+)/', $filters['age'], $results, PREG_SET_ORDER);
-            if (count($results)) {
-                foreach ($results as $result) {
-                    $ageOperator = $result[1];
-                    $ageValue = $result[2];
-                    if ($ageOperator == '<') {
-                        $filters['age_max'] = $ageValue - 1;
-                    }
-                    if ($ageOperator == '>') {
-                        $filters['age_min'] = $ageValue + 1;
-                    }
-                }
-            }
+            $filters = $this->parseAgeFilter($filters['age']) + $filters;
         }
 
         return array_filter($torrentList, function ($torrent) use ($filters) {
@@ -109,8 +98,32 @@ class TransmissionClient
             if ($age < $filters['age_min'] || $age > $filters['age_max']) {
                 return false;
             }
+            if (isset($torrent[Torrent\Get::NAME])
+                && !preg_match('/' . $filters['name'] . '/i', $torrent[Torrent\Get::NAME])
+            ) {
+                return false;
+            }
             return true;
         });
+    }
+
+    private function parseAgeFilter($age)
+    {
+        $filters = [];
+        preg_match_all('/([<>])\s?(\d+)/', $age, $results, PREG_SET_ORDER);
+        if (count($results)) {
+            foreach ($results as $result) {
+                $ageOperator = $result[1];
+                $ageValue = $result[2];
+                if ($ageOperator == '<') {
+                    $filters['age_max'] = $ageValue - 1;
+                }
+                if ($ageOperator == '>') {
+                    $filters['age_min'] = $ageValue + 1;
+                }
+            }
+        }
+        return $filters;
     }
 
     /**
@@ -119,7 +132,9 @@ class TransmissionClient
      */
     public function getTorrentAgeInDays($torrent)
     {
-        $date = $torrent[Torrent\Get::DONE_DATE] ? $torrent[Torrent\Get::DONE_DATE] : $torrent[Torrent\Get::ADDED_DATE];
+        $date = isset($torrent[Torrent\Get::DONE_DATE]) && $torrent[Torrent\Get::DONE_DATE] ?
+            $torrent[Torrent\Get::DONE_DATE] :
+            (isset($torrent[Torrent\Get::ADDED_DATE]) ? $torrent[Torrent\Get::ADDED_DATE] : 0);
         return $date ? round((time() - $date) / 86400) : 0;
     }
 
