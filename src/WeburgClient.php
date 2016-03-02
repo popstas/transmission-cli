@@ -45,21 +45,28 @@ class WeburgClient
      * @param $movieId
      * @param $hashes array hashes of torrents from movieInfo
      * @param int $daysMax torrents older last days will not matched
+     * @param int $allowedMisses after x misses next checks will broken
      * @return array urls of matched torrent files
      */
-    public function getSeriesTorrents($movieId, $hashes, $daysMax = 1)
+    public function getSeriesTorrents($movieId, $hashes, $daysMax = 1, $allowedMisses = 0)
     {
         $torrentsUrls = [];
         $timestampFrom = strtotime('-' . $daysMax . 'days');
 
         $hashes = array_reverse($hashes);
         foreach ($hashes as $hash) {
+            if ($allowedMisses < 0) {
+                break;
+            }
+
             $torrentUrl = $this->getMovieTorrentUrl($movieId, $hash);
             $body = $this->getUrlBody($torrentUrl);
 
             if (!$this->checkTorrentDate($body, $timestampFrom)) {
-                break;
+                $allowedMisses--;
+                continue;
             }
+
             $torrentsUrls = array_merge($torrentsUrls, $this->getTorrentsUrls($body));
         }
 

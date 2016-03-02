@@ -37,12 +37,25 @@ EOT
             list($torrentsDir, $downloadDir) = $this->getTorrentsDirectory($input);
 
             $daysMax = $config->overrideConfig($input, 'days', 'weburg-series-max-age');
+            $allowedMisses = $config->get('weburg-series-allowed-misses');
 
             $movieArgument = $input->getArgument('movie-id');
             if (isset($movieArgument)) {
-                $torrentsUrls = $this->getMovieTorrentsUrls($weburgClient, $movieArgument, $daysMax);
+                $torrentsUrls = $this->getMovieTorrentsUrls(
+                    $weburgClient,
+                    $movieArgument,
+                    $daysMax,
+                    $allowedMisses
+                );
             } else {
-                $torrentsUrls = $this->getTorrentsUrls($input, $output, $weburgClient, $downloadDir, $daysMax);
+                $torrentsUrls = $this->getTorrentsUrls(
+                    $input,
+                    $output,
+                    $weburgClient,
+                    $downloadDir,
+                    $daysMax,
+                    $allowedMisses
+                );
             }
 
             $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
@@ -64,7 +77,8 @@ EOT
         OutputInterface $output,
         WeburgClient $weburgClient,
         $downloadDir,
-        $daysMax
+        $daysMax,
+        $allowedMisses
     ) {
         $torrentsUrls = [];
 
@@ -83,7 +97,7 @@ EOT
         if ($input->getOption('series')) {
             $torrentsUrls = array_merge(
                 $torrentsUrls,
-                $this->getTrackedSeriesUrls($output, $weburgClient, $daysMax)
+                $this->getTrackedSeriesUrls($output, $weburgClient, $daysMax, $allowedMisses)
             );
         }
 
@@ -153,9 +167,10 @@ EOT
      * @param OutputInterface $output
      * @param WeburgClient $weburgClient
      * @param $daysMax
+     * @param $allowedMisses
      * @return array
      */
-    public function getTrackedSeriesUrls(OutputInterface $output, WeburgClient $weburgClient, $daysMax)
+    public function getTrackedSeriesUrls(OutputInterface $output, WeburgClient $weburgClient, $daysMax, $allowedMisses)
     {
         $torrentsUrls = [];
 
@@ -176,7 +191,7 @@ EOT
             $progress->advance();
 
             $movieInfo = $weburgClient->getMovieInfoById($seriesId);
-            $seriesUrls = $weburgClient->getSeriesTorrents($seriesId, $movieInfo['hashes'], $daysMax);
+            $seriesUrls = $weburgClient->getSeriesTorrents($seriesId, $movieInfo['hashes'], $daysMax, $allowedMisses);
             $torrentsUrls = array_merge($torrentsUrls, $seriesUrls);
         }
 
@@ -189,10 +204,10 @@ EOT
      * @param WeburgClient $weburgClient
      * @param $movieId
      * @param $daysMax
+     * @param $allowedMisses
      * @return array
-     * @throws \RuntimeException
      */
-    public function getMovieTorrentsUrls(WeburgClient $weburgClient, $movieId, $daysMax)
+    public function getMovieTorrentsUrls(WeburgClient $weburgClient, $movieId, $daysMax, $allowedMisses)
     {
         $torrentsUrls = [];
         $logger = $this->getApplication()->getLogger();
@@ -205,7 +220,7 @@ EOT
         $movieInfo = $weburgClient->getMovieInfoById($movieId);
         $logger->info('Search series ' . $movieId);
         if (!empty($movieInfo['hashes'])) {
-            $seriesUrls = $weburgClient->getSeriesTorrents($movieId, $movieInfo['hashes'], $daysMax);
+            $seriesUrls = $weburgClient->getSeriesTorrents($movieId, $movieInfo['hashes'], $daysMax, $allowedMisses);
             $torrentsUrls = array_merge($torrentsUrls, $seriesUrls);
 
             if (count($seriesUrls)) {

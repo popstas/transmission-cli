@@ -27,6 +27,7 @@ class Config
         
         'weburg-series-list' => [],
         'weburg-series-max-age' => 1,
+        'weburg-series-allowed-misses' => 1,
         'weburg-request-delay' => 2
     );
 
