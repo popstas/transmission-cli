@@ -82,14 +82,19 @@ class TorrentUtils
 
     /**
      * @param $torrent
-     * @return int days from torrent finish download
+     * @return int seconds from torrent finish download
      */
-    public static function getTorrentAgeInDays($torrent)
+    public static function getTorrentAge($torrent)
     {
         $date = isset($torrent[Torrent\Get::DONE_DATE]) && $torrent[Torrent\Get::DONE_DATE] ?
             $torrent[Torrent\Get::DONE_DATE] :
             (isset($torrent[Torrent\Get::ADDED_DATE]) ? $torrent[Torrent\Get::ADDED_DATE] : 0);
-        return $date ? round((time() - $date) / 86400) : 0;
+        return $date ? time() - $date : 0;
+    }
+
+    public static function getTorrentAgeInDays($torrent)
+    {
+        return round(self::getTorrentAge($torrent) / 86400);
     }
 
     public static function printTorrentsTable(array $torrentList, OutputInterface $output)

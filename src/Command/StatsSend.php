@@ -64,18 +64,23 @@ EOT
         $transmissionHost = $config->overrideConfig($input, 'transmission-host');
 
         foreach ($torrentList as $torrent) {
-            $point = new InfluxDB\Point(
-                'uploaded',
-                $torrent[Torrent\Get::UPLOAD_EVER],
-                [
-                    'host'         => $transmissionHost,
-                    'torrent_name' => $torrent[Torrent\Get::NAME],
-                ],
-                [],
-                time()
-            );
-            $points[] = $point;
-            $logger->debug('Send point: {point}', ['point' => $point]);
+            $age = TorrentUtils::getTorrentAge($torrent);
+            $tagsData = [
+                'host'             => $transmissionHost,
+                'torrent_name'     => $torrent[Torrent\Get::NAME],
+                'downloaded'       => $torrent[Torrent\Get::DOWNLOAD_EVER],
+                'age'              => $age,
+                'uploaded_per_day' => $age ? $torrent[Torrent\Get::UPLOAD_EVER] / $age * 86400 : 0
+            ];
+
+            $point = new InfluxDB\Point('uploaded', $torrent[Torrent\Get::UPLOAD_EVER], $tagsData, [], time());
+
+            if ($age) {
+                $points[] = $point;
+                $logger->debug('Send point: {point}', ['point' => $point]);
+            } else {
+                $logger->debug('Skip point: {point}', ['point' => $point]);
+            }
         }
 
         $this->dryRun($input, $output, function () use ($database, $points, $logger) {
