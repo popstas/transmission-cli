@@ -47,8 +47,12 @@ class TransmissionClient
             ];
         }
 
+        $cleanedIds = array_map(function ($torrentId) {
+            return (int)$torrentId;
+        }, $ids);
+
         $this->createSession();
-        $torrentList = $this->api->torrentGet($this->sessionId, $ids, $fields);
+        $torrentList = $this->api->torrentGet($this->sessionId, $cleanedIds, $fields);
         return $torrentList;
     }
 

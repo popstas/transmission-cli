@@ -31,6 +31,7 @@ Based on:
 - `list`                             - List commands
 - `torrent-clean`, `tc`              - Clean not popular torrents
 - `torrent-list [--sort=1] [--age='>1 <2'] [--name='series*1080']`, `tl` - List, filter and sort torrents
+- `torrent-remove 1 [2] [3]`, `tr`    - Remove one or more torrents by torrent id
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
@@ -188,6 +189,21 @@ Filter all mkv and avi:
 ```
 transmission-cli torrent-list --name '.mkv|.avi'
 ```
+
+## Remove torrents
+Torrents removes only by id, you can see torrent id in `torrent-list` output.
+
+By default torrents removes with data! Data deletes to trash.
+
+Remove one torrent:
+`transmission-cli torrent-remove 1`
+
+Remove several torrents:
+`transmission-cli torrent-remove 1 2`
+
+Remove only torrent from transmission, not delete data:
+`transmission-cli torrent-remove 1 --soft`
+
 
 
 # Contribution

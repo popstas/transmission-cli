@@ -5,10 +5,14 @@ BREAKING CHANGES:
 FEATURES:
   * packagist.org package: now able install with composer
   * torrent-list: add columns 'Age', 'Uploaded', 'Per day', add --sort, --age, --name options
+  * **torrent-remove** - remove torrents by torrent id
 
 IMPROVEMENTS:
 
+## 0.4.1 (March 2, 2016)
+
 BUG FIXES:
+  * fixed bug #9, some tracked series was not downloaded
 
 ## 0.4.0 (February 29, 2016)
 
