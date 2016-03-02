@@ -43,7 +43,7 @@ EOT
         });
 
         $sizeTotal = TorrentUtils::getTorrentsSize($blackTorrentList);
-        $sizeInGb = round($sizeTotal / 1024 / 1000 / 1000, 2);
+        $sizeInGb = TorrentUtils::getSizeInGb($sizeTotal);
 
         $output->writeln('Black Torrent list: ' . count($blackTorrentList));
         TorrentUtils::printTorrentsTable($blackTorrentList, $output);

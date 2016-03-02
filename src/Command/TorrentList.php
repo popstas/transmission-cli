@@ -44,14 +44,14 @@ EOT
         $rows = [];
         foreach ($torrentList as $torrent) {
             $age = TorrentUtils::getTorrentAgeInDays($torrent);
-            $perDay = $age ? round($torrent[Torrent\Get::UPLOAD_EVER] / $age / 1024 / 1000 / 1000, 2) : 0;
+            $perDay = $age ? TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER] / $age) : 0;
 
             $rows[] = [
                 $torrent[Torrent\Get::NAME],
                 $torrent[Torrent\Get::ID],
                 $age,
-                round($torrent[Torrent\Get::DOWNLOAD_EVER] / 1024 / 1000 / 1000, 2),
-                round($torrent[Torrent\Get::UPLOAD_EVER] / 1024 / 1000 / 1000, 2),
+                TorrentUtils::getSizeInGb($torrent[Torrent\Get::DOWNLOAD_EVER]),
+                TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER]),
                 $perDay,
             ];
         }
@@ -60,8 +60,8 @@ EOT
             'Total',
             '',
             '',
-            round(TorrentUtils::getTorrentsSize($torrentList) / 1024 / 1000 / 1000, 2),
-            round(TorrentUtils::getTorrentsSize($torrentList, Torrent\Get::UPLOAD_EVER) / 1024 / 1000 / 1000, 2),
+            TorrentUtils::getSizeInGb(TorrentUtils::getTorrentsSize($torrentList)),
+            TorrentUtils::getSizeInGb(TorrentUtils::getTorrentsSize($torrentList, Torrent\Get::UPLOAD_EVER)),
             ''
         ];
 

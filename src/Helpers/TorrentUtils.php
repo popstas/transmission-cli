@@ -101,7 +101,7 @@ class TorrentUtils
             $table->addRow([
                 $torrent[Torrent\Get::NAME],
                 $torrent[Torrent\Get::ID],
-                round($torrent[Torrent\Get::TOTAL_SIZE] / 1024 / 1000 / 1000, 2),
+                TorrentUtils::getSizeInGb($torrent[Torrent\Get::TOTAL_SIZE]),
             ]);
         }
 
@@ -130,6 +130,11 @@ class TorrentUtils
         }
 
         return $obsolete;
+    }
+
+    public static function getSizeInGb($sizeInBytes, $round = 2)
+    {
+        return round($sizeInBytes / 1024 / 1024 / 1024, $round);
     }
 
     private static function detectObsoleteTorrent($torrentInList, $torrentNotInList)
