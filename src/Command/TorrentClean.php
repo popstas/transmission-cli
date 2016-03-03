@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
+use Popstas\Transmission\Console\Helpers\TorrentListUtils;
 use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -42,11 +43,11 @@ EOT
             return in_array($torrent[Torrent\Get::NAME], $blacklist);
         });
 
-        $sizeTotal = TorrentUtils::getTorrentsSize($blackTorrentList);
+        $sizeTotal = TorrentListUtils::getTorrentsSize($blackTorrentList);
         $sizeInGb = TorrentUtils::getSizeInGb($sizeTotal);
 
         $output->writeln('Black Torrent list: ' . count($blackTorrentList));
-        TorrentUtils::printTorrentsTable($blackTorrentList, $output);
+        TorrentListUtils::printTorrentsTable($blackTorrentList, $output);
         $output->writeln('Total size: ' . $sizeInGb . ' Gb');
 
         $this->dryRun($input, $output, function () use ($logger) {

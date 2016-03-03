@@ -4,10 +4,8 @@ namespace Popstas\Transmission\Console\Tests;
 
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
-use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Popstas\Transmission\Console\Tests\Helpers\TestCase;
 use Popstas\Transmission\Console\TransmissionClient;
-use Symfony\Component\Console\Output\NullOutput;
 
 class TransmissionClientTest extends TestCase
 {

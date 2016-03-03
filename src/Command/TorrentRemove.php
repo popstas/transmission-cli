@@ -3,7 +3,7 @@
 namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
-use Popstas\Transmission\Console\Helpers\TorrentUtils;
+use Popstas\Transmission\Console\Helpers\TorrentListUtils;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,7 +33,7 @@ EOT
         $client = $this->getApplication()->getClient();
         $torrentIds = $input->getArgument('torrent-ids');
         $torrentList = $client->getTorrentData($torrentIds);
-        $notExistsIds = array_diff($torrentIds, TorrentUtils::getTorrentsField($torrentList, Torrent\Get::ID));
+        $notExistsIds = array_diff($torrentIds, TorrentListUtils::getTorrentsField($torrentList, Torrent\Get::ID));
 
         if (count($notExistsIds)) {
             foreach ($notExistsIds as $notExistsId) {
@@ -43,7 +43,7 @@ EOT
         }
 
         $output->writeln('Torrents for remove:');
-        TorrentUtils::printTorrentsTable($torrentList, $output);
+        TorrentListUtils::printTorrentsTable($torrentList, $output);
 
         if (!$input->getOption('yes')) {
             $helper = $this->getHelper('question');
