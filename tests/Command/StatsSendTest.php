@@ -49,7 +49,7 @@ class StatsSendTest extends CommandTestCase
         $this->database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
-        $this->getCommand()->setInfluxDb($this->influxDb);
+        $this->app->setInfluxDb($this->influxDb);
     }
 
     public function testWithoutOptions()
@@ -59,7 +59,7 @@ class StatsSendTest extends CommandTestCase
 
     public function testInfluxDbCreateInfluxDbWithoutDatabase()
     {
-        $this->getCommand()->setInfluxDb(null);
+        $this->app->setInfluxDb(null);
 
         $config = $this->app->getConfig();
         $config->set('influxdb-database', '');
@@ -96,7 +96,7 @@ class StatsSendTest extends CommandTestCase
         $database = $this->getMock('InfluxDB\Database', ['exists'], ['dbname', $this->influxDb]);
         $database->method('exists')->willThrowException($exception);
         $this->influxDb->method('selectDB')->will($this->returnValue($database));
-        $this->getCommand()->setInfluxDb($this->influxDb);
+        $this->app->setInfluxDb($this->influxDb);
 
         $this->app->getLogger()->expects($this->once())->method('critical');
         $result = $this->executeCommand();
@@ -118,7 +118,7 @@ class StatsSendTest extends CommandTestCase
         $this->database->expects($this->once())->method('create');
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
-        $this->getCommand()->setInfluxDb($this->influxDb);
+        $this->app->setInfluxDb($this->influxDb);
         $this->executeCommand();
     }
 

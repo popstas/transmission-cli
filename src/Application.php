@@ -3,10 +3,13 @@
 namespace Popstas\Transmission\Console;
 
 use GuzzleHttp;
+use GuzzleHttp\Exception\ConnectException;
+use InfluxDB;
 use Popstas\Transmission\Console\Command;
 use Psr\Log\LoggerInterface;
 use Stecman\Component\Symfony\Console\BashCompletion;
 use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Input\InputInterface;
 
 class Application extends BaseApplication
 {
@@ -31,6 +34,11 @@ class Application extends BaseApplication
      * @var WeburgClient
      */
     private $weburgClient;
+
+    /**
+     * @var InfluxDB\Client $influxDb
+     */
+    private $influxDb;
 
     public function __construct($name = 'Transmission CLI', $version = '@git-version@')
     {
@@ -136,5 +144,79 @@ class Application extends BaseApplication
         $requestDelay = $config->get('weburg-request-delay');
         $httpClient = new GuzzleHttp\Client();
         return new WeburgClient($httpClient, $requestDelay);
+    }
+
+    /**
+     * @return InfluxDB\Client $influxDb
+     */
+    public function getInfluxDb()
+    {
+        return $this->influxDb;
+    }
+
+    /**
+     * @param InfluxDB\Client $influxDb
+     */
+    public function setInfluxDb($influxDb)
+    {
+        $this->influxDb = $influxDb;
+    }
+
+    public function createInfluxDb($host, $port, $user, $password)
+    {
+        $logger = $this->getLogger();
+
+        $connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
+
+        $influxDb = new InfluxDB\Client(
+            $connect['host'],
+            $connect['port'],
+            $connect['user'],
+            $connect['password']
+        );
+        $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $connect);
+
+        return $influxDb;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @return InfluxDB\Database
+     * @throws InfluxDB\Database\Exception
+     */
+    public function getDatabase(InputInterface $input)
+    {
+        $config = $this->getConfig();
+        $logger = $this->getLogger();
+
+        $influxDb = $this->getInfluxDb();
+        if (!isset($influxDb)) {
+            $this->setInfluxDb($this->createInfluxDb(
+                $config->overrideConfig($input, 'influxdb-host'),
+                $config->overrideConfig($input, 'influxdb-port'),
+                $config->overrideConfig($input, 'influxdb-user'),
+                $config->overrideConfig($input, 'influxdb-password')
+            ));
+            $influxDb = $this->getInfluxDb();
+        }
+
+        $databaseName = $config->overrideConfig($input, 'influxdb-database');
+        if (!$databaseName) {
+            throw new \RuntimeException('InfluxDb database not defined');
+        }
+
+        $database = $influxDb->selectDB($databaseName);
+
+        try {
+            $databaseExists = $database->exists();
+        } catch (ConnectException $e) {
+            throw new \RuntimeException('InfluxDb connection error: ' . $e->getMessage());
+        }
+        if (!$databaseExists) {
+            $logger->info('Database ' . $databaseName . ' not exists, creating');
+            $database->create();
+        }
+
+        return $database;
     }
 }
