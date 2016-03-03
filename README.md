@@ -169,6 +169,12 @@ You can sort torrents by `Per day` column and estimate unpopular torrents:
 transmission-cli torrent-list --sort=6
 ```
 
+For reverse sort ordering, add `-` to column number:
+```
+transmission-cli torrent-list --sort=-6
+```
+
+
 #### Filtering torrent list
 **By age:**
 ```

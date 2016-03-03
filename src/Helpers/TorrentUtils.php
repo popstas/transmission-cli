@@ -103,13 +103,15 @@ class TorrentUtils
         $rowsSorted = $rows;
         $columnsTotal = count(end($rows));
 
+        $sortOrder = $columnNumber > 0 ? 1 : -1;
+
         $columnIndex = max(1, min(
             $columnsTotal,
-            $columnNumber
+            abs($columnNumber)
         )) - 1;
 
-        usort($rowsSorted, function ($first, $second) use ($columnIndex) {
-            return $first[$columnIndex] > $second[$columnIndex] ? 1 : -1;
+        usort($rowsSorted, function ($first, $second) use ($columnIndex, $sortOrder) {
+            return $first[$columnIndex] > $second[$columnIndex] ? $sortOrder : $sortOrder * -1;
         });
 
         return $rowsSorted;
