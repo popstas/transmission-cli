@@ -117,7 +117,7 @@ class TorrentUtils
         return $rowsSorted;
     }
 
-    public static function printTorrentsTable(array $torrentList, OutputInterface $output, $sortColumnNumber = 1)
+    public static function buildTableData(array $torrentList)
     {
         $headers = ['Name', 'Id', 'Age', 'Size', 'Uploaded', 'Per day'];
         $rows = [];
@@ -145,13 +145,23 @@ class TorrentUtils
             ''
         ];
 
-        $rows = self::sortRowsByColumnNumber($rows, $sortColumnNumber);
+        return [
+            'headers' => $headers,
+            'rows' => $rows,
+            'totals' => $totals
+        ];
+    }
+
+    public static function printTorrentsTable(array $torrentList, OutputInterface $output, $sortColumnNumber = 1)
+    {
+        $data = self::buildTableData($torrentList);
+        $data['rows'] = self::sortRowsByColumnNumber($data['rows'], $sortColumnNumber);
 
         $table = new Table($output);
-        $table->setHeaders($headers);
-        $table->setRows($rows);
+        $table->setHeaders($data['headers']);
+        $table->setRows($data['rows']);
         $table->addRow(new TableSeparator());
-        $table->addRow($totals);
+        $table->addRow($data['totals']);
         $table->render();
     }
 

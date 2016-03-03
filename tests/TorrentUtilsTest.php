@@ -78,7 +78,36 @@ class TorrentUtilsTest extends TestCase
         ]));
     }
 
-    // TODO: it asserts nothing
+    public function testBuildTableData()
+    {
+        $data = TorrentUtils::buildTableData($this->expectedTorrentList);
+
+        $this->assertEquals(
+            count($data['headers']),
+            count(end($data['rows']))
+        );
+
+        $this->assertEquals(
+            count($data['totals']),
+            count(end($data['rows']))
+        );
+    }
+
+    public function testSortRowsByColumnNumber()
+    {
+        $data = TorrentUtils::buildTableData($this->expectedTorrentList);
+        $rows = $data['rows'];
+
+        $sortedRows = TorrentUtils::sortRowsByColumnNumber($rows, 2);
+        $sortedIds = TorrentUtils::getTorrentsField($sortedRows, 1);
+        $this->assertEquals([1, 2, 3, 4], $sortedIds);
+
+        $sortedRows = TorrentUtils::sortRowsByColumnNumber($rows, -2);
+        $sortedIds = TorrentUtils::getTorrentsField($sortedRows, 1);
+        $this->assertEquals([4, 3, 2, 1], $sortedIds);
+    }
+
+    // it asserts nothing
     public function testPrintTorrentsTable()
     {
         $output = new NullOutput();
