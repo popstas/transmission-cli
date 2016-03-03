@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Helpers;
 
 use Martial\Transmission\API\Argument\Torrent;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class TorrentUtils
@@ -97,19 +98,58 @@ class TorrentUtils
         return round(self::getTorrentAge($torrent) / 86400);
     }
 
-    public static function printTorrentsTable(array $torrentList, OutputInterface $output)
+    public static function sortRowsByColumnNumber(array $rows, $columnNumber)
     {
-        $table = new Table($output);
-        $table->setHeaders(['Name', 'Id', 'Size']);
+        $rowsSorted = $rows;
+        $columnsTotal = count(end($rows));
+
+        $columnIndex = max(1, min(
+            $columnsTotal,
+            $columnNumber
+        )) - 1;
+
+        usort($rowsSorted, function ($first, $second) use ($columnIndex) {
+            return $first[$columnIndex] > $second[$columnIndex] ? 1 : -1;
+        });
+
+        return $rowsSorted;
+    }
+
+    public static function printTorrentsTable(array $torrentList, OutputInterface $output, $sortColumnNumber = 1)
+    {
+        $headers = ['Name', 'Id', 'Age', 'Size', 'Uploaded', 'Per day'];
+        $rows = [];
 
         foreach ($torrentList as $torrent) {
-            $table->addRow([
+            $age = TorrentUtils::getTorrentAgeInDays($torrent);
+            $perDay = $age ? TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER] / $age) : 0;
+
+            $rows[] = [
                 $torrent[Torrent\Get::NAME],
                 $torrent[Torrent\Get::ID],
+                $age,
                 TorrentUtils::getSizeInGb($torrent[Torrent\Get::TOTAL_SIZE]),
-            ]);
+                TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER]),
+                $perDay,
+            ];
         }
 
+        $totals = [
+            'Total',
+            '',
+            '',
+            TorrentUtils::getSizeInGb(TorrentUtils::getTorrentsSize($torrentList)),
+            TorrentUtils::getSizeInGb(TorrentUtils::getTorrentsSize($torrentList, Torrent\Get::UPLOAD_EVER)),
+            ''
+        ];
+
+        $rows = self::sortRowsByColumnNumber($rows, $sortColumnNumber);
+
+        $table = new Table($output);
+        $table->setHeaders($headers);
+        $table->setRows($rows);
+        $table->addRow(new TableSeparator());
+        $table->addRow($totals);
         $table->render();
     }
 

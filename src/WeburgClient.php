@@ -62,7 +62,7 @@ class WeburgClient
             $torrentUrl = $this->getMovieTorrentUrl($movieId, $hash);
             $body = $this->getUrlBody($torrentUrl);
 
-            if (!$this->checkTorrentDate($body, $timestampFrom)) {
+            if ($this->checkTorrentDate($body, $timestampFrom) === false) {
                 $allowedMisses--;
                 continue;
             }
@@ -120,7 +120,7 @@ class WeburgClient
     }
 
     /**
-     * @param $url
+     * @param string $url
      * @param array $headers
      * @return \Psr\Http\Message\StreamInterface
      * @throws \RuntimeException

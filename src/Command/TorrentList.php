@@ -4,8 +4,6 @@ namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\Helpers\TorrentUtils;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,8 +28,6 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $headers = ['Name', 'Id', 'Age', 'Size', 'Uploaded', 'Per day'];
-
         $client = $this->getApplication()->getClient();
 
         $torrentList = $client->getTorrentData();
@@ -41,54 +37,6 @@ EOT
             'name' => $input->getOption('name'),
         ]);
 
-        $rows = [];
-        foreach ($torrentList as $torrent) {
-            $age = TorrentUtils::getTorrentAgeInDays($torrent);
-            $perDay = $age ? TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER] / $age) : 0;
-
-            $rows[] = [
-                $torrent[Torrent\Get::NAME],
-                $torrent[Torrent\Get::ID],
-                $age,
-                TorrentUtils::getSizeInGb($torrent[Torrent\Get::DOWNLOAD_EVER]),
-                TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER]),
-                $perDay,
-            ];
-        }
-
-        $totals = [
-            'Total',
-            '',
-            '',
-            TorrentUtils::getSizeInGb(TorrentUtils::getTorrentsSize($torrentList)),
-            TorrentUtils::getSizeInGb(TorrentUtils::getTorrentsSize($torrentList, Torrent\Get::UPLOAD_EVER)),
-            ''
-        ];
-
-        $rows = $this->sortTable($rows, $input);
-
-        $table = new Table($output);
-        $table->setHeaders($headers);
-        $table->setRows($rows);
-        $table->addRow(new TableSeparator());
-        $table->addRow($totals);
-        $table->render();
-    }
-
-    private function sortTable(array $rows, InputInterface $input)
-    {
-        $rowsSorted = $rows;
-        $columnsTotal = count(end($rows));
-
-        $sortColumn = max(1, min(
-            $columnsTotal,
-            $input->getOption('sort')
-        )) - 1;
-
-        usort($rowsSorted, function ($first, $second) use ($sortColumn) {
-            return $first[$sortColumn] > $second[$sortColumn] ? 1 : -1;
-        });
-
-        return $rowsSorted;
+        TorrentUtils::printTorrentsTable($torrentList, $output, $input->getOption('sort'));
     }
 }
