@@ -22,7 +22,24 @@ class TorrentListUtilsTest extends TestCase
         $this->assertEquals(['name.ext', 'name.ext', 'name2.ext', 'name.ext'], $torrentField);
     }
 
-    public function testFilterTorrentsByAge()
+    public function filterTorrentsByAgeProvider()
+    {
+        return [
+            'empty filter' => [[0, 1, 2, 3], []],
+            'age >0'       => [[1, 2, 3],    ['age' => '>0']],
+            'age < 3'      => [[0, 1, 2],    ['age' => '< 3']],
+            'age_min=1'    => [[1, 2, 3],    ['age_min' => '1']],
+            'age_max=2'    => [[0, 1, 2],    ['age_max' => '2']],
+            'age >0 < 3'   => [[1, 2],       ['age' => '>0 < 3']],
+        ];
+    }
+
+    /**
+     * @dataProvider filterTorrentsByAgeProvider
+     * @param $expectedKeys
+     * @param $ageFilter
+     */
+    public function testFilterTorrentsByAge($expectedKeys, $ageFilter)
     {
         $torrentList = [
             ['doneDate' => time() - 86400 * 0],
@@ -31,12 +48,7 @@ class TorrentListUtilsTest extends TestCase
             ['doneDate' => time() - 86400 * 3],
         ];
 
-        $this->assertEquals($torrentList, TorrentListUtils::filterTorrents($torrentList, []));
-        $this->assertEquals([1, 2, 3], array_keys(TorrentListUtils::filterTorrents($torrentList, ['age' => '>0'])));
-        $this->assertEquals([0, 1, 2], array_keys(TorrentListUtils::filterTorrents($torrentList, ['age' => '< 3'])));
-        $this->assertEquals([1, 2, 3], array_keys(TorrentListUtils::filterTorrents($torrentList, ['age_min' => '1'])));
-        $this->assertEquals([0, 1, 2], array_keys(TorrentListUtils::filterTorrents($torrentList, ['age_max' => '2'])));
-        $this->assertEquals([1, 2], array_keys(TorrentListUtils::filterTorrents($torrentList, ['age' => '>0 < 3'])));
+        $this->assertEquals($expectedKeys, array_keys(TorrentListUtils::filterTorrents($torrentList, $ageFilter)));
     }
 
     public function testFilterTorrentsByName()
