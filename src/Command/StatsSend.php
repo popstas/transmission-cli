@@ -60,21 +60,14 @@ EOT
 
         foreach ($torrentList as $torrent) {
             $age = TorrentUtils::getTorrentAge($torrent);
-            $tagsData = [
-                'host'             => $transmissionHost,
-                'torrent_name'     => $torrent[Torrent\Get::NAME],
-                'downloaded'       => $torrent[Torrent\Get::DOWNLOAD_EVER],
-                'age'              => $age,
-                'uploaded_per_day' => $age ? $torrent[Torrent\Get::UPLOAD_EVER] / $age * 86400 : 0
-            ];
-
-            $point = new InfluxDB\Point('uploaded', $torrent[Torrent\Get::UPLOAD_EVER], $tagsData, [], time());
+            $lastPoint = TorrentUtils::getLastPoint($torrent, $transmissionHost, $database);
+            $torrentPoint = TorrentUtils::buildPoint($torrent, $transmissionHost, $lastPoint);
 
             if ($age) {
-                $points[] = $point;
-                $logger->debug('Send point: {point}', ['point' => $point]);
+                $points[] = $torrentPoint;
+                $logger->debug('Send point: {point}', ['point' => $torrentPoint]);
             } else {
-                $logger->debug('Skip point: {point}', ['point' => $point]);
+                $logger->debug('Skip point: {point}', ['point' => $torrentPoint]);
             }
         }
 

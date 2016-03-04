@@ -6,7 +6,6 @@ use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Popstas\Transmission\Console\Tests\Helpers\TestCase;
-use Symfony\Component\Console\Output\NullOutput;
 
 class TorrentUtilsTest extends TestCase
 {

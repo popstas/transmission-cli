@@ -45,7 +45,7 @@ class StatsSendTest extends CommandTestCase
          ->disableOriginalConstructor()
          ->getMock();
 
-        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $this->database = $this->getMock('InfluxDB\Database', null, ['dbname', $this->influxDb]);
         $this->database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
@@ -116,8 +116,18 @@ class StatsSendTest extends CommandTestCase
         $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
         $this->database->method('exists')->will($this->returnValue(false));
         $this->database->expects($this->once())->method('create');
-        $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
+        $queryBuilder = $this->getMock('InfluxDB\Query\Builder', ['getResultSet'], [$this->database]);
+        $resultSet = $this->getMockBuilder('InfluxDB\ResultSet')
+            ->setMethods([])
+            ->setConstructorArgs([''])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $resultSet->method('getPoints')->willReturn([]);
+        $queryBuilder->method('getResultSet')->will($this->returnValue($resultSet));
+        $this->database->method('getQueryBuilder')->willReturn($queryBuilder);
+
+        $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
         $this->app->setInfluxDb($this->influxDb);
         $this->executeCommand();
     }

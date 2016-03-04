@@ -8,6 +8,10 @@ FEATURES:
   * **torrent-remove** - remove torrents by torrent id
 
 IMPROVEMENTS:
+  * stats-send: now it send derivative uploaded from last send
+
+BUG FIXES:
+  * fixed incorrect display sizes in GB
 
 ## 0.4.1 (March 2, 2016)
 
@@ -20,7 +24,7 @@ FEATURES:
   * command/weburg-download: download single movie by url or id without popularity check
   * command/weburg-download: download single series for last x days by url or id without popularity check
   * **command/weburg-download**: now weburg-download also downloads new series for torrents added through weburg-series-add.
-    You can select command behaviour by --popular and --series flags if you want to download something one. 
+    You can select command behaviour by --popular and --series flags if you want to download something one.
 
 IMPROVEMENTS:
   * command/stats-send: broken connection handling and logging
