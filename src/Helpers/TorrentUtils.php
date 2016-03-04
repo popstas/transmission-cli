@@ -26,10 +26,10 @@ class TorrentUtils
             $torrent[Torrent\Get::UPLOAD_EVER] - $lastPoint['last'] : $torrent[Torrent\Get::UPLOAD_EVER];
 
         $fieldsData = [
-            'uploaded_derivative' => $uploadedDerivative,
+            'uploaded_last'       => $uploadedDerivative,
             'downloaded'          => $torrent[Torrent\Get::TOTAL_SIZE],
             'age'                 => $age,
-            'uploaded_per_day'    => $age ? $torrent[Torrent\Get::UPLOAD_EVER] / $age * 86400 : 0,
+            'uploaded_per_day'    => $age ? intval($torrent[Torrent\Get::UPLOAD_EVER] / $age * 86400) : 0,
         ];
 
         return new InfluxDB\Point(
