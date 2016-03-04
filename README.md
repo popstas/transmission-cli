@@ -30,9 +30,10 @@ Based on:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
 - `torrent-clean`, `tc`              - Clean not popular torrents
-- `torrent-list [--sort=1] [--age='>1 <2'] [--name='series*1080']`, `tl` - List, filter and sort torrents
+- `torrent-list [--sort=1] [--age='>1 <2'] [--name='series*1080'] [--limit=10]`, `tl` - List, filter and sort torrents
 - `torrent-remove 1 [2] [3]`, `tr`    - Remove one or more torrents by torrent id
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
+- `stats-get [--sort=1] [--name='name'] [--limit=10] [profit='>0'] [--days=7]`, `sg` - Get metrics from InfluxDB
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
 - `weburg-download --popular`        - Download only popular
@@ -128,7 +129,7 @@ PATH="$PATH:/usr/local/bin"
 0  * * * * transmission-cli stats-send --transmission-host=wrtnsq
 1  2 * * * transmission-cli weburg-download --download-torrents-dir=/Volumes/media/_planeta/_torrents
 ```
-DDon't forget add to cron PATH your ~/.composer/vendor/bin if you installed transmission-cli with `composer global`!
+Don't forget add to cron PATH your ~/.composer/vendor/bin if you installed transmission-cli with `composer global`!
 
 # Usage
 
@@ -152,7 +153,7 @@ transmission-cli weburg-download --dest=/path/to/torrents/directory --series
 ## List torrents
 You can list torrents from transmission with `torrent-list` command:
 ```
-transmission-cli torrent-list [--sort=column_name]
+transmission-cli torrent-list [--sort=column_number] [--name='name'] [--age='>0'] [--limit=10]
 ```
 
 ##### List columns:
@@ -195,6 +196,28 @@ Filter all mkv and avi:
 ```
 transmission-cli torrent-list --name '.mkv|.avi'
 ```
+
+#### Limiting torrent list
+Output 10 worst torrents:
+```
+transmission-cli torrent-list --sort=6 --limit 10
+```
+
+
+## Get torrents stats from InfluxDB
+Command `stats-get` almost same as `torrent-list`, but it use InfluxDB:
+```
+transmission-cli stats-get [--sort=column_number] [--name='name'] [--limit=10] [profit='>0'] [--days=7]
+```
+You can also use `--sort`, `--name`, `--limit`, except `--age`, plus `--profit` and `--days` options.
+
+Profit = uploaded for period / torrent size. Profit metric more precise than uploaded ever value.
+
+Show 10 worst torrents for last week:
+```
+transmission-cli stats-get --days 7 --profit '<0.01' --limit 10
+```
+
 
 ## Remove torrents
 Torrents removes only by id, you can see torrent id in `torrent-list` output.

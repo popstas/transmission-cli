@@ -4,6 +4,8 @@ namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\Helpers\TorrentListUtils;
+use Popstas\Transmission\Console\Helpers\TorrentUtils;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,6 +22,7 @@ class TorrentList extends Command
             ->addOption('sort', null, InputOption::VALUE_OPTIONAL, 'Sort by column number', 4)
             ->addOption('age', null, InputOption::VALUE_OPTIONAL, 'Sort by torrent age, ex. \'>1 <5\'')
             ->addOption('name', null, InputOption::VALUE_OPTIONAL, 'Sort by torrent name (regexp)')
+            ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit torrent list')
             ->setHelp(<<<EOT
 The <info>torrent-list</info> list torrents.
 EOT
@@ -37,6 +40,11 @@ EOT
             'name' => $input->getOption('name'),
         ]);
 
-        TorrentListUtils::printTorrentsTable($torrentList, $output, $input->getOption('sort'));
+        TorrentListUtils::printTorrentsTable(
+            $torrentList,
+            $output,
+            $input->getOption('sort'),
+            $input->getOption('limit')
+        );
     }
 }

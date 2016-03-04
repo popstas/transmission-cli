@@ -41,44 +41,102 @@ class TorrentListUtils
      */
     public static function filterTorrents(array $torrentList, array $filters)
     {
-        $filters += ['age_min' => 0, 'age_max' => 99999, 'name' => ''];
-        $filters['name'] = str_replace(['/', '.', '*'], ['\/', '\.', '.*?'], $filters['name']);
-
+        if (isset($filters['name'])) {
+            $filters[Torrent\Get::NAME] = ['type' => 'regex', 'value' => $filters['name']];
+        }
         if (isset($filters['age'])) {
-            $filters = self::parseAgeFilter($filters['age']) + $filters;
+            $filters['age'] = ['type' => 'numeric', 'value' => $filters['age']];
+            // TODO: move to getTorrentData()
+            $torrentList = array_map(function ($torrent) {
+                $torrent['age'] = TorrentUtils::getTorrentAgeInDays($torrent);
+                return $torrent;
+            }, $torrentList);
         }
 
-        return array_filter($torrentList, function ($torrent) use ($filters) {
-            $age = TorrentUtils::getTorrentAgeInDays($torrent);
-            if ($age < $filters['age_min'] || $age > $filters['age_max']) {
-                return false;
-            }
-            if (isset($torrent[Torrent\Get::NAME])
-                && !preg_match('/' . $filters['name'] . '/i', $torrent[Torrent\Get::NAME])
-            ) {
-                return false;
-            }
-            return true;
-        });
+        $filters = self::parseFilters($filters);
+        $torrentList = self::filterRows($torrentList, $filters);
+        return $torrentList;
     }
 
-    private static function parseAgeFilter($age)
+    private static function parseFilters(array $filters)
     {
-        $filters = [];
-        preg_match_all('/([<>])\s?(\d+)/', $age, $results, PREG_SET_ORDER);
-        if ($results) {
-            foreach ($results as $result) {
-                $ageOperator = $result[1];
-                $ageValue = $result[2];
-                if ($ageOperator == '<') {
-                    $filters['age_max'] = $ageValue - 1;
-                }
-                if ($ageOperator == '>') {
-                    $filters['age_min'] = $ageValue + 1;
-                }
+        foreach ($filters as $columnKey => $filter) {
+            if (is_array($filter) && !isset($filter['type'])) {
+                throw new \InvalidArgumentException('Unknown filter type');
+            }
+            if (!isset($filter) || !isset($filter['value'])) {
+                unset($filters[$columnKey]);
+                continue;
+            }
+            switch ($filter['type']) {
+                case 'numeric':
+                    $filters[$columnKey] = self::parseNumericFilter($filter['value'])
+                        + $filters[$columnKey];
+                    break;
+                case 'regex':
+                    $filters[$columnKey] = self::parseRegexFilter($filter['value'])
+                        + $filters[$columnKey];
+                    break;
+                default:
+                    throw new \InvalidArgumentException('Unknown filter type');
             }
         }
         return $filters;
+    }
+
+    private static function parseNumericFilter($filterString)
+    {
+        $filter = [];
+        preg_match_all('/([<>])\s?([\d\.]+)/', $filterString, $results, PREG_SET_ORDER);
+        if ($results) {
+            foreach ($results as $result) {
+                $operator = $result[1];
+                $value = $result[2];
+                if ($operator == '<') {
+                    $filter['max'] = $value;
+                }
+                if ($operator == '>') {
+                    $filter['min'] = $value;
+                }
+            }
+        }
+        return $filter;
+    }
+
+    public static function parseRegexFilter($filterString)
+    {
+        $filter = [];
+        $filter['regex'] = str_replace(['/', '.', '*'], ['\/', '\.', '.*?'], $filterString);
+        return $filter;
+    }
+
+    public static function filterRows(array $rows, $filters)
+    {
+        $filters = self::parseFilters($filters);
+
+        return array_filter($rows, function ($row) use ($filters) {
+            foreach ($filters as $columnKey => $filter) {
+                if (!isset($row[$columnKey])) {
+                    continue;
+                }
+                $columnValue = $row[$columnKey];
+
+                if ($filter['type'] == 'numeric') {
+                    if ((isset($filter['min']) && $columnValue <= $filter['min']) ||
+                        (isset($filter['max']) && $columnValue >= $filter['max'])
+                    ) {
+                        return false;
+                    }
+                }
+
+                if ($filter['type'] == 'regex') {
+                    if (!preg_match('/' . $filter['regex'] . '/i', $columnValue)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
     }
 
     public static function sortRowsByColumnNumber(array $rows, $columnNumber)
@@ -135,16 +193,31 @@ class TorrentListUtils
         ];
     }
 
-    public static function printTorrentsTable(array $torrentList, OutputInterface $output, $sortColumnNumber = 1)
-    {
+    public static function printTorrentsTable(
+        array $torrentList,
+        OutputInterface $output,
+        $sortColumnNumber = 1,
+        $limit = 0
+    ) {
         $data = self::buildTableData($torrentList);
-        $data['rows'] = self::sortRowsByColumnNumber($data['rows'], $sortColumnNumber);
+        self::printTable($data, $output, $sortColumnNumber, $limit);
+    }
+
+    public static function printTable(array $tableData, OutputInterface $output, $sortColumnNumber = 1, $limit = 0)
+    {
+        $tableData['rows'] = self::sortRowsByColumnNumber($tableData['rows'], $sortColumnNumber);
+
+        if ($limit && $limit < count($tableData['rows'])) {
+            $tableData['rows'] = array_slice($tableData['rows'], 0, $limit);
+        }
 
         $table = new Table($output);
-        $table->setHeaders($data['headers']);
-        $table->setRows($data['rows']);
+        $table->setHeaders($tableData['headers']);
+        $table->setRows($tableData['rows']);
         $table->addRow(new TableSeparator());
-        $table->addRow($data['totals']);
+        if (isset($tableData['totals'])) {
+            $table->addRow($tableData['totals']);
+        }
         $table->render();
     }
 

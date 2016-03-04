@@ -1,10 +1,12 @@
 ## Next Release
 
 BREAKING CHANGES:
+  * stats-send: removed --influxdb-* command-line options
 
 FEATURES:
   * packagist.org package: now able install with composer
-  * torrent-list: add columns 'Age', 'Uploaded', 'Per day', add --sort, --age, --name options
+  * torrent-list: add columns 'Age', 'Uploaded', 'Per day', add --sort, --age, --name, --limit options
+  * **stats-get** - get metrics from InfluxDB, --sort --name --profit --limit --days options
   * **torrent-remove** - remove torrents by torrent id
 
 IMPROVEMENTS:

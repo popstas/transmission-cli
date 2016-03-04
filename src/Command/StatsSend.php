@@ -19,11 +19,6 @@ class StatsSend extends Command
             ->setName('stats-send')
             ->setAliases(['ss'])
             ->setDescription('Send metrics to InfluxDB')
-            ->addOption('influxdb-host', null, InputOption::VALUE_OPTIONAL, 'InfluxDb host')
-            ->addOption('influxdb-port', null, InputOption::VALUE_OPTIONAL, 'InfluxDb port')
-            ->addOption('influxdb-user', null, InputOption::VALUE_OPTIONAL, 'InfluxDb user')
-            ->addOption('influxdb-password', null, InputOption::VALUE_OPTIONAL, 'InfluxDb password')
-            ->addOption('influxdb-database', null, InputOption::VALUE_OPTIONAL, 'InfluxDb database')
             ->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host')
             ->setHelp(<<<EOT
 The <info>stats-send</info> sends upload ever for every torrent to InfluxDB.

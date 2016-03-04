@@ -35,6 +35,17 @@ class InfluxDbClient
     }
 
     /**
+     * @return InfluxDB\Database $database
+     */
+    private function getDatabase()
+    {
+        if (!isset($this->database)) {
+            $this->database = $this->connectDatabase();
+        }
+        return $this->database;
+    }
+
+    /**
      * @param InfluxDB\Database $database
      */
     public function setDatabase($database)
@@ -53,12 +64,13 @@ class InfluxDbClient
     }
 
     /**
+     * @return InfluxDB\Database
      * @throws InfluxDB\Database\Exception
      */
     public function connectDatabase()
     {
         if (isset($this->database)) {
-            return true;
+            $this->database;
         }
 
         $database = $this->influxDb->selectDB($this->databaseName);
@@ -73,8 +85,7 @@ class InfluxDbClient
             $database->create();
         }
 
-        $this->database = $database;
-        return true;
+        return $database;
     }
 
     /**
@@ -113,10 +124,8 @@ class InfluxDbClient
 
     public function getLastPoint(array $torrent, $transmissionHost)
     {
-        $this->connectDatabase();
-
         $torrentName = $torrent[Torrent\Get::NAME];
-        $queryBuilder = $this->database->getQueryBuilder();
+        $queryBuilder = $this->getDatabase()->getQueryBuilder();
         $results = $queryBuilder
             ->last('value')
             ->from('uploaded')
@@ -132,7 +141,47 @@ class InfluxDbClient
     
     public function writePoints($points, $precision = InfluxDB\Database::PRECISION_SECONDS)
     {
-        $this->connectDatabase();
-        return $this->database->writePoints($points, $precision);
+        return $this->getDatabase()->writePoints($points, $precision);
+    }
+
+    /**
+     * @param array $torrent
+     * @param string $fieldName
+     * @param string $transmissionHost
+     * @param int $lastDays
+     * @return int
+     */
+    public function getTorrentSum(array $torrent, $fieldName, $transmissionHost = '', $lastDays = 0)
+    {
+        $where = [];
+
+        if (isset($torrent[Torrent\Get::NAME])) {
+            $where[] = "torrent_name = '" . $torrent[Torrent\Get::NAME] . "'";
+        }
+
+        if ($transmissionHost) {
+            $where[] = "host = '" . $transmissionHost . "'";
+        }
+
+        if ($lastDays) {
+            $fromTimestamp = strtotime('-2 hours');
+            $fromDate = date('c', $fromTimestamp);
+            $where[] = "time >= '$fromDate'";
+        }
+
+        $results = $this->getDatabase()->getQueryBuilder()
+            ->from('uploaded')
+            ->select("sum($fieldName) as $fieldName")
+            ->where($where)
+            ->getResultSet()
+            ->getPoints();
+        ;
+
+        $this->logger->debug($this->influxDb->getLastQuery());
+
+        if (!empty($results)) {
+            return $results[0][$fieldName];
+        }
+        return 0;
     }
 }

@@ -3,13 +3,11 @@
 namespace Popstas\Transmission\Console;
 
 use GuzzleHttp;
-use GuzzleHttp\Exception\ConnectException;
 use InfluxDB;
 use Popstas\Transmission\Console\Command;
 use Psr\Log\LoggerInterface;
 use Stecman\Component\Symfony\Console\BashCompletion;
 use Symfony\Component\Console\Application as BaseApplication;
-use Symfony\Component\Console\Input\InputInterface;
 
 class Application extends BaseApplication
 {
@@ -53,6 +51,7 @@ class Application extends BaseApplication
         $commands = array_merge(parent::getDefaultCommands(), [
             new BashCompletion\CompletionCommand(),
 
+            new Command\StatsGet(),
             new Command\StatsSend(),
             new Command\TorrentClean(),
             new Command\TorrentList(),

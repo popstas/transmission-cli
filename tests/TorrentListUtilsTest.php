@@ -28,8 +28,6 @@ class TorrentListUtilsTest extends TestCase
             'empty filter' => [[0, 1, 2, 3], []],
             'age >0'       => [[1, 2, 3],    ['age' => '>0']],
             'age < 3'      => [[0, 1, 2],    ['age' => '< 3']],
-            'age_min=1'    => [[1, 2, 3],    ['age_min' => '1']],
-            'age_max=2'    => [[0, 1, 2],    ['age_max' => '2']],
             'age >0 < 3'   => [[1, 2],       ['age' => '>0 < 3']],
         ];
     }
@@ -74,6 +72,44 @@ class TorrentListUtilsTest extends TestCase
         );
     }
 
+    public function testNullFilter()
+    {
+        $this->assertEquals(
+            $this->expectedTorrentList,
+            TorrentListUtils::filterTorrents($this->expectedTorrentList, ['name' => null])
+        );
+    }
+
+    public function testNotExistsColumnFilter()
+    {
+        $this->assertEquals(
+            $this->expectedTorrentList,
+            TorrentListUtils::filterTorrents($this->expectedTorrentList, [
+                'not_exists_key' => [
+                    'type' => 'regex',
+                    'value' => 'value']
+            ])
+        );
+    }
+
+    public function invalidFilterProvider()
+    {
+        return [
+            'without type' => [[['value' => 'value']]],
+            'wrong type' => [[['type' => 'unknown', 'value' => 'value']]]
+        ];
+    }
+
+    /**
+     * @dataProvider invalidFilterProvider
+     * @expectedException \InvalidArgumentException
+     * @param array $filters
+     */
+    public function testInvalidFilter(array $filters)
+    {
+        TorrentListUtils::filterTorrents([], $filters);
+    }
+
     public function testBuildTableData()
     {
         $data = TorrentListUtils::buildTableData($this->expectedTorrentList);
@@ -107,7 +143,7 @@ class TorrentListUtilsTest extends TestCase
     public function testPrintTorrentsTable()
     {
         $output = new NullOutput();
-        TorrentListUtils::printTorrentsTable($this->expectedTorrentList, $output);
+        TorrentListUtils::printTorrentsTable($this->expectedTorrentList, $output, 1, 2);
     }
 
     public function testGetObsoleteTorrents()
