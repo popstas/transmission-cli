@@ -5,6 +5,7 @@ namespace Popstas\Transmission\Console\Tests\Command;
 use InfluxDB;
 use PHPUnit_Framework_MockObject_MockObject;
 use Popstas\Transmission\Console\Config;
+use Popstas\Transmission\Console\InfluxDbClient;
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
 class StatsSendTest extends CommandTestCase
@@ -14,6 +15,11 @@ class StatsSendTest extends CommandTestCase
      * @var PHPUnit_Framework_MockObject_MockObject $influxDb
      */
     private $influxDb;
+
+    /**
+     * @var InfluxDbClient
+     */
+    private $influxDbClient;
 
     /**
      * var InfluxDB\Database $database
@@ -45,11 +51,16 @@ class StatsSendTest extends CommandTestCase
          ->disableOriginalConstructor()
          ->getMock();
 
+        $this->influxDbClient = $this->getMock(
+            'Popstas\Transmission\Console\InfluxDbClient',
+            [],
+            [$this->influxDb, 'test']
+        );
         $this->database = $this->getMock('InfluxDB\Database', null, ['dbname', $this->influxDb]);
         $this->database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
-        $this->app->setInfluxDb($this->influxDb);
+        $this->app->setInfluxDbClient($this->influxDbClient);
     }
 
     public function testWithoutOptions()
@@ -59,7 +70,7 @@ class StatsSendTest extends CommandTestCase
 
     public function testInfluxDbCreateInfluxDbWithoutDatabase()
     {
-        $this->app->setInfluxDb(null);
+        $this->app->setInfluxDbClient(null);
 
         $config = $this->app->getConfig();
         $config->set('influxdb-database', '');
@@ -82,54 +93,15 @@ class StatsSendTest extends CommandTestCase
         //$this->assertRegExp('/InfluxDb database not defined/', $this->getDisplay());
     }
 
-    public function testInfluxDbConnectionError()
+    public function testInfluxDbCreateInfluxDb()
     {
-        $requestInterface = $this->getMock('Psr\Http\Message\RequestInterface');
-        $exception = new \GuzzleHttp\Exception\ConnectException('error', $requestInterface);
+        $this->app->setInfluxDbClient(null);
 
-        $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
-            ->setMethods([])
-            ->setConstructorArgs([''])
-            ->disableOriginalConstructor()
-            ->getMock();
 
-        $database = $this->getMock('InfluxDB\Database', ['exists'], ['dbname', $this->influxDb]);
-        $database->method('exists')->willThrowException($exception);
-        $this->influxDb->method('selectDB')->will($this->returnValue($database));
-        $this->app->setInfluxDb($this->influxDb);
-
-        $this->app->getLogger()->expects($this->once())->method('critical');
         $result = $this->executeCommand();
-        // TODO: output log errors as real app
-        //$this->assertRegExp('/InfluxDb connection error/', $this->getDisplay());
         $this->assertEquals(1, $result);
-    }
-
-    public function testInfluxDbCreateDatabase()
-    {
-        $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
-            ->setMethods([])
-            ->setConstructorArgs([''])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
-        $this->database->method('exists')->will($this->returnValue(false));
-        $this->database->expects($this->once())->method('create');
-
-        $queryBuilder = $this->getMock('InfluxDB\Query\Builder', ['getResultSet'], [$this->database]);
-        $resultSet = $this->getMockBuilder('InfluxDB\ResultSet')
-            ->setMethods([])
-            ->setConstructorArgs([''])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $resultSet->method('getPoints')->willReturn([]);
-        $queryBuilder->method('getResultSet')->will($this->returnValue($resultSet));
-        $this->database->method('getQueryBuilder')->willReturn($queryBuilder);
-
-        $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
-        $this->app->setInfluxDb($this->influxDb);
-        $this->executeCommand();
+        // TODO: output logger critical
+        //$this->assertRegExp('/Could not resolve host/', $this->getDisplay());
     }
 
     public function testDryRun()

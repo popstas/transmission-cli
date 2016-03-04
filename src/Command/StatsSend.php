@@ -46,35 +46,38 @@ EOT
         }
 
         try {
-            $database = $this->getApplication()->getDatabase($input);
+            $influxDbClient = $this->getApplication()->getInfluxDbClient(
+                $config->get('influxdb-host'),
+                $config->get('influxdb-port'),
+                $config->get('influxdb-user'),
+                $config->get('influxdb-password'),
+                $config->get('influxdb-database')
+            );
+
+            $points = [];
+
+            $transmissionHost = $config->overrideConfig($input, 'transmission-host');
+
+            foreach ($torrentList as $torrent) {
+                $age = TorrentUtils::getTorrentAge($torrent);
+                $torrentPoint = $influxDbClient->buildPoint($torrent, $transmissionHost);
+
+                if ($age) {
+                    $points[] = $torrentPoint;
+                    $logger->debug('Send point: {point}', ['point' => $torrentPoint]);
+                } else {
+                    $logger->debug('Skip point: {point}', ['point' => $torrentPoint]);
+                }
+            }
+
+            $this->dryRun($input, $output, function () use ($influxDbClient, $points, $logger) {
+                $isSuccess = $influxDbClient->writePoints($points);
+                $logger->info('InfluxDB write ' . ($isSuccess ? 'success' : 'failed'));
+            }, 'dry-run, don\'t really send points');
         } catch (\Exception $e) {
             $logger->critical($e->getMessage());
             return 1;
         }
-
-        $points = [];
-
-        $torrentList = $client->getTorrentData();
-
-        $transmissionHost = $config->overrideConfig($input, 'transmission-host');
-
-        foreach ($torrentList as $torrent) {
-            $age = TorrentUtils::getTorrentAge($torrent);
-            $lastPoint = TorrentUtils::getLastPoint($torrent, $transmissionHost, $database);
-            $torrentPoint = TorrentUtils::buildPoint($torrent, $transmissionHost, $lastPoint);
-
-            if ($age) {
-                $points[] = $torrentPoint;
-                $logger->debug('Send point: {point}', ['point' => $torrentPoint]);
-            } else {
-                $logger->debug('Skip point: {point}', ['point' => $torrentPoint]);
-            }
-        }
-
-        $this->dryRun($input, $output, function () use ($database, $points, $logger) {
-            $isSuccess = $database->writePoints($points, InfluxDB\Database::PRECISION_SECONDS);
-            $logger->info('InfluxDB write ' . ($isSuccess ? 'success' : 'failed'));
-        }, 'dry-run, don\'t really send points');
 
         return 0;
     }

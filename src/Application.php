@@ -36,9 +36,9 @@ class Application extends BaseApplication
     private $weburgClient;
 
     /**
-     * @var InfluxDB\Client $influxDb
+     * @var InfluxDbClient
      */
-    private $influxDb;
+    private $influxDbClient;
 
     public function __construct($name = 'Transmission CLI', $version = '@git-version@')
     {
@@ -147,76 +147,47 @@ class Application extends BaseApplication
     }
 
     /**
-     * @return InfluxDB\Client $influxDb
-     */
-    public function getInfluxDb()
-    {
-        return $this->influxDb;
-    }
-
-    /**
-     * @param InfluxDB\Client $influxDb
-     */
-    public function setInfluxDb($influxDb)
-    {
-        $this->influxDb = $influxDb;
-    }
-
-    public function createInfluxDb($host, $port, $user, $password)
-    {
-        $logger = $this->getLogger();
-
-        $connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
-
-        $influxDb = new InfluxDB\Client(
-            $connect['host'],
-            $connect['port'],
-            $connect['user'],
-            $connect['password']
-        );
-        $logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $connect);
-
-        return $influxDb;
-    }
-
-    /**
-     * @param InputInterface $input
-     * @return InfluxDB\Database
+     * @return InfluxDbClient
      * @throws InfluxDB\Database\Exception
      */
-    public function getDatabase(InputInterface $input)
+    public function getInfluxDbClient($host, $port, $user, $password, $databaseName)
     {
-        $config = $this->getConfig();
-        $logger = $this->getLogger();
-
-        $influxDb = $this->getInfluxDb();
-        if (!isset($influxDb)) {
-            $this->setInfluxDb($this->createInfluxDb(
-                $config->overrideConfig($input, 'influxdb-host'),
-                $config->overrideConfig($input, 'influxdb-port'),
-                $config->overrideConfig($input, 'influxdb-user'),
-                $config->overrideConfig($input, 'influxdb-password')
-            ));
-            $influxDb = $this->getInfluxDb();
+        if (!isset($this->influxDbClient)) {
+            $this->influxDbClient = $this->createInfluxDbClient($host, $port, $user, $password, $databaseName);
         }
+        return $this->influxDbClient;
+    }
 
-        $databaseName = $config->overrideConfig($input, 'influxdb-database');
+    /**
+     * @param InfluxDbClient $influxDbClient
+     */
+    public function setInfluxDbClient($influxDbClient)
+    {
+        $this->influxDbClient = $influxDbClient;
+    }
+
+    /**
+     * @param $host
+     * @param $port
+     * @param $user
+     * @param $password
+     * @param $databaseName
+     * @return InfluxDbClient
+     * @throws InfluxDB\Database\Exception
+     */
+    public function createInfluxDbClient($host, $port, $user, $password, $databaseName)
+    {
+        $influxDb = new InfluxDB\Client($host, $port, $user, $password);
+        $connect = ['host' => $host, 'port' => $port, 'user' => $user, 'password' => $password];
+        $this->logger->debug('Connect InfluxDB using: {user}:{password}@{host}:{port}', $connect);
+
         if (!$databaseName) {
             throw new \RuntimeException('InfluxDb database not defined');
         }
 
-        $database = $influxDb->selectDB($databaseName);
+        $influxDbClient = new InfluxDbClient($influxDb, $databaseName);
+        $influxDbClient->setLogger($this->logger);
 
-        try {
-            $databaseExists = $database->exists();
-        } catch (ConnectException $e) {
-            throw new \RuntimeException('InfluxDb connection error: ' . $e->getMessage());
-        }
-        if (!$databaseExists) {
-            $logger->info('Database ' . $databaseName . ' not exists, creating');
-            $database->create();
-        }
-
-        return $database;
+        return $influxDbClient;
     }
 }

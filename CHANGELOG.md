@@ -9,6 +9,7 @@ FEATURES:
 
 IMPROVEMENTS:
   * stats-send: now it send derivative uploaded from last send
+  * core: extracted InfluxDbClient
 
 BUG FIXES:
   * fixed incorrect display sizes in GB
