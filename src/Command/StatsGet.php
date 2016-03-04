@@ -81,7 +81,12 @@ EOT
 
         TorrentListUtils::printTable([
             'headers' => ['Name', 'Uploaded', 'Profit'],
-            'rows' => $rows
+            'rows' => $rows,
+            'totals' => [
+                '',
+                TorrentListUtils::getTorrentsSize($rows, 1),
+                TorrentListUtils::getTorrentsSize($rows, 2)
+            ]
         ], $output, $input->getOption('sort'), $limit);
 
         return 0;

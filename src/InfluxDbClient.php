@@ -164,7 +164,7 @@ class InfluxDbClient
         }
 
         if ($lastDays) {
-            $fromTimestamp = strtotime('-2 hours');
+            $fromTimestamp = strtotime('-' . $lastDays . ' days');
             $fromDate = date('c', $fromTimestamp);
             $where[] = "time >= '$fromDate'";
         }
