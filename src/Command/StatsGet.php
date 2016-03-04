@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Command;
 
 use InfluxDB;
 use Martial\Transmission\API\Argument\Torrent;
+use Popstas\Transmission\Console\Helpers\TableUtils;
 use Popstas\Transmission\Console\Helpers\TorrentListUtils;
 use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Symfony\Component\Console\Input\InputInterface;
@@ -75,17 +76,17 @@ EOT
             return 1;
         }
 
-        $rows = TorrentListUtils::filterRows($rows, [
+        $rows = TableUtils::filterRows($rows, [
             '2' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
         ]);
 
-        TorrentListUtils::printTable([
+        TableUtils::printTable([
             'headers' => ['Name', 'Uploaded', 'Profit'],
             'rows' => $rows,
             'totals' => [
                 '',
-                TorrentListUtils::getTorrentsSize($rows, 1),
-                TorrentListUtils::getTorrentsSize($rows, 2)
+                TorrentListUtils::sumArrayField($rows, 1),
+                TorrentListUtils::sumArrayField($rows, 2)
             ]
         ], $output, $input->getOption('sort'), $limit);
 

@@ -43,7 +43,7 @@ EOT
             return in_array($torrent[Torrent\Get::NAME], $blacklist);
         });
 
-        $sizeTotal = TorrentListUtils::getTorrentsSize($blackTorrentList);
+        $sizeTotal = TorrentListUtils::sumArrayField($blackTorrentList, Torrent\Get::TOTAL_SIZE);
         $sizeInGb = TorrentUtils::getSizeInGb($sizeTotal);
 
         $output->writeln('Black Torrent list: ' . count($blackTorrentList));

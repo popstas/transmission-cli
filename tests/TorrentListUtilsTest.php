@@ -12,13 +12,13 @@ class TorrentListUtilsTest extends TestCase
 {
     public function testGetTorrentsSize()
     {
-        $torrentSize = TorrentListUtils::getTorrentsSize($this->expectedTorrentList);
+        $torrentSize = TorrentListUtils::sumArrayField($this->expectedTorrentList, Torrent\Get::TOTAL_SIZE);
         $this->assertEquals(7, $torrentSize);
     }
 
     public function testGetTorrentsField()
     {
-        $torrentField = TorrentListUtils::getTorrentsField($this->expectedTorrentList, Torrent\Get::NAME);
+        $torrentField = TorrentListUtils::getArrayField($this->expectedTorrentList, Torrent\Get::NAME);
         $this->assertEquals(['name.ext', 'name.ext', 'name2.ext', 'name.ext'], $torrentField);
     }
 
@@ -123,20 +123,6 @@ class TorrentListUtilsTest extends TestCase
             count($data['totals']),
             count(end($data['rows']))
         );
-    }
-
-    public function testSortRowsByColumnNumber()
-    {
-        $data = TorrentListUtils::buildTableData($this->expectedTorrentList);
-        $rows = $data['rows'];
-
-        $sortedRows = TorrentListUtils::sortRowsByColumnNumber($rows, 2);
-        $sortedIds = TorrentListUtils::getTorrentsField($sortedRows, 1);
-        $this->assertEquals([1, 2, 3, 4], $sortedIds);
-
-        $sortedRows = TorrentListUtils::sortRowsByColumnNumber($rows, -2);
-        $sortedIds = TorrentListUtils::getTorrentsField($sortedRows, 1);
-        $this->assertEquals([4, 3, 2, 1], $sortedIds);
     }
 
     // it asserts nothing

@@ -36,7 +36,7 @@ EOT
 
         $this->dryRun($input, $output, function () use ($logger, $client, $obsoleteList) {
             $client->removeTorrents($obsoleteList);
-            $names = TorrentListUtils::getTorrentsField($obsoleteList, Torrent\Get::NAME);
+            $names = TorrentListUtils::getArrayField($obsoleteList, Torrent\Get::NAME);
             $logger->info('Removed torrents:' . implode(', ', $names));
         }, 'dry-run, don\'t really remove');
 

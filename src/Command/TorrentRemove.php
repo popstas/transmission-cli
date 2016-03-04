@@ -33,7 +33,7 @@ EOT
         $client = $this->getApplication()->getClient();
         $torrentIds = $input->getArgument('torrent-ids');
         $torrentList = $client->getTorrentData($torrentIds);
-        $notExistsIds = array_diff($torrentIds, TorrentListUtils::getTorrentsField($torrentList, Torrent\Get::ID));
+        $notExistsIds = array_diff($torrentIds, TorrentListUtils::getArrayField($torrentList, Torrent\Get::ID));
 
         if (count($notExistsIds)) {
             foreach ($notExistsIds as $notExistsId) {
