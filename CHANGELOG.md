@@ -1,16 +1,27 @@
 ## Next Release
 
 BREAKING CHANGES:
-  * stats-send: removed --influxdb-* command-line options
 
 FEATURES:
-  * packagist.org package: now able install with composer
+
+IMPROVEMENTS:
+
+BUG FIXES:
+
+## 0.5.0 (March 5, 2016)
+
+BREAKING CHANGES:
+  * stats-send: removed --influxdb-* command-line options
+  * grafana dashboards at this time show incorrect data
+
+FEATURES:
+  * packagist.org package: now able to install with composer (but recommended PHAR installation)
   * torrent-list: add columns 'Age', 'Uploaded', 'Per day', add --sort, --age, --name, --limit options
   * **stats-get** - get metrics from InfluxDB and remove filtered torrents, --sort --name --profit --limit --days --rm options 
   * **torrent-remove** - remove torrents by torrent id
 
 IMPROVEMENTS:
-  * stats-send: now it send derivative uploaded from last send
+  * stats-send: now it send derivative uploaded value from last send
   * core: extracted InfluxDbClient
   * removed unused torrent-clean command
 

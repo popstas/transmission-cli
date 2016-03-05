@@ -97,26 +97,33 @@ EOT
         ], $output, $input->getOption('sort'), $limit);
 
         if ($input->getOption('rm')) {
-            $rows = TableUtils::sortRowsByColumnNumber($rows, $input->getOption('sort'));
-
-            if ($limit && $limit < count($rows)) {
-                $rows = array_slice($rows, 0, $limit);
-            }
-
-            $torrentIds = TorrentListUtils::getArrayField($rows, 1);
-            $command = $this->getApplication()->find('torrent-remove');
-            $arguments = array(
-                'command'     => 'torrent-remove',
-                'torrent-ids' => $torrentIds,
-                '--dry-run'   => $input->getOption('dry-run'),
-                '--yes'       => $input->getOption('yes'),
-                '--soft'      => $input->getOption('soft'),
-            );
-
-            $removeInput = new ArrayInput($arguments);
-            return $command->run($removeInput, $output);
+            return $this->removeTorrents($input, $output, $rows);
         }
 
         return 0;
+    }
+
+    private function removeTorrents(InputInterface $input, OutputInterface $output, array $rows)
+    {
+        $limit = (int)$input->getOption('limit') ? (int)$input->getOption('limit') : 0;
+
+        $rows = TableUtils::sortRowsByColumnNumber($rows, $input->getOption('sort'));
+
+        if ($limit && $limit < count($rows)) {
+            $rows = array_slice($rows, 0, $limit);
+        }
+
+        $torrentIds = TorrentListUtils::getArrayField($rows, 1);
+        $command = $this->getApplication()->find('torrent-remove');
+        $arguments = array(
+            'command'     => 'torrent-remove',
+            'torrent-ids' => $torrentIds,
+            '--dry-run'   => $input->getOption('dry-run'),
+            '--yes'       => $input->getOption('yes'),
+            '--soft'      => $input->getOption('soft'),
+        );
+
+        $removeInput = new ArrayInput($arguments);
+        return $command->run($removeInput, $output);
     }
 }
