@@ -30,7 +30,7 @@ Based on:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
 - `torrent-clean`, `tc`              - Clean not popular torrents
-- `torrent-list [--sort=1] [--age='>1 <2'] [--name='series*1080'] [--limit=10]`, `tl` - List, filter and sort torrents
+- `torrent-list [--sort=1] [--age='>1 <3 =2'] [--name='series*1080'] [--limit=10]`, `tl` - List, filter and sort torrents
 - `torrent-remove 1 [2] [3]`, `tr`    - Remove one or more torrents by torrent id
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-get [--sort=1] [--name='name'] [--limit=10] [profit='>0'] [--days=7]`, `sg` - Get metrics from InfluxDB

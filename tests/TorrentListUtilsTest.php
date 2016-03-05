@@ -29,6 +29,7 @@ class TorrentListUtilsTest extends TestCase
             'age >0'       => [[1, 2, 3],    ['age' => '>0']],
             'age < 3'      => [[0, 1, 2],    ['age' => '< 3']],
             'age >0 < 3'   => [[1, 2],       ['age' => '>0 < 3']],
+            'age = 1'      => [[1],          ['age' => ' = 1 ']],
         ];
     }
 

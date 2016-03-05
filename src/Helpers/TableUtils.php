@@ -18,7 +18,7 @@ class TableUtils
                 unset($filters[$columnKey]);
                 continue;
             }
-            $filters = self::parseFilter($filter['type'], $filter['value']) + $filters[$columnKey];
+            $filters[$columnKey] = self::parseFilter($filter['type'], $filter['value']) + $filters[$columnKey];
         }
         return $filters;
     }
@@ -28,34 +28,26 @@ class TableUtils
         switch ($type) {
             case 'numeric':
                 $filter = [];
-                preg_match_all('/([<>])\s?([\d\.]+)/', $filterString, $results, PREG_SET_ORDER);
+                preg_match_all('/([<>=])\s?([\d\.]+)/', $filterString, $results, PREG_SET_ORDER);
                 if ($results) {
                     foreach ($results as $result) {
                         $operator = $result[1];
                         $value = $result[2];
-                        if ($operator == '<') {
-                            $filter['max'] = $value;
-                        }
-                        if ($operator == '>') {
-                            $filter['min'] = $value;
-                        }
+                        $operatorMap = [
+                            '<' => 'max',
+                            '>' => 'min',
+                            '=' => 'equals',
+                        ];
+                        $filterCondition = $operatorMap[$operator];
+                        $filter[$filterCondition] = $value;
                     }
                 }
                 return $filter;
 
             case 'regex':
                 return ['regex' => str_replace(['/', '.', '*'], ['\/', '\.', '.*?'], $filterString)];
-
-            default:
-                throw new \InvalidArgumentException('Unknown filter type');
         }
-    }
-
-    public static function parseRegexFilter($filterString)
-    {
-        $filter = [];
-        $filter['regex'] = str_replace(['/', '.', '*'], ['\/', '\.', '.*?'], $filterString);
-        return $filter;
+        throw new \InvalidArgumentException('Unknown filter type');
     }
 
     public static function filterRows(array $rows, $filters)
@@ -79,18 +71,12 @@ class TableUtils
 
     private static function filterRow($value, $filter)
     {
-        if ($filter['type'] == 'numeric') {
-            if ((isset($filter['min']) && $value <= $filter['min']) ||
-                (isset($filter['max']) && $value >= $filter['max'])
-            ) {
-                return false;
-            }
-        }
-
-        if ($filter['type'] == 'regex') {
-            if (!preg_match('/' . $filter['regex'] . '/i', $value)) {
-                return false;
-            }
+        if ((isset($filter['min']) && $value <= $filter['min']) ||
+            (isset($filter['max']) && $value >= $filter['max']) ||
+            (isset($filter['equals']) && $value != $filter['equals']) ||
+            (isset($filter['regex']) && !preg_match('/' . $filter['regex'] . '/i', $value))
+        ) {
+            return false;
         }
 
         return true;

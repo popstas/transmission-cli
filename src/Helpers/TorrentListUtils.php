@@ -51,7 +51,6 @@ class TorrentListUtils
             }, $torrentList);
         }
 
-        $filters = TableUtils::parseFilters($filters);
         $torrentList = TableUtils::filterRows($torrentList, $filters);
         return $torrentList;
     }
