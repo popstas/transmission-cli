@@ -206,15 +206,20 @@ transmission-cli torrent-list --sort=6 --limit 10
 ## Get torrents stats from InfluxDB
 Command `stats-get` almost same as `torrent-list`, but it use InfluxDB:
 ```
-transmission-cli stats-get [--sort=column_number] [--name='name'] [--limit=10] [profit='>0'] [--days=7] [--rm]
+transmission-cli stats-get [--name='name'] [--age='age'] [profit='>0'] [--days=7] [--sort=column_number] [--limit=10] [--rm]
 ```
-You can also use `--sort`, `--name`, `--limit`, except `--age`, plus `--profit` and `--days` options.
+You can also use `--name`, `--age`, `--sort`, `--limit`, plus `--profit` and `--days` options.
 
 Profit = uploaded for period / torrent size. Profit metric more precise than uploaded ever value.
 
 Show 10 worst torrents for last week:
 ```
-transmission-cli stats-get --days 7 --profit '<0.01' --limit 10
+transmission-cli stats-get --days 7 --profit '=0' --limit 10
+```
+
+Show stats of last added torrents:
+```
+transmission-cli stats-get --days 1 --age '<2'
 ```
 
 Option `--rm` used for remove filtered torrents (see above).

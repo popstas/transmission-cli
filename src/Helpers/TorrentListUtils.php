@@ -44,11 +44,6 @@ class TorrentListUtils
         }
         if (isset($filters['age'])) {
             $filters['age'] = ['type' => 'numeric', 'value' => $filters['age']];
-            // TODO: move to getTorrentData()
-            $torrentList = array_map(function ($torrent) {
-                $torrent['age'] = TorrentUtils::getTorrentAgeInDays($torrent);
-                return $torrent;
-            }, $torrentList);
         }
 
         $torrentList = TableUtils::filterRows($torrentList, $filters);

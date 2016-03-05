@@ -21,11 +21,12 @@ class StatsGet extends Command
             ->setName('stats-get')
             ->setAliases(['sg'])
             ->setDescription('Get metrics from InfluxDB')
-            ->addOption('sort', null, InputOption::VALUE_OPTIONAL, 'Sort by column number', 4)
             ->addOption('name', null, InputOption::VALUE_OPTIONAL, 'Sort by torrent name (regexp)')
-            ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Show stats for last days', 7)
-            ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit torrent list')
+            ->addOption('age', null, InputOption::VALUE_OPTIONAL, 'Sort by torrent age, ex. \'>1 <5\'')
             ->addOption('profit', null, InputOption::VALUE_OPTIONAL, 'Filter by profit')
+            ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Show stats for last days', 7)
+            ->addOption('sort', null, InputOption::VALUE_OPTIONAL, 'Sort by column number', 4)
+            ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit torrent list')
             ->addOption('rm', null, InputOption::VALUE_NONE, 'Remove filtered torrents')
             ->addOption('soft', null, InputOption::VALUE_NONE, 'Remove only from Transmission, not delete data')
             ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
@@ -57,6 +58,7 @@ EOT
             $torrentList = $client->getTorrentData();
 
             $torrentList = TorrentListUtils::filterTorrents($torrentList, [
+                'age' => $input->getOption('age'),
                 'name' => $input->getOption('name'),
             ]);
 
@@ -65,6 +67,8 @@ EOT
             $rows = [];
 
             foreach ($torrentList as $torrent) {
+                $perDay = $torrent['age'] ?
+                    TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER] / $torrent['age']) : 0;
                 $uploaded = $influxDbClient->getTorrentSum($torrent, 'uploaded_last', $transmissionHost, $lastDays);
 
                 $profit = round($uploaded / $torrent[Torrent\Get::TOTAL_SIZE], 2);
@@ -72,7 +76,10 @@ EOT
                 $rows[] = [
                     $torrent[Torrent\Get::NAME],
                     $torrent[Torrent\Get::ID],
+                    $torrent['age'],
+                    TorrentUtils::getSizeInGb($torrent[Torrent\Get::TOTAL_SIZE]),
                     TorrentUtils::getSizeInGb($uploaded) . ' GB',
+                    $perDay,
                     $profit
                 ];
             }
@@ -82,17 +89,20 @@ EOT
         }
 
         $rows = TableUtils::filterRows($rows, [
-            '3' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
+            '6' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
         ]);
 
         TableUtils::printTable([
-            'headers' => ['Name', 'Id', 'Uploaded', 'Profit'],
+            'headers' => ['Name', 'Id', 'Age', 'Size', 'Uploaded', 'Per day', 'Profit'],
             'rows' => $rows,
             'totals' => [
                 '',
                 '',
-                TorrentListUtils::sumArrayField($rows, 2),
-                TorrentListUtils::sumArrayField($rows, 3)
+                '',
+                '', // TODO: cannot sum rendered size or unfiltered torrentList
+                TorrentListUtils::sumArrayField($rows, 4),
+                TorrentListUtils::sumArrayField($rows, 5),
+                TorrentListUtils::sumArrayField($rows, 6),
             ]
         ], $output, $input->getOption('sort'), $limit);
 

@@ -3,6 +3,7 @@
 BREAKING CHANGES:
 
 FEATURES:
+  * stats-get: add --age option and Age, Size, Per day columns
 
 IMPROVEMENTS:
 

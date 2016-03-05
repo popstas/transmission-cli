@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console;
 
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
+use Popstas\Transmission\Console\Helpers\TorrentUtils;
 
 class TransmissionClient
 {
@@ -53,6 +54,12 @@ class TransmissionClient
 
         $this->createSession();
         $torrentList = $this->api->torrentGet($this->sessionId, $cleanedIds, $fields);
+
+        $torrentList = array_map(function ($torrent) {
+            $torrent['age'] = TorrentUtils::getTorrentAgeInDays($torrent);
+            return $torrent;
+        }, $torrentList);
+
         return $torrentList;
     }
 
