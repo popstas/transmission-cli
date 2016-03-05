@@ -29,11 +29,10 @@ Based on:
 # Available commands:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
-- `torrent-clean`, `tc`              - Clean not popular torrents
 - `torrent-list [--sort=1] [--age='>1 <3 =2'] [--name='series*1080'] [--limit=10]`, `tl` - List, filter and sort torrents
 - `torrent-remove 1 [2] [3]`, `tr`    - Remove one or more torrents by torrent id
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
-- `stats-get [--sort=1] [--name='name'] [--limit=10] [profit='>0'] [--days=7]`, `sg` - Get metrics from InfluxDB
+- `stats-get [--sort=1] [--name='name'] [--limit=10] [profit='>0'] [--days=7] [--rm]`, `sg` - Get metrics from InfluxDB
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
 - `weburg-download --popular`        - Download only popular
@@ -207,7 +206,7 @@ transmission-cli torrent-list --sort=6 --limit 10
 ## Get torrents stats from InfluxDB
 Command `stats-get` almost same as `torrent-list`, but it use InfluxDB:
 ```
-transmission-cli stats-get [--sort=column_number] [--name='name'] [--limit=10] [profit='>0'] [--days=7]
+transmission-cli stats-get [--sort=column_number] [--name='name'] [--limit=10] [profit='>0'] [--days=7] [--rm]
 ```
 You can also use `--sort`, `--name`, `--limit`, except `--age`, plus `--profit` and `--days` options.
 
@@ -217,6 +216,8 @@ Show 10 worst torrents for last week:
 ```
 transmission-cli stats-get --days 7 --profit '<0.01' --limit 10
 ```
+
+Option `--rm` used for remove filtered torrents (see above).
 
 
 ## Remove torrents
@@ -233,6 +234,13 @@ Remove several torrents:
 Remove only torrent from transmission, not delete data:
 `transmission-cli torrent-remove 1 --soft`
 
+You can use command `stats-get` to remove filtered unpopular torrents:
+```
+transmission-cli stats-get --days 7 --profit '=0' --rm
+```
+With `--rm` option you can use all options of `torrent-remove` command: `--soft`, `--dry-run`, `-y`.  
+Without `-y` option command ask your confirmation for remove torrents.  
+If you don't want to remove all filtered torrents, you can save ids of needle torrents and call `torrent-remove` manually.
 
 
 # Contribution

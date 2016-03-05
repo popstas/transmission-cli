@@ -55,13 +55,15 @@ EOT
         }
 
         $deleteLocalData = !$input->getOption('soft');
-        $client->removeTorrents($torrentList, $deleteLocalData);
 
-        $output->writeln('Torrents removed.');
-        if (!$deleteLocalData) {
-            $output->writeln('Data don\'t removed.');
-        }
-        
+        $this->dryRun($input, $output, function () use ($output, $torrentList, $client, $deleteLocalData) {
+            $client->removeTorrents($torrentList, $deleteLocalData);
+            $output->writeln('Torrents removed.');
+            if (!$deleteLocalData) {
+                $output->writeln('Data don\'t removed.');
+            }
+        }, 'dry-run, don\'t really remove torrents');
+
         return 0;
     }
 }

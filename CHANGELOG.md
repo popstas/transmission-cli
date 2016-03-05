@@ -6,12 +6,13 @@ BREAKING CHANGES:
 FEATURES:
   * packagist.org package: now able install with composer
   * torrent-list: add columns 'Age', 'Uploaded', 'Per day', add --sort, --age, --name, --limit options
-  * **stats-get** - get metrics from InfluxDB, --sort --name --profit --limit --days options
+  * **stats-get** - get metrics from InfluxDB and remove filtered torrents, --sort --name --profit --limit --days --rm options 
   * **torrent-remove** - remove torrents by torrent id
 
 IMPROVEMENTS:
   * stats-send: now it send derivative uploaded from last send
   * core: extracted InfluxDbClient
+  * removed unused torrent-clean command
 
 BUG FIXES:
   * fixed incorrect display sizes in GB

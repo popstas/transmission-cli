@@ -84,8 +84,27 @@ class StatsGetTest extends CommandTestCase
         //$this->assertRegExp('/InfluxDb database not defined/', $this->getDisplay());
     }
 
-    public function testWithoutOptions()
+    public function testWithoutArguments()
     {
         $this->executeCommand();
+    }
+
+    public function testRemoveNotConfirmed()
+    {
+        $command = $this->getCommand();
+
+        $question = $this->getMock('Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $question->expects($this->at(0))
+            ->method('ask')
+            ->will($this->returnValue(false));
+
+        $command->getHelperSet()->set($question, 'question');
+
+        $result = $this->executeCommand([
+            '--rm'    => true,
+            '--limit' => 1
+        ]);
+        $this->assertEquals(1, $result);
+        $this->assertRegExp('/Aborting/', $this->getDisplay());
     }
 }

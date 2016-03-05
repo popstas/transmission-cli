@@ -7,6 +7,7 @@ use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\Helpers\TableUtils;
 use Popstas\Transmission\Console\Helpers\TorrentListUtils;
 use Popstas\Transmission\Console\Helpers\TorrentUtils;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,6 +26,9 @@ class StatsGet extends Command
             ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Show stats for last days', 7)
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit torrent list')
             ->addOption('profit', null, InputOption::VALUE_OPTIONAL, 'Filter by profit')
+            ->addOption('rm', null, InputOption::VALUE_NONE, 'Remove filtered torrents')
+            ->addOption('soft', null, InputOption::VALUE_NONE, 'Remove only from Transmission, not delete data')
+            ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host')
             ->setHelp(<<<EOT
 The <info>stats-get</info> sends upload ever for every torrent to InfluxDB.
@@ -67,6 +71,7 @@ EOT
 
                 $rows[] = [
                     $torrent[Torrent\Get::NAME],
+                    $torrent[Torrent\Get::ID],
                     TorrentUtils::getSizeInGb($uploaded) . ' GB',
                     $profit
                 ];
@@ -77,18 +82,40 @@ EOT
         }
 
         $rows = TableUtils::filterRows($rows, [
-            '2' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
+            '3' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
         ]);
 
         TableUtils::printTable([
-            'headers' => ['Name', 'Uploaded', 'Profit'],
+            'headers' => ['Name', 'Id', 'Uploaded', 'Profit'],
             'rows' => $rows,
             'totals' => [
                 '',
-                TorrentListUtils::sumArrayField($rows, 1),
-                TorrentListUtils::sumArrayField($rows, 2)
+                '',
+                TorrentListUtils::sumArrayField($rows, 2),
+                TorrentListUtils::sumArrayField($rows, 3)
             ]
         ], $output, $input->getOption('sort'), $limit);
+
+        if ($input->getOption('rm')) {
+            $rows = TableUtils::sortRowsByColumnNumber($rows, $input->getOption('sort'));
+
+            if ($limit && $limit < count($rows)) {
+                $rows = array_slice($rows, 0, $limit);
+            }
+
+            $torrentIds = TorrentListUtils::getArrayField($rows, 1);
+            $command = $this->getApplication()->find('torrent-remove');
+            $arguments = array(
+                'command'     => 'torrent-remove',
+                'torrent-ids' => $torrentIds,
+                '--dry-run'   => $input->getOption('dry-run'),
+                '--yes'       => $input->getOption('yes'),
+                '--soft'      => $input->getOption('soft'),
+            );
+
+            $removeInput = new ArrayInput($arguments);
+            return $command->run($removeInput, $output);
+        }
 
         return 0;
     }

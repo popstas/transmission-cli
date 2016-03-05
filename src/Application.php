@@ -53,7 +53,6 @@ class Application extends BaseApplication
 
             new Command\StatsGet(),
             new Command\StatsSend(),
-            new Command\TorrentClean(),
             new Command\TorrentList(),
             new Command\TorrentRemove(),
             new Command\TorrentRemoveDuplicates(),
