@@ -110,9 +110,10 @@ class Command extends BaseCommand
         $message = 'dry-run, don\'t doing anything'
     ) {
         if (!$input->getOption('dry-run')) {
-            $callback();
+            return $callback();
         } else {
             $output->writeln($message);
+            return true;
         }
     }
 }

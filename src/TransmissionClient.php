@@ -4,7 +4,6 @@ namespace Popstas\Transmission\Console;
 
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Torrent;
-use Popstas\Transmission\Console\Helpers\TorrentUtils;
 
 class TransmissionClient
 {

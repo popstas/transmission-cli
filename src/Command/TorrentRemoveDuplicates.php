@@ -24,7 +24,7 @@ EOT
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logger = $this->getApplication()->getLogger();
+        $config = $this->getApplication()->getConfig();
         $client = $this->getApplication()->getClient();
 
         $torrentList = $client->getTorrentData();
@@ -34,10 +34,20 @@ EOT
             return 0;
         }
 
-        $this->dryRun($input, $output, function () use ($logger, $client, $obsoleteList) {
+        $this->dryRun($input, $output, function () use ($client, $obsoleteList, $config, $input, $output) {
+            $influxDbClient = $this->getApplication()->getInfluxDbClient(
+                $config->get('influxdb-host'),
+                $config->get('influxdb-port'),
+                $config->get('influxdb-user'),
+                $config->get('influxdb-password'),
+                $config->get('influxdb-database')
+            );
+            $transmissionHost = $config->overrideConfig($input, 'transmission-host');
+            $influxDbClient->sendTorrentPoints($obsoleteList, $transmissionHost);
+
             $client->removeTorrents($obsoleteList);
             $names = TorrentListUtils::getArrayField($obsoleteList, Torrent\Get::NAME);
-            $logger->info('Removed torrents:' . implode(', ', $names));
+            $output->writeln('Removed torrents:' . implode(', ', $names));
         }, 'dry-run, don\'t really remove');
 
         $output->writeln('Found and deleted ' . count($obsoleteList) . ' obsolete torrents from transmission:');

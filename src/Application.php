@@ -145,6 +145,11 @@ class Application extends BaseApplication
     }
 
     /**
+     * @param $host
+     * @param $port
+     * @param $user
+     * @param $password
+     * @param $databaseName
      * @return InfluxDbClient
      * @throws InfluxDB\Database\Exception
      */

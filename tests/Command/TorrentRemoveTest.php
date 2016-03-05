@@ -15,7 +15,7 @@ class TorrentRemoveTest extends CommandTestCase
     public function testRemoveOne()
     {
         $this->executeCommand(['torrent-ids' => [1], '-y' => true]);
-        $this->assertRegExp('/removed/', $this->getDisplay());
+        $this->assertRegExp('/Torrents removed/', $this->getDisplay());
     }
 
     public function testRemoveConfirmation()

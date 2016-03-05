@@ -63,6 +63,13 @@ class InfluxDbClient
         $this->logger = $logger;
     }
 
+    private function log($level, $message, $context = [])
+    {
+        if (!is_null($this->logger)) {
+            $this->logger->log($level, $message, $context);
+        }
+    }
+
     /**
      * @return InfluxDB\Database
      * @throws InfluxDB\Database\Exception
@@ -81,7 +88,7 @@ class InfluxDbClient
             throw new \RuntimeException('InfluxDb connection error: ' . $e->getMessage());
         }
         if (!$databaseExists) {
-            $this->logger->info('Database ' . $this->databaseName . ' not exists, creating');
+            $this->log('info', 'Database ' . $this->databaseName . ' not exists, creating');
             $database->create();
         }
 
@@ -141,7 +148,21 @@ class InfluxDbClient
     
     public function writePoints($points, $precision = InfluxDB\Database::PRECISION_SECONDS)
     {
+        foreach ($points as $point) {
+            $this->log('debug', 'Send point: {point}', ['point' => $point]);
+        }
         return $this->getDatabase()->writePoints($points, $precision);
+    }
+
+    public function sendTorrentPoints(array $torrentList, $transmissionHost)
+    {
+        $points = [];
+        foreach ($torrentList as $torrent) {
+            $points[] = $this->buildPoint($torrent, $transmissionHost);
+        }
+        $isSuccess = $this->writePoints($points);
+        $this->log('info', 'InfluxDB write ' . ($isSuccess ? 'success' : 'failed'));
+        return $isSuccess;
     }
 
     /**
@@ -177,7 +198,7 @@ class InfluxDbClient
             ->getPoints();
         ;
 
-        $this->logger->debug($this->influxDb->getLastQuery());
+        $this->log('debug', $this->influxDb->getLastQuery());
 
         if (!empty($results)) {
             return $results[0][$fieldName];

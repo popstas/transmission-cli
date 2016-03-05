@@ -34,6 +34,23 @@ class InfluxDbClientTest extends TestCase
         parent::setUp();
     }
 
+    private function getDatabaseMockReturnsResultSet($value)
+    {
+        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+
+        $queryBuilder = $this->getMock('InfluxDB\Query\Builder', ['getResultSet'], [$database]);
+        $resultSet = $this->getMockBuilder('InfluxDB\ResultSet')
+            ->setMethods([])
+            ->setConstructorArgs([''])
+            ->disableOriginalConstructor()
+            ->getMock();
+        $resultSet->method('getPoints')->willReturn($value);
+        $queryBuilder->method('getResultSet')->will($this->returnValue($resultSet));
+        $database->method('getQueryBuilder')->willReturn($queryBuilder);
+
+        return $database;
+    }
+
     public function testConnectDatabaseOnGet()
     {
         $this->client = $this->getMock(
@@ -91,23 +108,6 @@ class InfluxDbClientTest extends TestCase
 
         $torrent = $this->expectedTorrentList[0];
         $this->client->buildPoint($torrent, 'localhost');
-    }
-
-    private function getDatabaseMockReturnsResultSet($value)
-    {
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
-
-        $queryBuilder = $this->getMock('InfluxDB\Query\Builder', ['getResultSet'], [$database]);
-        $resultSet = $this->getMockBuilder('InfluxDB\ResultSet')
-            ->setMethods([])
-            ->setConstructorArgs([''])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $resultSet->method('getPoints')->willReturn($value);
-        $queryBuilder->method('getResultSet')->will($this->returnValue($resultSet));
-        $database->method('getQueryBuilder')->willReturn($queryBuilder);
-
-        return $database;
     }
 
     public function testWritePoints()

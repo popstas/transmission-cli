@@ -31,6 +31,8 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $client = $this->getApplication()->getClient();
+        $config = $this->getApplication()->getConfig();
+
         $torrentIds = $input->getArgument('torrent-ids');
         $torrentList = $client->getTorrentData($torrentIds);
         $notExistsIds = array_diff($torrentIds, TorrentListUtils::getArrayField($torrentList, Torrent\Get::ID));
@@ -54,9 +56,18 @@ EOT
             }
         }
 
-        $deleteLocalData = !$input->getOption('soft');
+        $this->dryRun($input, $output, function () use ($config, $torrentList, $client, $input, $output) {
+            $influxDbClient = $this->getApplication()->getInfluxDbClient(
+                $config->get('influxdb-host'),
+                $config->get('influxdb-port'),
+                $config->get('influxdb-user'),
+                $config->get('influxdb-password'),
+                $config->get('influxdb-database')
+            );
+            $transmissionHost = $config->overrideConfig($input, 'transmission-host');
+            $influxDbClient->sendTorrentPoints($torrentList, $transmissionHost);
 
-        $this->dryRun($input, $output, function () use ($output, $torrentList, $client, $deleteLocalData) {
+            $deleteLocalData = !$input->getOption('soft');
             $client->removeTorrents($torrentList, $deleteLocalData);
             $output->writeln('Torrents removed.');
             if (!$deleteLocalData) {

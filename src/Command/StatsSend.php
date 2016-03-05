@@ -59,15 +59,13 @@ EOT
 
                 if ($age) {
                     $points[] = $torrentPoint;
-                    $logger->debug('Send point: {point}', ['point' => $torrentPoint]);
                 } else {
                     $logger->debug('Skip point: {point}', ['point' => $torrentPoint]);
                 }
             }
 
-            $this->dryRun($input, $output, function () use ($influxDbClient, $points, $logger) {
-                $isSuccess = $influxDbClient->writePoints($points);
-                $logger->info('InfluxDB write ' . ($isSuccess ? 'success' : 'failed'));
+            $this->dryRun($input, $output, function () use ($influxDbClient, $points) {
+                $influxDbClient->writePoints($points);
             }, 'dry-run, don\'t really send points');
         } catch (\Exception $e) {
             $logger->critical($e->getMessage());
