@@ -18,39 +18,37 @@ class TableUtils
                 unset($filters[$columnKey]);
                 continue;
             }
-            switch ($filter['type']) {
-                case 'numeric':
-                    $filters[$columnKey] = self::parseNumericFilter($filter['value'])
-                        + $filters[$columnKey];
-                    break;
-                case 'regex':
-                    $filters[$columnKey] = self::parseRegexFilter($filter['value'])
-                        + $filters[$columnKey];
-                    break;
-                default:
-                    throw new \InvalidArgumentException('Unknown filter type');
-            }
+            $filters = self::parseFilter($filter['type'], $filter['value']) + $filters[$columnKey];
         }
         return $filters;
     }
 
-    private static function parseNumericFilter($filterString)
+    private static function parseFilter($type, $filterString)
     {
-        $filter = [];
-        preg_match_all('/([<>])\s?([\d\.]+)/', $filterString, $results, PREG_SET_ORDER);
-        if ($results) {
-            foreach ($results as $result) {
-                $operator = $result[1];
-                $value = $result[2];
-                if ($operator == '<') {
-                    $filter['max'] = $value;
+        switch ($type) {
+            case 'numeric':
+                $filter = [];
+                preg_match_all('/([<>])\s?([\d\.]+)/', $filterString, $results, PREG_SET_ORDER);
+                if ($results) {
+                    foreach ($results as $result) {
+                        $operator = $result[1];
+                        $value = $result[2];
+                        if ($operator == '<') {
+                            $filter['max'] = $value;
+                        }
+                        if ($operator == '>') {
+                            $filter['min'] = $value;
+                        }
+                    }
                 }
-                if ($operator == '>') {
-                    $filter['min'] = $value;
-                }
-            }
+                return $filter;
+
+            case 'regex':
+                return ['regex' => str_replace(['/', '.', '*'], ['\/', '\.', '.*?'], $filterString)];
+
+            default:
+                throw new \InvalidArgumentException('Unknown filter type');
         }
-        return $filter;
     }
 
     public static function parseRegexFilter($filterString)
