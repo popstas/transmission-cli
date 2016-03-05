@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\Helpers\TorrentListUtils;
+use Popstas\Transmission\Console\Helpers\TorrentUtils;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,6 +33,11 @@ EOT
         $client = $this->getApplication()->getClient();
 
         $torrentList = $client->getTorrentData();
+
+        $torrentList = array_map(function ($torrent) {
+            $torrent['age'] = TorrentUtils::getTorrentAgeInDays($torrent);
+            return $torrent;
+        }, $torrentList);
 
         $torrentList = TorrentListUtils::filterTorrents($torrentList, [
             'age' => $input->getOption('age'),

@@ -41,10 +41,10 @@ class TorrentListUtilsTest extends TestCase
     public function testFilterTorrentsByAge($expectedKeys, $ageFilter)
     {
         $torrentList = [
-            ['doneDate' => time() - 86400 * 0],
-            ['doneDate' => time() - 86400 * 1],
-            ['doneDate' => time() - 86400 * 2],
-            ['doneDate' => time() - 86400 * 3],
+            ['age' => 0],
+            ['age' => 1],
+            ['age' => 2],
+            ['age' => 3],
         ];
 
         $this->assertEquals($expectedKeys, array_keys(TorrentListUtils::filterTorrents($torrentList, $ageFilter)));
@@ -81,16 +81,16 @@ class TorrentListUtilsTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException \RuntimeException
+     */
     public function testNotExistsColumnFilter()
     {
-        $this->assertEquals(
-            $this->expectedTorrentList,
-            TorrentListUtils::filterTorrents($this->expectedTorrentList, [
-                'not_exists_key' => [
-                    'type' => 'regex',
-                    'value' => 'value']
-            ])
-        );
+        TorrentListUtils::filterTorrents($this->expectedTorrentList, [
+            'not_exists_key' => [
+                'type' => 'regex',
+                'value' => 'value']
+        ]);
     }
 
     public function invalidFilterProvider()

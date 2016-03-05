@@ -14,7 +14,12 @@ class TorrentListTest extends CommandTestCase
 
     public function testSortList()
     {
-        $result = $this->executeCommand(['--sort' => 'asd', '--name' => 'asd']);
+        $result = $this->executeCommand([
+            '--name' => 'asd',
+            '--age' => '<5',
+            '--sort' => 'asd',
+            '--limit' => 2,
+        ]);
         $this->assertEquals(0, $result);
         $this->assertRegExp('/Total.*?0.*?0/', $this->getDisplay());
     }

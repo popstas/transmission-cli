@@ -57,6 +57,7 @@ class TableUtils
         return array_filter($rows, function ($row) use ($filters) {
             foreach ($filters as $columnKey => $filter) {
                 if (!isset($row[$columnKey])) {
+                    throw new \RuntimeException('Column ' . $columnKey . ' not exists, cannot filter');
                     continue;
                 }
                 $columnValue = $row[$columnKey];
