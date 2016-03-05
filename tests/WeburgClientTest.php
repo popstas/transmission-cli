@@ -141,7 +141,7 @@ class WeburgClientTest extends TestCase
         $client = $this->getClientWithBodyResponse($this->getTestPage('movies_new'));
 
         $movies_ids = $client->getMoviesIds();
-        $this->assertCount(20, $movies_ids);
+        $this->assertCount(1, $movies_ids);
     }
 
     public function testGetMovieUrl()
