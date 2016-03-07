@@ -116,4 +116,13 @@ class Command extends BaseCommand
             return true;
         }
     }
+
+    public function setHelp($help)
+    {
+        $help = preg_replace('/```\n(.*?)\n```/mis', '<info>$1</info>', $help);
+        $help = preg_replace('/(\n|^)#+ (.*)/', '$1<question>$2</question>', $help);
+        $help = preg_replace('/`([^`]*?)`/', '<comment>$1</comment>', $help);
+        $help = preg_replace('/\*\*(.*?)\*\*/', '<comment>$1</comment>', $help);
+        return parent::setHelp($help);
+    }
 }
