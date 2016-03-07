@@ -50,7 +50,13 @@ class TableUtils
         throw new \InvalidArgumentException('Unknown filter type');
     }
 
-    public static function filterRows(array $rows, $filters)
+    /**
+     * @param array $rows
+     * @param array $filters
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public static function filterRows(array $rows, array $filters)
     {
         $filters = self::parseFilters($filters);
 
@@ -58,7 +64,6 @@ class TableUtils
             foreach ($filters as $columnKey => $filter) {
                 if (!isset($row[$columnKey])) {
                     throw new \RuntimeException('Column ' . $columnKey . ' not exists, cannot filter');
-                    continue;
                 }
                 $columnValue = $row[$columnKey];
 
@@ -102,14 +107,16 @@ class TableUtils
         return $rowsSorted;
     }
 
-    public static function printTable(array $tableData, OutputInterface $output, $sortColumnNumber = 1, $limit = 0)
+    public static function limitRows(array $rows, $limit)
     {
-        $tableData['rows'] = self::sortRowsByColumnNumber($tableData['rows'], $sortColumnNumber);
-
-        if ($limit && $limit < count($tableData['rows'])) {
-            $tableData['rows'] = array_slice($tableData['rows'], 0, $limit);
+        if ($limit && $limit < count($rows)) {
+            $rows = array_slice($rows, 0, $limit);
         }
+        return $rows;
+    }
 
+    public static function printTable(array $tableData, OutputInterface $output)
+    {
         $table = new Table($output);
         $table->setHeaders($tableData['headers']);
         $table->setRows($tableData['rows']);
