@@ -57,7 +57,7 @@ EOT
 
             $points = [];
 
-            $transmissionHost = $config->overrideConfig($input, 'transmission-host');
+            $transmissionHost = $config->get('transmission-host');
 
             foreach ($torrentList as $torrent) {
                 $age = TorrentUtils::getTorrentAge($torrent);

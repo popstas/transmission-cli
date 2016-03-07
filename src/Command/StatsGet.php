@@ -100,7 +100,7 @@ EOT
                 'name' => $input->getOption('name'),
             ]);
 
-            $transmissionHost = $config->overrideConfig($input, 'transmission-host');
+            $transmissionHost = $config->get('transmission-host');
 
             $torrentList = array_map(function ($torrent) use ($influxDbClient, $transmissionHost, $lastDays) {
                 $torrent['uploaded'] = $influxDbClient->getTorrentSum(

@@ -85,7 +85,7 @@ EOT
                 $config->get('influxdb-password'),
                 $config->get('influxdb-database')
             );
-            $transmissionHost = $config->overrideConfig($input, 'transmission-host');
+            $transmissionHost = $config->get('transmission-host');
             $influxDbClient->sendTorrentPoints($torrentList, $transmissionHost);
 
             $deleteLocalData = !$input->getOption('soft');
