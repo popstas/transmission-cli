@@ -41,7 +41,7 @@ It is pretty simple:
 transmission-cli weburg-series-add http://weburg.net/series/info/12345
 ```
 
-After that command `weburg-download also will download series from list for last day.
+After that command `weburg-download` also will download series from list for last day.
 If you don't want to download popular torrents, but only new series, use command:
 ```
 transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory --series

@@ -51,6 +51,7 @@ class Application extends BaseApplication
         $commands = array_merge(parent::getDefaultCommands(), [
             new BashCompletion\CompletionCommand(),
 
+            new Command\Docs(),
             new Command\StatsGet(),
             new Command\StatsSend(),
             new Command\TorrentAdd(),

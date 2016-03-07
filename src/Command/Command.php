@@ -18,6 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Command extends BaseCommand
 {
+    private $help;
+
     protected function configure()
     {
         $this->addOption('dry-run', null, InputOption::VALUE_NONE, 'Dry run, don\'t change any data');
@@ -119,10 +121,16 @@ class Command extends BaseCommand
 
     public function setHelp($help)
     {
+        $this->help = $help;
         $help = preg_replace('/```\n(.*?)\n```/mis', '<info>$1</info>', $help);
         $help = preg_replace('/(\n|^)#+ (.*)/', '$1<question>$2</question>', $help);
         $help = preg_replace('/`([^`]*?)`/', '<comment>$1</comment>', $help);
         $help = preg_replace('/\*\*(.*?)\*\*/', '<comment>$1</comment>', $help);
         return parent::setHelp($help);
+    }
+    
+    public function getRawHelp()
+    {
+        return $this->help;
     }
 }
