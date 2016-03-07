@@ -59,6 +59,7 @@ class TransmissionClientTest extends TestCase
 
         $this->api->method('sessionGet')->willThrowException($exception);
         $sessionId = $this->invokeMethod($this->client, 'getSessionId', ['']);
+        //$this->markTestIncomplete();
     }
 
     public function testGetTorrentData()
@@ -67,6 +68,20 @@ class TransmissionClientTest extends TestCase
         $this->assertEquals($this->expectedTorrentList, $torrentList);
     }
 
+    public function testAddFile()
+    {
+        $this->client->addTorrent('/abc.torrent');
+        $this->client->addTorrent('/abc.torrent', '/path/to/download');
+        //$this->markTestIncomplete();
+    }
+
+    public function testAddMetadata()
+    {
+        $torrentFile = tempnam(sys_get_temp_dir(), 'torrent');
+        $this->client->addTorrent($torrentFile);
+        unlink($torrentFile);
+        //$this->markTestIncomplete();
+    }
 
     public function testRemoveTorrents()
     {
@@ -75,5 +90,10 @@ class TransmissionClientTest extends TestCase
 
         $result = $this->client->removeTorrents([1, 2]);
         $this->assertTrue($result);
+    }
+
+    public function testWaitForTransmission()
+    {
+        $this->client->waitForTransmission(0);
     }
 }

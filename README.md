@@ -29,10 +29,11 @@ Based on:
 # Available commands:
 - `help`                             - Displays help for a command
 - `list`                             - List commands
-- `torrent-list [--sort=1] [--age='>1 <3 =2'] [--name='series*1080'] [--limit=10]`, `tl` - List, filter and sort torrents
+- `torrent-list [--name='series*1080'] [--age='>1 <3 =2'] [--sort=1] [--limit=10]`, `tl` - List, filter and sort torrents
+- `torrent-add file|url [file2] [fileX]`, `ta` - Safe add torrents
 - `torrent-remove 1 [2] [3]`, `tr`    - Remove one or more torrents by torrent id
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
-- `stats-get [--sort=1] [--name='name'] [--limit=10] [profit='>0'] [--days=7] [--rm]`, `sg` - Get metrics from InfluxDB
+- `stats-get [--name='name'] [--age='>1 <3 =2'] [profit='>0'] [--days=7] [--sort=1] [--limit=10] [--rm]`, `sg` - Get metrics from InfluxDB
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
 - `weburg-download --popular`        - Download only popular
@@ -89,7 +90,7 @@ Commands `weburg-download`, `weburg-series-add`, interacts only with weburg.net 
 
 
 #### Transmission
-If you want to make commands `torrent-` working, you should enable remote access in Transmission
+If you want to make commands `torrent-*` working, you should enable remote access in Transmission
 and add host, port, username, password if it not defaults.
 
 By default, transmission-cli request to Transmission on localhost:9091 without user and password. You can change it in `~/.transmission-cli.yml`.
@@ -103,14 +104,23 @@ and point to same directory in `--dest=` option.
 #### InfluxDB and Grafana
 You need to install it for drawing torrent graphics.
 
-**Influxdb**
+**InfluxDB**
 
-Add host, port and database name in InfluxDB to config.
+Simplest way to install InfluxDB - Docker:
+```
+docker run --name influxdb\
+    -d --volume=/Users/popstas/lib/influxdb:/data \
+    -p 8083:8083 -p 8086:8086 \
+    tutum/influxdb
+```
+And if you don't want to see detailed stats about your torrents, you may not install InfluxDB, commands `stat-*` will not working.
+
 
 **Grafana**
 
 Add InfluxDB as data source to Grafana.
 Then import dashboard - [grafana-torrents.json](doc/grafana-torrents.json)
+If you don't want to see graphs, Grafana not necessary.
 
 #### [autocompletion](https://github.com/stecman/symfony-console-completion) for bash/zsh:
 ```
@@ -217,18 +227,28 @@ Show 10 worst torrents for last week:
 transmission-cli stats-get --days 7 --profit '=0' --limit 10
 ```
 
-Show stats of last added torrents:
+Show stats of last added torrents sorted by profit:
 ```
-transmission-cli stats-get --days 1 --age '<2'
+transmission-cli stats-get --days 1 --age '<2' --sort='-7'
 ```
 
 Option `--rm` used for remove filtered torrents (see above).
 
 
+## Add torrents
+By default, Transmission may to freeze if you add several torrents at same time.
+Therefore, preferred way to add torrents - with `torrent-add`.
+After each add file command sleeps for 10 seconds for give time to freeze Transmission.
+After that command waits for Transmission answer and add next file, etc.
+
+```
+transmission-cli torrent-add file|url [file2] [fileX]
+```
+
 ## Remove torrents
 Torrents removes only by id, you can see torrent id in `torrent-list` output.
 
-By default torrents removes with data! Data deletes to trash.
+By default torrents removes with data! Data deletes to trash on Mac OS and totally removes on Windows!
 
 Remove one torrent:
 `transmission-cli torrent-remove 1`
@@ -262,7 +282,3 @@ phpunit
 ```
 phpmd src/ text codesize,controversial,design,naming,unusedcode
 ```
-
-### TODO
-- symfony/config
-- automatic docs: now each feature should documented at Command help, README.md, CHANGELOG.md

@@ -57,6 +57,23 @@ class TransmissionClient
         return $torrentList;
     }
 
+    public function addTorrent($torrentFile, $downloadDir = null)
+    {
+        $arguments = [];
+        if (is_file($torrentFile)) {
+            $arguments[Torrent\Add::METAINFO] = base64_encode(file_get_contents($torrentFile));
+        } else {
+            $arguments[Torrent\Add::FILENAME] = $torrentFile;
+        }
+
+        if (!is_null($downloadDir)) {
+            $arguments[API\Argument\Session\Accessor::DOWNLOAD_DIR] = $downloadDir;
+        }
+
+        $this->createSession();
+        return $this->api->torrentAdd($this->sessionId, $arguments);
+    }
+
     /**
      * @param array $torrentList Array of Torrent data or torrent_ids
      * @param bool $deleteLocalData
@@ -78,5 +95,11 @@ class TransmissionClient
         $this->api->torrentRemove($this->sessionId, $torrentIds, $deleteLocalData);
 
         return true;
+    }
+
+    public function waitForTransmission($int)
+    {
+        sleep($int);
+        $this->createSession();
     }
 }
