@@ -23,7 +23,7 @@ Based on:
 - hourly upload stats by torrent and summary upload
 - list all hosts that sends metrics to InfluxDB
 
-![Screenshot](doc/img/grafana.png?raw=true)
+![Screenshot](docs/img/grafana.png?raw=true)
 
 
 # Available commands:
@@ -119,7 +119,7 @@ And if you don't want to see detailed stats about your torrents, you may not ins
 **Grafana**
 
 Add InfluxDB as data source to Grafana.
-Then import dashboard - [grafana-torrents.json](doc/grafana-torrents.json)
+Then import dashboard - [grafana-torrents.json](docs/grafana-torrents.json)
 If you don't want to see graphs, Grafana not necessary.
 
 #### [autocompletion](https://github.com/stecman/symfony-console-completion) for bash/zsh:
@@ -142,16 +142,7 @@ Don't forget add to cron PATH your ~/.composer/vendor/bin if you installed trans
 
 # Usage
 
-See commands `--help`:
-
-- `torrent-list --help`
-- `torrent-add --help`
-- `torrent-remove --help`
-- `torrent-remove-duplicates --help`
-- `stats-get --help`
-- `stats-send --help`
-- `weburg-download --help`
-- `weburg-series-add --help`
+See [commands `--help`](docs/commands.md).
 
 
 # Contribution
