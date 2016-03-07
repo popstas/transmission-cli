@@ -19,6 +19,8 @@ class TorrentAdd extends Command
             ->setDescription('Remove torrents')
             ->addArgument('torrent-files', InputArgument::IS_ARRAY, 'List of torrent files to add')
             ->setHelp(<<<EOT
+## Add torrents
+
 By default, Transmission may to freeze if you add several torrents at same time.
 Therefore, preferred way to add torrents - with `torrent-add`.
 After each add file command sleeps for 10 seconds for give time to freeze Transmission.

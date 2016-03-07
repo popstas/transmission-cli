@@ -21,7 +21,13 @@ class StatsSend extends Command
             ->setDescription('Send metrics to InfluxDB')
             ->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host')
             ->setHelp(<<<EOT
-The <info>stats-send</info> sends upload ever for every torrent to InfluxDB.
+## Send statistic to InfluxDB
+
+Command should called every hour or more, possible every day, but it will less precise.
+
+Command assume that all torrents have unique names.
+
+You should to configure InfluxDB to use this functional.
 EOT
             );
     }

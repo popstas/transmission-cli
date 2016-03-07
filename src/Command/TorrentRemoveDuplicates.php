@@ -17,7 +17,18 @@ class TorrentRemoveDuplicates extends Command
             ->setAliases(['trd'])
             ->setDescription('Remove duplicates obsolete torrents')
             ->setHelp(<<<EOT
-The <info>torrent-remove-duplicates</info> removed all torrents with same name and smaller size than other.
+## Remove series torrent duplicates
+
+While download series every time you add torrent with same name to Transmission.
+It corrupts `stats-send` command, therefore we need to remove old torrents. This command doing this.
+
+Just call:
+```
+transmission-cli torrent-remove-duplicates
+```
+
+Command removes all torrents with same name and same download directory from Transmission.
+**It not removes any files!**
 EOT
             );
     }

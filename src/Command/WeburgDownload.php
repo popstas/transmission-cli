@@ -23,7 +23,29 @@ class WeburgDownload extends Command
             ->addOption('series', null, InputOption::VALUE_NONE, 'Download only tracked series')
             ->addArgument('movie-id', null, 'Movie ID or URL')
             ->setHelp(<<<EOT
-The <info>weburg-download</info> scans weburg.net top page and downloads popular torrents.
+## Download torrents from Weburg.net
+
+You can automatically download popular torrents from http://weburg.net/movies/new out of the box, use command:
+```
+transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory
+```
+
+or define `download-torrents-dir` in config and just:
+```
+transmission-cli weburg-download
+```
+
+You can automatically download new series, for add series to tracked list see `transmission-cli weburg-series-add`.
+It is pretty simple:
+```
+transmission-cli weburg-series-add http://weburg.net/series/info/12345
+```
+
+After that command `weburg-download also will download series from list for last day.
+If you don't want to download popular torrents, but only new series, use command:
+```
+transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory --series
+```
 EOT
             );
     }

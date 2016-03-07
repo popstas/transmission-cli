@@ -23,7 +23,64 @@ class TorrentList extends Command
             ->addOption('sort', null, InputOption::VALUE_OPTIONAL, 'Sort by column number', 4)
             ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit torrent list')
             ->setHelp(<<<EOT
-The <info>torrent-list</info> list torrents.
+## List torrents
+
+You can list torrents from transmission with `torrent-list` command:
+```
+transmission-cli torrent-list [--sort=column_number] [--name='name'] [--age='>0'] [--limit=10]
+```
+
+**List columns:**
+
+- Name
+- Id - need for `torrent-remove` command
+- Age - days from torrent done date
+- Size - size of downloaded data
+- Uploaded - size of uploaded data
+- Per day - average uploaded GB per day
+
+
+#### Sorting list
+
+You can sort torrents by `Per day` column and estimate unpopular torrents:
+```
+transmission-cli torrent-list --sort=6
+```
+
+For reverse sort ordering, add `-` to column number:
+```
+transmission-cli torrent-list --sort=-6
+```
+
+
+#### Filtering torrent list
+
+**By age:**
+```
+transmission-cli torrent-list --age '>10'
+transmission-cli torrent-list --age '< 20'
+transmission-cli torrent-list --age '>0 <5'
+```
+
+**By name:**
+You can use simple regular expression except `.` and `/` symbols.
+
+Filter FullHD series:
+```
+transmission-cli torrent-list --name 'season*1080*'
+```
+
+Filter all mkv and avi:
+```
+transmission-cli torrent-list --name '.mkv|.avi'
+```
+
+#### Limiting torrent list
+
+Output 10 worst torrents:
+```
+transmission-cli torrent-list --sort=6 --limit 10
+```
 EOT
             );
     }

@@ -32,7 +32,40 @@ class StatsGet extends Command
             ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addOption('transmission-host', null, InputOption::VALUE_OPTIONAL, 'Transmission host')
             ->setHelp(<<<EOT
-The <info>stats-get</info> sends upload ever for every torrent to InfluxDB.
+## Get torrents stats from InfluxDB
+
+Command `stats-get` almost same as `torrent-list`, but it use InfluxDB:
+```
+transmission-cli stats-get [--name='name'] [--age='age'] [profit='>0'] [--days=7] [--sort=1] [--limit=10] [--rm]
+```
+
+You can also use `--name`, `--age`, `--sort`, `--limit`, plus `--profit` and `--days` options.
+
+Profit = uploaded for period / torrent size. Profit metric more precise than uploaded ever value.
+
+Show 10 worst torrents for last week:
+```
+transmission-cli stats-get --days 7 --profit '=0' --limit 10
+```
+
+Show stats of last added torrents sorted by profit:
+```
+transmission-cli stats-get --days 1 --age '<2' --sort='-7'
+```
+
+
+## Remove torrents
+
+You can use command `stats-get` with `--rm` option to remove filtered unpopular torrents:
+```
+transmission-cli stats-get --days 7 --profit '=0' --rm
+```
+
+With `--rm` option you can use all options of `torrent-remove` command: `--soft`, `--dry-run`, `-y`.  
+
+Without `-y` option command ask your confirmation for remove torrents.  
+
+If you don't want to remove all filtered torrents, you can save ids of torrents and call `torrent-remove` manually.
 EOT
             );
     }

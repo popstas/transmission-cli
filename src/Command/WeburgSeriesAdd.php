@@ -17,7 +17,18 @@ class WeburgSeriesAdd extends Command
             ->setDescription('Add series to monitoring list')
             ->addArgument('series-id', null, 'series id or series url')
             ->setHelp(<<<EOT
-The <info>download-series-add</info> add series to monitoring list.
+## Add series to download list
+
+You can automatically download new series. To do this, you should add series to download list:
+```
+transmission-cli weburg-series-add http://weburg.net/series/info/12345
+```
+
+After that command `weburg-download` also will download series from list for last day.
+If you don't want to download popular torrents, but only new series, use command:
+```
+transmission-cli weburg-download --series
+```
 EOT
             );
     }

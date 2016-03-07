@@ -23,7 +23,28 @@ class TorrentRemove extends Command
             ->addOption('soft', null, InputOption::VALUE_NONE, 'Remove only from Transmission, not delete data')
             ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->setHelp(<<<EOT
-The <info>torrent-remove</info> removes torrents torrents.
+## Remove torrents
+
+Torrents removes only by id, you can see torrent id in `torrent-list` output.
+
+By default torrents removes with data! Data deletes to trash on Mac OS and totally removes on Windows!
+
+Remove one torrent:
+```
+transmission-cli torrent-remove 1
+```
+
+Remove several torrents:
+```
+transmission-cli torrent-remove 1 2
+```
+
+Remove only torrent from transmission, not delete data:
+```
+transmission-cli torrent-remove 1 --soft
+```
+
+For select not popular torrents and remove it, see `transmission-cli stats-get --help`
 EOT
             );
     }
