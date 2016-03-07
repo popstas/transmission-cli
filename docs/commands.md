@@ -177,6 +177,11 @@ If you don't want to download popular torrents, but only new series, use command
 transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory --series
 ```
 
+## Add downloaded torrents to Transmission
+
+After download all torrents, command call `torrent-add` command for each transmission-host from config.
+If was defined `--transmission-host` option, then `torrent-add` will called only for this host.
+
 
 ## Add series to download list
 

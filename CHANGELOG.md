@@ -1,13 +1,44 @@
-## Next Release
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/popstas/transmission-cli/compare/v0.5.0...v) (2016-03-08)
 
-BREAKING CHANGES:
 
-FEATURES:
-  * stats-get: add --age option and Age, Size, Per day columns
+### Bug Fixes
 
-IMPROVEMENTS:
+* notices on add duplicating torrent ([ec101e9](https://github.com/popstas/transmission-cli/commit/ec101e9)), closes [#34](https://github.com/popstas/transmission-cli/issues/34)
+* torrent-stat and torrent-list correct totals when limit ([9ff4ca4](https://github.com/popstas/transmission-cli/commit/9ff4ca4)), closes [#21](https://github.com/popstas/transmission-cli/issues/21)
+* torrent-stat and torrent-list correct totals when limit ([6e7f584](https://github.com/popstas/transmission-cli/commit/6e7f584)), closes [#21](https://github.com/popstas/transmission-cli/issues/21)
 
-BUG FIXES:
+### Features
+
+* **docs:** Command `_docs` for generate docs/commands.md with commands help ([b635820](https://github.com/popstas/transmission-cli/commit/b635820)), closes [#32](https://github.com/popstas/transmission-cli/issues/32)
+* **command:** command help render markdown code blocks ([d863814](https://github.com/popstas/transmission-cli/commit/d863814))
+* **torrent-add:** add command for add torrent by file or url ([2515f9c](https://github.com/popstas/transmission-cli/commit/2515f9c)), closes [#4](https://github.com/popstas/transmission-cli/issues/4)
+* **config:** multiple transmission instances in config ([ef90596](https://github.com/popstas/transmission-cli/commit/ef90596)), closes [#11](https://github.com/popstas/transmission-cli/issues/11)
+* **weburg-download:** add downloaded torrents with torrent-add command ([7229c34](https://github.com/popstas/transmission-cli/commit/7229c34)), closes [#30](https://github.com/popstas/transmission-cli/issues/30)
+* **stats-get:** add --age option and Age, Size, Per day columns
+
+
+### BREAKING CHANGES
+
+* change Transmission config names
+
+Before:
+```
+transmission-host: localhost
+transmission-port: 9091
+transmission-user: ''
+transmission-password: ''
+```
+
+After:
+```
+transmission:
+    - { host: localhost, port: 9091, user: '', password: '' }
+    - { host: host2, port: 9091, user: '', password: '' }
+```
+
+You can automatically add config in new format by add any series to list:
+transmission-cli weburg-series-add 12345
 
 ## 0.5.0 (March 5, 2016)
 

@@ -153,6 +153,16 @@ See [commands `--help`](docs/commands.md).
 phpunit
 ```
 
+### Chore
+- generate CHANGELOG.md
+```
+conventional-changelog -p angular -i CHANGELOG.md -s 
+```
+- generate command docs
+```
+bin/transmission-cli _docs > docs/commands.md
+```
+
 ### Recommended
 - support code full coverage
 - check code with PHP Mess Detector:hich 
