@@ -63,7 +63,6 @@ class TorrentListUtils
                 $torrent[Torrent\Get::NAME],
                 $torrent[Torrent\Get::ID],
                 $age,
-                // TODO: it wrong if sort and limit applied, see https://github.com/popstas/transmission-cli/issues/21
                 TorrentUtils::getSizeInGb($torrent[Torrent\Get::TOTAL_SIZE]),
                 TorrentUtils::getSizeInGb($torrent[Torrent\Get::UPLOAD_EVER]),
                 $perDay,

@@ -119,11 +119,6 @@ class TorrentListUtilsTest extends TestCase
             count($data['headers']),
             count(end($data['rows']))
         );
-
-        $this->assertEquals(
-            count($data['totals']),
-            count(end($data['rows']))
-        );
     }
 
     // it asserts nothing
