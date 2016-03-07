@@ -110,6 +110,13 @@ class InfluxDbClientTest extends TestCase
         $this->client->buildPoint($torrent, 'localhost');
     }
 
+    public function testSendTorrentPoints()
+    {
+        $database = $this->getDatabaseMockReturnsResultSet([]);
+        $this->client->setDatabase($database);
+        $this->client->sendTorrentPoints($this->expectedTorrentList, 'localhost');
+    }
+
     public function testWritePoints()
     {
         $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
