@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Command;
 
 use Popstas\Transmission\Console\WeburgClient;
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -46,6 +47,11 @@ If you don't want to download popular torrents, but only new series, use command
 ```
 transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory --series
 ```
+
+## Add downloaded torrents to Transmission
+
+After download all torrents, command call `torrent-add` command for each transmission-host from config.
+If was defined `--transmission-host` option, then `torrent-add` will called only for this host.
 EOT
             );
     }
@@ -80,10 +86,19 @@ EOT
                 );
             }
 
-            $this->dryRun($input, $output, function () use ($weburgClient, $torrentsDir, $torrentsUrls) {
+            $this->dryRun($input, $output, function () use (
+                $input,
+                $output,
+                $weburgClient,
+                $torrentsDir,
+                $torrentsUrls
+            ) {
+                $downloadedFiles = [];
                 foreach ($torrentsUrls as $torrentUrl) {
-                    $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
+                    $downloadedFiles[] = $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
                 }
+
+                $this->addTorrents($input, $output, $downloadedFiles);
             }, 'dry-run, don\'t really download');
 
         } catch (\RuntimeException $e) {
@@ -135,7 +150,7 @@ EOT
 
         $moviesIds = $weburgClient->getMoviesIds();
 
-        $output->writeln("Downloading popular torrents");
+        $output->writeln("\nDownloading popular torrents");
 
         $progress = new ProgressBar($output, count($moviesIds));
         $progress->start();
@@ -203,7 +218,7 @@ EOT
             return [];
         }
 
-        $output->writeln("Downloading tracked series");
+        $output->writeln("\nDownloading tracked series");
 
         $progress = new ProgressBar($output, count($seriesIds));
         $progress->start();
@@ -282,5 +297,33 @@ EOT
         }
 
         return [$torrentsDir, $downloadDir];
+    }
+
+    private function addTorrents(InputInterface $input, OutputInterface $output, array $torrentFiles)
+    {
+        $config = $this->getApplication()->getConfig();
+        $hosts = [];
+
+        if (empty($input->getOption('transmission-host'))) {
+            $transmissionConnects = $config->get('transmission');
+            foreach ($transmissionConnects as $transmissionConnect) {
+                $hosts[] = $transmissionConnect['host'];
+            }
+        } else {
+            $hosts[] = $config->get('transmission-host');
+        }
+
+        foreach ($hosts as $host) {
+            $command = $this->getApplication()->find('torrent-add');
+            $arguments = array(
+                'command'     => 'torrent-add',
+                'torrent-files' => $torrentFiles,
+                '--transmission-host' => $host
+            );
+
+            $addInput = new ArrayInput($arguments);
+            $output->writeln("\nAdd torrents to " . $host);
+            $command->run($addInput, $output);
+        }
     }
 }

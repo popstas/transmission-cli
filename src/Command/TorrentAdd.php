@@ -16,7 +16,7 @@ class TorrentAdd extends Command
         $this
             ->setName('torrent-add')
             ->setAliases(['ta'])
-            ->setDescription('Remove torrents')
+            ->setDescription('Add torrents to Transmission')
             ->addArgument('torrent-files', InputArgument::IS_ARRAY, 'List of torrent files to add')
             ->setHelp(<<<EOT
 ## Add torrents
@@ -38,7 +38,6 @@ EOT
         $client = $this->getApplication()->getClient();
 
         $torrentFiles = $input->getArgument('torrent-files');
-
         foreach ($torrentFiles as $torrentFile) {
             $this->addFile($input, $output, $client, $torrentFile);
             $output->writeln($torrentFile . ' added. Waiting for Transmission...');

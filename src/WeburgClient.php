@@ -135,6 +135,7 @@ class WeburgClient
     /**
      * @param $url
      * @param $torrentsDir
+     * @return string path to downloaded file
      * @throws \RuntimeException
      */
     public function downloadTorrent($url, $torrentsDir)
@@ -148,6 +149,8 @@ class WeburgClient
 
         $filePath = $torrentsDir . '/' . $filename;
         file_put_contents($filePath, $torrentBody);
+
+        return $filePath;
     }
 
     public function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)

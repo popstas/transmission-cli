@@ -59,11 +59,40 @@ class WeburgDownloadTest extends CommandTestCase
 
     public function testDownloadPopular()
     {
+        $this->app->getConfig()->set('transmission', [
+            ['host' => 'devnull1', 'port' => 9091, 'user' => '', 'password' => ''],
+            ['host' => 'devnull2', 'port' => 9091, 'user' => '', 'password' => '']
+        ]);
+
         $client = $this->app->getWeburgClient();
         $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
         $client->expects($this->exactly(2))->method('downloadTorrent');
 
         $this->executeCommand(['--popular' => true, '--download-torrents-dir' => $this->dest]);
+        $display = $this->getDisplay();
+        preg_match_all('/All torrents added/', $display, $addedCount);
+        $this->assertCount(2, $addedCount[0]);
+    }
+
+    public function testDownloadPopularToOneHost()
+    {
+        $this->app->getConfig()->set('transmission', [
+            ['host' => 'devnull1', 'port' => 9091, 'user' => '', 'password' => ''],
+            ['host' => 'devnull2', 'port' => 9091, 'user' => '', 'password' => '']
+        ]);
+
+        $client = $this->app->getWeburgClient();
+        $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
+        $client->expects($this->exactly(2))->method('downloadTorrent');
+
+        $this->executeCommand([
+            '--popular' => true,
+            '--download-torrents-dir' => $this->dest,
+            '--transmission-host'     => 'devnull'
+        ]);
+        $display = $this->getDisplay();
+        preg_match_all('/All torrents added/', $display, $addedCount);
+        $this->assertCount(1, $addedCount[0]);
     }
 
     public function testDownloadDownloaded()
@@ -125,6 +154,9 @@ class WeburgDownloadTest extends CommandTestCase
     public function testBothPopularAndSeries()
     {
         $this->executeCommand(['--download-torrents-dir' => $this->dest]);
+        $display = $this->getDisplay();
+        $this->assertRegExp('/series/', $display);
+        $this->assertRegExp('/popular/', $display);
     }
 
 
@@ -134,7 +166,8 @@ class WeburgDownloadTest extends CommandTestCase
         $client = $this->app->getWeburgClient();
         $client->method('cleanMovieId')->willReturn(12345);
         $client->expects($this->once())->method('downloadTorrent');
-        $this->executeCommand(['movie-id' => 12345]);
+        $return = $this->executeCommand(['movie-id' => 12345]);
+        $this->assertEquals(0, $return);
     }
 
     public function testDownloadOneSeries()
