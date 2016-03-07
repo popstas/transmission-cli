@@ -63,6 +63,11 @@ class InfluxDbClient
         $this->logger = $logger;
     }
 
+    /**
+     * @param string $level
+     * @param string $message
+     * @param array $context
+     */
     private function log($level, $message, $context = [])
     {
         if (!is_null($this->logger)) {
@@ -129,6 +134,11 @@ class InfluxDbClient
         );
     }
 
+    /**
+     * @param array $torrent
+     * @param string $transmissionHost
+     * @return array
+     */
     public function getLastPoint(array $torrent, $transmissionHost)
     {
         $torrentName = $torrent[Torrent\Get::NAME];
