@@ -19,6 +19,10 @@ class TorrentListTest extends CommandTestCase
             '--age' => '<5',
             '--sort' => 'asd',
             '--limit' => 2,
+            '--transmission-host' => 'localhost',
+            '--transmission-port' => 9091,
+            '--transmission-user' => '',
+            '--transmission-password' => '',
         ]);
         $this->assertEquals(0, $result);
         $this->assertRegExp('/Total.*?0.*?0/', $this->getDisplay());

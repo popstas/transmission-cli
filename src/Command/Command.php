@@ -68,14 +68,23 @@ class Command extends BaseCommand
             $this->getApplication()->setConfig($config);
         }
 
+        // compatibility: first client available at old config names
+        // this overrides config values to options from command line arguments
+        $firstTransmission = $config->get('transmission')[0];
+        $vars = ['host', 'port', 'user', 'password'];
+        foreach ($vars as $var) {
+            $configName = 'transmission-' . $var;
+            $config->set($configName, $this->getInputOption($input, $configName, $firstTransmission[$var]));
+        }
+
         // client
         $client = $this->getApplication()->getClient();
         if (!isset($client)) {
             $client = $this->createTransmissionClient(
-                $config->overrideConfig($input, 'transmission-host'),
-                $config->overrideConfig($input, 'transmission-port'),
-                $config->overrideConfig($input, 'transmission-user'),
-                $config->overrideConfig($input, 'transmission-password')
+                $config->get('transmission-host'),
+                $config->get('transmission-port'),
+                $config->get('transmission-user'),
+                $config->get('transmission-password')
             );
             $this->getApplication()->setClient($client);
         }
@@ -103,6 +112,16 @@ class Command extends BaseCommand
         $logger->debug('Connect Transmission using: {user}:{password}@{host}:{port}', $connect);
 
         return new TransmissionClient($api);
+    }
+
+    private function getInputOption(InputInterface $input, $optionName, $defaultValue = null)
+    {
+        $value = $defaultValue;
+        $optionValue = $input->hasOption($optionName) ? $input->getOption($optionName) : null;
+        if (isset($optionValue)) {
+            $value = $optionValue;
+        }
+        return $value;
     }
 
     public function dryRun(

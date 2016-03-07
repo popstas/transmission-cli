@@ -1,0 +1,22 @@
+transmission:
+    - { host: localhost, port: 9091, user: '', password: '' }
+    - { host: wrtnsq, port: 9091, user: '', password: '' }
+influxdb-host: localhost
+influxdb-port: 8086
+influxdb-database: transmission
+influxdb-user: ''
+influxdb-password: ''
+download-torrents-dir: ''
+download-imdb-min: '8.0'
+download-kinopoisk-min: '8.0'
+download-comments-min: 10
+download-votes-min: 25
+weburg-series-list:
+    - '21829'
+weburg-series-max-age: 1
+weburg-series-allowed-misses: 1
+weburg-request-delay: 2
+transmission-host: localhost
+transmission-port: 9091
+transmission-user: ''
+transmission-password: ''

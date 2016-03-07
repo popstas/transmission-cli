@@ -51,10 +51,12 @@ class CommandTest extends CommandTestCase
         $this->app->setClient(null);
 
         $config = new Config();
-        $config->set('transmission-host', 'devnull');
-        $config->set('transmission-port', 1234);
-        $config->set('transmission-user', 'user');
-        $config->set('transmission-password', 'pass');
+        $config->set('transmission', [[
+            'host' => 'devnull',
+            'port' => 1234,
+            'user' => 'user',
+            'password' => 'pass'
+        ]]);
         $this->app->setConfig($config);
 
         /*$connect = [

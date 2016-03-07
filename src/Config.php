@@ -8,10 +8,14 @@ use Symfony\Component\Yaml\Yaml;
 class Config
 {
     private static $defaultConfig = array(
-        'transmission-host'     => 'localhost',
-        'transmission-port'     => 9091,
-        'transmission-user'     => '',
-        'transmission-password' => '',
+        'transmission' => [
+            [
+                'host'     => 'localhost',
+                'port'     => 9091,
+                'user'     => '',
+                'password' => ''
+            ]
+        ],
 
         'influxdb-host'     => 'localhost',
         'influxdb-port'     => 8086,
