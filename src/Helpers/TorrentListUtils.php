@@ -70,19 +70,9 @@ class TorrentListUtils
             ];
         }
 
-        $totals = [
-            'Total',
-            '',
-            '',
-            TorrentUtils::getSizeInGb(self::sumArrayField($torrentList, Torrent\Get::TOTAL_SIZE)),
-            TorrentUtils::getSizeInGb(self::sumArrayField($torrentList, Torrent\Get::UPLOAD_EVER)),
-            ''
-        ];
-
         return [
             'headers' => $headers,
             'rows' => $rows,
-            'totals' => $totals
         ];
     }
 
@@ -93,7 +83,20 @@ class TorrentListUtils
         $limit = 0
     ) {
         $data = self::buildTableData($torrentList);
-        TableUtils::printTable($data, $output, $sortColumnNumber, $limit);
+
+        $data['rows'] = TableUtils::sortRowsByColumnNumber($data['rows'], $sortColumnNumber);
+        $data['rows'] = TableUtils::limitRows($data['rows'], $limit);
+
+        $data['totals'] = [
+            'Total',
+            '',
+            '',
+            self::sumArrayField($data['rows'], 3),
+            self::sumArrayField($data['rows'], 4),
+            ''
+        ];
+
+        TableUtils::printTable($data, $output);
     }
 
     public static function getObsoleteTorrents(array $torrentList)

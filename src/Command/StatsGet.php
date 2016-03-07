@@ -118,47 +118,21 @@ EOT
 
                 return $torrent;
             }, $torrentList);
-
-            $torrentList = TorrentListUtils::filterTorrents($torrentList, [
-                'profit' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
-            ]);
-
-
-            $rows = [];
-
-            foreach ($torrentList as $torrent) {
-                $rows[] = [
-                    $torrent[Torrent\Get::NAME],
-                    $torrent[Torrent\Get::ID],
-                    $torrent['age'],
-                    TorrentUtils::getSizeInGb($torrent[Torrent\Get::TOTAL_SIZE]),
-                    TorrentUtils::getSizeInGb($torrent['uploaded']),
-                    $torrent['per_day'],
-                    $torrent['profit']
-                ];
-            }
         } catch (\Exception $e) {
             $logger->critical($e->getMessage());
             return 1;
         }
 
-        TableUtils::printTable([
-            'headers' => ['Name', 'Id', 'Age, days', 'Size, GB', 'Uploaded, GB', 'Per day, GB', 'Profit, %'],
-            'rows' => $rows,
-            'totals' => [
-                '',
-                '',
-                '',
-                // TODO: it wrong if sort and limit applied, see https://github.com/popstas/transmission-cli/issues/21
-                TorrentUtils::getSizeInGb(TorrentListUtils::sumArrayField($torrentList, Torrent\Get::TOTAL_SIZE)),
-                TorrentListUtils::sumArrayField($rows, 4),
-                TorrentListUtils::sumArrayField($rows, 5),
-                TorrentListUtils::sumArrayField($rows, 6),
-            ]
-        ], $output, $input->getOption('sort'), $limit);
+        $torrentList = TorrentListUtils::filterTorrents($torrentList, [
+            'profit' => ['type' => 'numeric', 'value' => $input->getOption('profit')]
+        ]);
+
+        $tableData = $this->buildTableData($torrentList, $input->getOption('sort'), $limit);
+
+        TableUtils::printTable($tableData, $output);
 
         if ($input->getOption('rm')) {
-            return $this->removeTorrents($input, $output, $rows);
+            return $this->removeTorrents($input, $output, $tableData['rows']);
         }
 
         return 0;
@@ -186,5 +160,39 @@ EOT
 
         $removeInput = new ArrayInput($arguments);
         return $command->run($removeInput, $output);
+    }
+
+    private function buildTableData(array $torrentList, $sort, $limit)
+    {
+        $rows = [];
+
+        foreach ($torrentList as $torrent) {
+            $rows[] = [
+                $torrent[Torrent\Get::NAME],
+                $torrent[Torrent\Get::ID],
+                $torrent['age'],
+                TorrentUtils::getSizeInGb($torrent[Torrent\Get::TOTAL_SIZE]),
+                TorrentUtils::getSizeInGb($torrent['uploaded']),
+                $torrent['per_day'],
+                $torrent['profit']
+            ];
+        }
+
+        $rows = TableUtils::sortRowsByColumnNumber($rows, $sort);
+        $rows = TableUtils::limitRows($rows, $limit);
+
+        return [
+            'headers' => ['Name', 'Id', 'Age, days', 'Size, GB', 'Uploaded, GB', 'Per day, GB', 'Profit, %'],
+            'rows' => $rows,
+            'totals' => [
+                '',
+                '',
+                '',
+                TorrentListUtils::sumArrayField($rows, 3),
+                TorrentListUtils::sumArrayField($rows, 4),
+                TorrentListUtils::sumArrayField($rows, 5),
+                TorrentListUtils::sumArrayField($rows, 6),
+            ]
+        ];
     }
 }
