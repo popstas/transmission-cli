@@ -14,6 +14,12 @@ class TorrentAddTest extends CommandTestCase
 
     public function testAddOne()
     {
+        $this->app->getClient()->method('addTorrent')->willReturn([
+            'hashString' => '29cf5b5a005af16250801fd1586efae39604c0f5',
+            'id' => 101,
+            'name' => 'movie.mkv',
+        ]);
+
         $torrentFile = tempnam(sys_get_temp_dir(), 'torrent');
         $this->app->getClient()->expects($this->once())->method('addTorrent');
         $this->executeCommand(['torrent-files' => [$torrentFile]]);
@@ -23,9 +29,24 @@ class TorrentAddTest extends CommandTestCase
 
     public function testAddSeveral()
     {
+        $this->app->getClient()->method('addTorrent')->willReturn([
+            'hashString' => '29cf5b5a005af16250801fd1586efae39604c0f5',
+            'id' => 101,
+            'name' => 'movie.mkv',
+        ]);
+
         $this->app->getClient()->expects($this->exactly(2))->method('addTorrent');
         $this->executeCommand(['torrent-files' => ['url-1', 'url-2']]);
         $this->assertRegExp('/added/', $this->getDisplay());
+    }
+
+    public function testAddDuplicate()
+    {
+        $this->app->getClient()->method('addTorrent')->willReturn(null);
+
+        $this->app->getClient()->expects($this->once())->method('addTorrent');
+        $this->executeCommand(['torrent-files' => ['url-1']]);
+        $this->assertRegExp('/added before/', $this->getDisplay());
     }
 
     public function testDryRun()

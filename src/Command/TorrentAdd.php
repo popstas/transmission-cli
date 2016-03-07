@@ -40,8 +40,6 @@ EOT
         $torrentFiles = $input->getArgument('torrent-files');
         foreach ($torrentFiles as $torrentFile) {
             $this->addFile($input, $output, $client, $torrentFile);
-            $output->writeln($torrentFile . ' added. Waiting for Transmission...');
-            $client->waitForTransmission(10);
         }
 
         $output->writeln('All torrents added.');
@@ -50,7 +48,13 @@ EOT
     private function addFile(InputInterface $input, OutputInterface $output, TransmissionClient $client, $torrentFile)
     {
         $this->dryRun($input, $output, function () use ($torrentFile, $client, $input, $output) {
-            $client->addTorrent($torrentFile);
+            $torrentAdded = $client->addTorrent($torrentFile);
+            if ($torrentAdded) {
+                $output->writeln($torrentFile . ' added. Waiting for Transmission...');
+                $client->waitForTransmission(10);
+            } else {
+                $output->writeln($torrentFile . ' was not added. Probably it was added before.');
+            }
         }, 'dry-run, don\'t really add torrents');
     }
 }

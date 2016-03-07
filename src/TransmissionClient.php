@@ -59,6 +59,10 @@ class TransmissionClient
 
     public function addTorrent($torrentFile, $downloadDir = null)
     {
+        // remove error suppress after https://github.com/MartialGeek/transmission-api/issues/6 closed
+        $errorLevel = ini_get('error_reporting');
+        error_reporting(E_ALL & ~ E_NOTICE & ~ E_STRICT & ~ E_DEPRECATED);
+
         $arguments = [];
         if (is_file($torrentFile)) {
             $arguments[Torrent\Add::METAINFO] = base64_encode(file_get_contents($torrentFile));
@@ -71,7 +75,10 @@ class TransmissionClient
         }
 
         $this->createSession();
-        return $this->api->torrentAdd($this->sessionId, $arguments);
+
+        $response = $this->api->torrentAdd($this->sessionId, $arguments);
+        error_reporting($errorLevel);
+        return $response;
     }
 
     /**

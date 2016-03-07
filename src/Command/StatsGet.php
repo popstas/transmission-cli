@@ -140,14 +140,6 @@ EOT
 
     private function removeTorrents(InputInterface $input, OutputInterface $output, array $rows)
     {
-        $limit = (int)$input->getOption('limit') ? (int)$input->getOption('limit') : 0;
-
-        $rows = TableUtils::sortRowsByColumnNumber($rows, $input->getOption('sort'));
-
-        if ($limit && $limit < count($rows)) {
-            $rows = array_slice($rows, 0, $limit);
-        }
-
         $torrentIds = TorrentListUtils::getArrayField($rows, 1);
         $command = $this->getApplication()->find('torrent-remove');
         $arguments = array(
