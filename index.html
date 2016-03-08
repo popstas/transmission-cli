@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Transmission-cli by popstas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Transmission-cli</h1>
+      <h2 class="project-tagline">Transmission PHP client for detect profit torrents and automate weburg.net downloads</h2>
+      <a href="https://github.com/popstas/transmission-cli" class="btn">View on GitHub</a>
+      <a href="https://github.com/popstas/transmission-cli/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/popstas/transmission-cli/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="transmission-cli---" class="anchor" href="#transmission-cli---" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Transmission CLI <a href="https://travis-ci.org/popstas/transmission-cli"><img src="https://travis-ci.org/popstas/transmission-cli.svg?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/github/popstas/transmission-cli?branch=master"><img src="https://coveralls.io/repos/github/popstas/transmission-cli/badge.svg?branch=master" alt="Coverage Status"></a> <a href="https://scrutinizer-ci.com/g/popstas/transmission-cli/?branch=master"><img src="https://scrutinizer-ci.com/g/popstas/transmission-cli/badges/quality-score.png?b=master" alt="Scrutinizer Code Quality"></a>
+</h1>
+
+<p>transmission-cli is console php application for automate torrent download/upload from weburg.net</p>
+
+<p>Blog post: <a href="http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/">http://blog.popstas.ru/blog/2016/01/17/torrent-transmission-client-for-weburg/</a></p>
+
+<p>Based on:</p>
+
+<ul>
+<li>
+<a href="http://symfony.com/doc/current/components/console/index.html">symfony/console</a>,</li>
+<li>
+<a href="https://github.com/MartialGeek/transmission-api">martial/transmission-api</a>,</li>
+<li>
+<a href="https://github.com/leominov/weburg-torrent-grabber">leominov/weburg-torrent-grabber</a>.</li>
+</ul>
+
+<h1>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h1>
+
+<ul>
+<li>send metrics to InfluxDB, torrent monitoring trends with Grafana</li>
+<li>download popular (rating, comment and votes based) movies from <a href="http://weburg.net">http://weburg.net</a>
+</li>
+<li>download tracked series from <a href="http://weburg.net">http://weburg.net</a>
+</li>
+<li>delete not popular uploads from transmission</li>
+<li>working with multiple transmission instances</li>
+<li>command line autocompletion</li>
+</ul>
+
+<h2>
+<a id="graphics" class="anchor" href="#graphics" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Graphics</h2>
+
+<ul>
+<li>hourly upload stats by torrent and summary upload</li>
+<li>list all hosts that sends metrics to InfluxDB</li>
+</ul>
+
+<p><img src="docs/img/grafana.png?raw=true" alt="Screenshot"></p>
+
+<h1>
+<a id="available-commands" class="anchor" href="#available-commands" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Available commands:</h1>
+
+<ul>
+<li>
+<code>help</code>                             - Displays help for a command</li>
+<li>
+<code>list</code>                             - List commands</li>
+<li>
+<code>torrent-list [--name='series*1080'] [--age='&gt;1 &lt;3 =2'] [--sort=1] [--limit=10]</code>, <code>tl</code> - List, filter and sort torrents</li>
+<li>
+<code>torrent-add file|url [file2] [fileX]</code>, <code>ta</code> - Safe add torrents</li>
+<li>
+<code>torrent-remove 1 [2] [3]</code>, <code>tr</code>    - Remove one or more torrents by torrent id</li>
+<li>
+<code>torrent-remove-duplicates</code>, <code>trd</code> - Remove duplicates obsolete torrents</li>
+<li>
+<code>stats-get [--name='name'] [--age='&gt;1 &lt;3 =2'] [profit='&gt;0'] [--days=7] [--sort=1] [--limit=10] [--rm]</code>, <code>sg</code> - Get metrics from InfluxDB</li>
+<li>
+<code>stats-send</code>, <code>ss</code>                 - Send metrics to InfluxDB</li>
+<li>
+<code>weburg-download</code>, <code>wd</code>            - Download popular torrents and tracked series from weburg.net</li>
+<li>
+<code>weburg-download --popular</code>        - Download only popular</li>
+<li>
+<code>weburg-download --series</code>         - Download only series</li>
+<li>
+<code>weburg-download [movie url or id]</code> - Download movie without popularity check</li>
+<li>
+<code>weburg-download [series url or id] [--days=1]</code> - Download series for last x days</li>
+<li>
+<code>weburg-series-add</code>, <code>wsa</code>         - Add series to monitoring list</li>
+</ul>
+
+<h4>
+<a id="global-command-options" class="anchor" href="#global-command-options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Global command options</h4>
+
+<ul>
+<li>
+<code>--config</code> - set path to config file</li>
+<li>
+<code>--dry-run</code> - don't change any data</li>
+<li>
+<code>-v|vv|vvv</code> - more verbose output</li>
+<li>
+<code>--transmission-host</code> - set transmission host</li>
+<li>
+<code>--transmission-port</code> - set transmission port</li>
+<li>
+<code>--transmission-user</code> - set transmission user</li>
+<li>
+<code>--transmission-password</code> - set transmission password</li>
+</ul>
+
+<h1>
+<a id="install" class="anchor" href="#install" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Install</h1>
+
+<h3>
+<a id="phar-automatic-recommended" class="anchor" href="#phar-automatic-recommended" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PHAR automatic (Recommended)</h3>
+
+<pre><code>latest_phar=$(curl -s https://api.github.com/repos/popstas/transmission-cli/releases/latest | grep 'browser_' | cut -d\" -f4)
+wget -O /usr/local/bin/transmission-cli "$latest_phar"
+chmod +x /usr/local/bin/transmission-cli
+</code></pre>
+
+<h3>
+<a id="phar-manually" class="anchor" href="#phar-manually" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>PHAR manually</h3>
+
+<p>Download latest transmission-cli.phar <a href="https://github.com/popstas/transmission-cli/releases/latest">here</a>, make it executable and put it to bin directory.</p>
+
+<h3>
+<a id="composer-global" class="anchor" href="#composer-global" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Composer global</h3>
+
+<pre><code>composer global require popstas/transmission-cli
+</code></pre>
+
+<p>If you cannot execute <code>transmission-cli</code> after that, probably you should add ~/.composer/vendor/bin to your PATH environment variable
+as described <a href="https://akrabat.com/global-installation-of-php-tools-with-composer/">here</a>.</p>
+
+<h3>
+<a id="composer-from-source" class="anchor" href="#composer-from-source" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Composer from source:</h3>
+
+<pre><code>git clone https://github.com/popstas/transmission-cli
+cd transmission-cli
+composer install
+ln -s "$PWD"/bin/transmission-cli /usr/local/bin/transmission-cli
+</code></pre>
+
+<h1>
+<a id="configure" class="anchor" href="#configure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Configure</h1>
+
+<p>Default config placement: <code>~/.transmission-cli.yml</code>. It creates on first <code>weburg-series-add</code> command.
+You can change some parameters here.</p>
+
+<p>Also, you can pass config to command: <code>transmission-cli --config /path/to/config.yml</code></p>
+
+<p>Commands <code>weburg-download</code>, <code>weburg-series-add</code>, interacts only with weburg.net and not requests to Transmission or InfluxDb.</p>
+
+<h4>
+<a id="transmission" class="anchor" href="#transmission" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Transmission</h4>
+
+<p>If you want to make commands <code>torrent-*</code> working, you should enable remote access in Transmission
+and add host, port, username, password if it not defaults.</p>
+
+<p>By default, transmission-cli request to Transmission on localhost:9091 without user and password. You can change it in <code>~/.transmission-cli.yml</code>.</p>
+
+<p>You can override default config: <code>--transmission-host</code>, <code>--transmission-port</code>, <code>--transmission-user</code>, <code>--transmission-password</code></p>
+
+<p>Also, maybe you want to automatically download movies, not only torrent files. To do that, enable autodownload in Transmission
+and point to same directory in <code>--dest=</code> option.</p>
+
+<h4>
+<a id="influxdb-and-grafana" class="anchor" href="#influxdb-and-grafana" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>InfluxDB and Grafana</h4>
+
+<p>You need to install it for drawing torrent graphics.</p>
+
+<p><strong>InfluxDB</strong></p>
+
+<p>Simplest way to install InfluxDB - Docker:</p>
+
+<pre><code>docker run --name influxdb\
+    -d --volume=/Users/popstas/lib/influxdb:/data \
+    -p 8083:8083 -p 8086:8086 \
+    tutum/influxdb
+</code></pre>
+
+<p>And if you don't want to see detailed stats about your torrents, you may not install InfluxDB, commands <code>stat-*</code> will not working.</p>
+
+<p><strong>Grafana</strong></p>
+
+<p>Add InfluxDB as data source to Grafana.
+Then import dashboard - <a href="docs/grafana-torrents.json">grafana-torrents.json</a>
+If you don't want to see graphs, Grafana not necessary.</p>
+
+<h4>
+<a id="autocompletion-for-bashzsh" class="anchor" href="#autocompletion-for-bashzsh" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><a href="https://github.com/stecman/symfony-console-completion">autocompletion</a> for bash/zsh:</h4>
+
+<pre><code>source &lt;(transmission-cli _completion --generate-hook)
+</code></pre>
+
+<h4>
+<a id="cron" class="anchor" href="#cron" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Cron</h4>
+
+<p>Then, add to cron tasks like this:</p>
+
+<pre><code>PATH="$PATH:/usr/local/bin"
+59 * * * * transmission-cli torrent-remove-duplicates --transmission-host=localhost
+59 * * * * transmission-cli torrent-remove-duplicates --transmission-host=wrtnsq
+0  * * * * transmission-cli stats-send --transmission-host=localhost
+0  * * * * transmission-cli stats-send --transmission-host=wrtnsq
+1  2 * * * transmission-cli weburg-download --download-torrents-dir=/Volumes/media/_planeta/_torrents
+</code></pre>
+
+<p>Don't forget add to cron PATH your ~/.composer/vendor/bin if you installed transmission-cli with <code>composer global</code>!</p>
+
+<h1>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h1>
+
+<p>See <a href="docs/commands.md">commands <code>--help</code></a>.</p>
+
+<h1>
+<a id="contribution" class="anchor" href="#contribution" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contribution</h1>
+
+<h3>
+<a id="required-checks-for-pass-build" class="anchor" href="#required-checks-for-pass-build" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Required checks for pass build:</h3>
+
+<pre><code>./vendor/bin/phpcs --standard=psr2 ./src ./tests
+phpunit
+</code></pre>
+
+<h3>
+<a id="chore" class="anchor" href="#chore" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Chore</h3>
+
+<ul>
+<li>generate CHANGELOG.md</li>
+</ul>
+
+<pre><code>conventional-changelog -p angular -i CHANGELOG.md -s 
+</code></pre>
+
+<ul>
+<li>generate command docs</li>
+</ul>
+
+<pre><code>bin/transmission-cli _docs &gt; docs/commands.md
+</code></pre>
+
+<h3>
+<a id="recommended" class="anchor" href="#recommended" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Recommended</h3>
+
+<ul>
+<li>support code full coverage</li>
+<li>check code with PHP Mess Detector:hich </li>
+</ul>
+
+<pre><code>phpmd src/ text codesize,controversial,design,naming,unusedcode
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/popstas/transmission-cli">Transmission-cli</a> is maintained by <a href="https://github.com/popstas">popstas</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-70438594-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
