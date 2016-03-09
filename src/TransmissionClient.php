@@ -3,6 +3,7 @@
 namespace Popstas\Transmission\Console;
 
 use Martial\Transmission\API;
+use Martial\Transmission\API\Argument\Session;
 use Martial\Transmission\API\Argument\Torrent;
 
 class TransmissionClient
@@ -15,21 +16,15 @@ class TransmissionClient
         $this->api = $api;
     }
 
-    public function createSession()
-    {
-        $this->sessionId = $this->getSessionId($this->sessionId);
-    }
-
-    private function getSessionId($sessionId)
+    private function getSessionId()
     {
         try {
-            $this->api->sessionGet($sessionId);
+            $this->api->sessionGet($this->sessionId);
         } catch (API\CSRFException $e) {
             // The session has been reinitialized. Fetch the new session ID with the method getSessionId().
-            $sessionId = $e->getSessionId();
+            $this->sessionId = $e->getSessionId();
         }
-
-        return $sessionId;
+        return $this->sessionId;
     }
 
     public function getTorrentData(array $ids = [], $fields = [])
@@ -51,7 +46,7 @@ class TransmissionClient
             return (int)$torrentId;
         }, $ids);
 
-        $this->createSession();
+        $this->getSessionId();
         $torrentList = $this->api->torrentGet($this->sessionId, $cleanedIds, $fields);
 
         return $torrentList;
@@ -74,7 +69,7 @@ class TransmissionClient
             $arguments[API\Argument\Session\Accessor::DOWNLOAD_DIR] = $downloadDir;
         }
 
-        $this->createSession();
+        $this->getSessionId();
 
         $response = $this->api->torrentAdd($this->sessionId, $arguments);
         error_reporting($errorLevel);
@@ -98,7 +93,7 @@ class TransmissionClient
             $torrentIds[] = $torrent[Torrent\Get::ID];
         }
 
-        $this->createSession();
+        $this->getSessionId();
         $this->api->torrentRemove($this->sessionId, $torrentIds, $deleteLocalData);
 
         return true;
@@ -107,6 +102,26 @@ class TransmissionClient
     public function waitForTransmission($int)
     {
         sleep($int);
-        $this->createSession();
+        $this->getSessionId();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDownloadDir()
+    {
+        $this->getSessionId();
+        $session = $this->api->sessionGet($this->sessionId);
+        return $session[Session\Get::DOWNLOAD_DIR];
+    }
+
+    public function getFreeSpace($downloadDir = null)
+    {
+        if (is_null($downloadDir)) {
+            $downloadDir = $this->getDownloadDir();
+        }
+        $this->getSessionId();
+        $freeSpace = $this->api->freeSpace($this->sessionId, $downloadDir);
+        return $freeSpace['arguments']['size-bytes'];
     }
 }
