@@ -131,6 +131,9 @@ EOT
 
         TableUtils::printTable($tableData, $output);
 
+        $freeSpace = $client->getFreeSpace();
+        $output->writeln('Free space: ' . TorrentUtils::getSizeInGb($freeSpace) . ' GB');
+
         if ($input->getOption('rm')) {
             return $this->removeTorrents($input, $output, $tableData['rows']);
         }
@@ -177,7 +180,7 @@ EOT
             'headers' => ['Name', 'Id', 'Age, days', 'Size, GB', 'Uploaded, GB', 'Per day, GB', 'Profit, %'],
             'rows' => $rows,
             'totals' => [
-                '',
+                'Total: ' . count($rows),
                 '',
                 '',
                 TorrentListUtils::sumArrayField($rows, 3),

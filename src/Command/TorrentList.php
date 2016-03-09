@@ -107,5 +107,8 @@ EOT
             $input->getOption('sort'),
             $input->getOption('limit')
         );
+
+        $freeSpace = $client->getFreeSpace();
+        $output->writeln('Free space: ' . TorrentUtils::getSizeInGb($freeSpace) . ' GB');
     }
 }

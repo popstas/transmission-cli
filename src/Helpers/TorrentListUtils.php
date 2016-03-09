@@ -87,7 +87,7 @@ class TorrentListUtils
         $data['rows'] = TableUtils::limitRows($data['rows'], $limit);
 
         $data['totals'] = [
-            'Total',
+            'Total: ' . count($data['rows']),
             '',
             '',
             self::sumArrayField($data['rows'], 3),
