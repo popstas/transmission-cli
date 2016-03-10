@@ -4,6 +4,7 @@ namespace Popstas\Transmission\Console\Command;
 
 use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\TransmissionClient;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,6 +44,8 @@ EOT
         }
 
         $output->writeln('All torrents added.');
+
+        $this->removeDuplicates($output);
     }
 
     private function addFile(InputInterface $input, OutputInterface $output, TransmissionClient $client, $torrentFile)
@@ -56,5 +59,18 @@ EOT
                 $output->writeln($torrentFile . ' was not added. Probably it was added before.');
             }
         }, 'dry-run, don\'t really add torrents');
+    }
+
+    private function removeDuplicates(OutputInterface $output)
+    {
+        $config = $this->getApplication()->getConfig();
+
+        $command = $this->getApplication()->find('torrent-remove-duplicates');
+        $arguments = array(
+            'command'             => 'torrent-remove-duplicates',
+            '--transmission-host' => $config->get('transmission-host')
+        );
+        $commandInput = new ArrayInput($arguments);
+        $command->run($commandInput, $output);
     }
 }
