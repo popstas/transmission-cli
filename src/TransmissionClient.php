@@ -122,6 +122,6 @@ class TransmissionClient
         }
         $this->getSessionId();
         $freeSpace = $this->api->freeSpace($this->sessionId, $downloadDir);
-        return $freeSpace['arguments']['size-bytes'];
+        return $freeSpace['size-bytes'];
     }
 }
