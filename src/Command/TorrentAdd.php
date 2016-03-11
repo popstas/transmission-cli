@@ -53,10 +53,12 @@ EOT
         $this->dryRun($input, $output, function () use ($torrentFile, $client, $input, $output) {
             $torrentAdded = $client->addTorrent($torrentFile);
             if ($torrentAdded) {
-                $output->writeln($torrentFile . ' added. Waiting for Transmission...');
-                $client->waitForTransmission(10);
-            } else {
-                $output->writeln($torrentFile . ' was not added. Probably it was added before.');
+                if (isset($torrentAdded['duplicate'])) {
+                    $output->writeln($torrentFile . ' was not added. Probably it was added before.');
+                } else {
+                    $output->writeln($torrentFile . ' added. Waiting for Transmission...');
+                    $client->waitForTransmission(10);
+                }
             }
         }, 'dry-run, don\'t really add torrents');
     }

@@ -42,7 +42,7 @@ class TorrentAddTest extends CommandTestCase
 
     public function testAddDuplicate()
     {
-        $this->app->getClient()->method('addTorrent')->willReturn(null);
+        $this->app->getClient()->method('addTorrent')->willReturn(['duplicate' => true]);
 
         $this->app->getClient()->expects($this->once())->method('addTorrent');
         $this->executeCommand(['torrent-files' => ['url-1']]);
