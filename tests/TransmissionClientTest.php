@@ -124,7 +124,7 @@ class TransmissionClientTest extends TestCase
         $this->client = new TransmissionClient($this->api);
 
         $this->api->expects($this->once())
-            ->method('freeSpace')->with(null, '/a/b/c')->willReturn(['arguments' => ['size-bytes' => 12345]]);
+            ->method('freeSpace')->with(null, '/a/b/c')->willReturn(['size-bytes' => 12345]);
         $this->assertEquals(12345, $this->client->getFreeSpace());
     }
 
@@ -141,7 +141,7 @@ class TransmissionClientTest extends TestCase
         $this->client = new TransmissionClient($this->api);
 
         $this->api->expects($this->once())
-            ->method('freeSpace')->with(null, '/d/e/f')->willReturn(['arguments' => ['size-bytes' => 12345]]);
+            ->method('freeSpace')->with(null, '/d/e/f')->willReturn(['size-bytes' => 12345]);
         $this->assertEquals(12345, $this->client->getFreeSpace('/d/e/f'));
     }
 }
