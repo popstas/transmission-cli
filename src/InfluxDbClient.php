@@ -94,7 +94,7 @@ class InfluxDbClient
         }
         if (!$databaseExists) {
             $this->log('info', 'Database ' . $this->databaseName . ' not exists, creating');
-            $database->create();
+            $database->create(null, false);
         }
 
         return $database;
