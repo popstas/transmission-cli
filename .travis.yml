@@ -19,7 +19,7 @@ before_install:
 install:
   - composer install --no-dev
   - php box build
-  - composer update
+  - composer install
   - vendor/bin/phpcs --standard=psr2 ./src ./tests
 
 script:
