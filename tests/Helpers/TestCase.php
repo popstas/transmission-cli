@@ -76,7 +76,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     public function getTestPage($name)
     {
-        $body = file_get_contents('tests/data/' . $name . '.html');
+        $body = file_get_contents('tests/fixtures/' . $name . '.html');
         return $body;
     }
 }
