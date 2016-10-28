@@ -6,6 +6,7 @@ use Popstas\Transmission\Console\Application;
 use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\InfluxDbClient;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Console\Command\Command;
 
 abstract class CommandTestCase extends TestCase
 {
@@ -28,6 +29,9 @@ abstract class CommandTestCase extends TestCase
      */
     private $commandTester;
 
+    /**
+     * @var Command
+     */
     private $command;
 
     public function setUp()

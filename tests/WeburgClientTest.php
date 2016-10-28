@@ -64,7 +64,6 @@ class WeburgClientTest extends TestCase
         $this->assertEquals(3.4, $info['rating_imdb']);
         $this->assertEquals(456, $info['rating_votes']);
         $this->assertEquals(0, count($info['hashes']));
-
     }
 
     public function testGetMovieInfoByIdCorrupted()

@@ -51,7 +51,7 @@ class StatsGetTest extends CommandTestCase
             [],
             [$this->influxDb, 'test']
         );
-        $this->database = $this->getMock('InfluxDB\Database', null, ['dbname', $this->influxDb]);
+        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
         $this->database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 

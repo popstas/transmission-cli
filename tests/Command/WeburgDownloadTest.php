@@ -143,7 +143,7 @@ class WeburgDownloadTest extends CommandTestCase
     public function testDownloadEmptySeriesList()
     {
         $this->app->getConfig()->set('weburg-series-list', null);
-        $client = $this->app->getClient();
+        $client = $this->app->getWeburgClient();
         $client->expects($this->never())->method('getSeriesTorrents');
 
         $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest]);
