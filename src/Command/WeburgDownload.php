@@ -100,7 +100,6 @@ EOT
 
                 $this->addTorrents($input, $output, $downloadedFiles);
             }, 'dry-run, don\'t really download');
-
         } catch (\RuntimeException $e) {
             $output->writeln($e->getMessage());
             return 1;

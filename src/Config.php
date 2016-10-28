@@ -51,7 +51,11 @@ class Config
     public function loadConfigFile()
     {
         if (!file_exists($this->configFile)) {
-            throw new \RuntimeException('Config file not found: ' . $this->configFile);
+            if ($this->configFile == self::getHomeDir() . '/.transmission-cli.yml') {
+                $this->saveConfigFile();
+            } else {
+                throw new \RuntimeException('Config file not found: ' . $this->configFile);
+            }
         }
         $yml = Yaml::parse(file_get_contents($this->configFile));
         if (!is_array($yml)) {

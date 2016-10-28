@@ -3,12 +3,19 @@
 namespace Popstas\Transmission\Console\Tests;
 
 use Popstas\Transmission\Console\Application;
-use Popstas\Transmission\Console\Tests\Helpers\TestCase;
+use Popstas\Transmission\Console\Config;
+use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\StreamOutput;
 
-class ApplicationTest extends TestCase
+class ApplicationTest extends CommandTestCase
 {
+    public function setUp()
+    {
+        $this->setCommandName('torrent-list');
+        parent::setUp();
+    }
+
     public function testGetVersion()
     {
         $app = new Application();
@@ -48,5 +55,16 @@ class ApplicationTest extends TestCase
             'Transmission CLI version 1.2.3 build @git-commit@',
             $string
         );
+    }
+
+    public function testDefaultConfigWriteOnAppStart()
+    {
+        $configFile = Config::getHomeDir() . '/.transmission-cli.yml';
+        if (file_exists($configFile)) {
+            unlink($configFile);
+        }
+
+        $this->executeCommand();
+        $this->assertFileExists($configFile);
     }
 }

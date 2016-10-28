@@ -30,7 +30,7 @@ class ConfigTest extends TestCase
         $config = new Config(); // creates config on default path
         $config->saveConfigFile();
 
-        $this->assertTrue(file_exists($configFile));
+        $this->assertFileExists($configFile);
 
         unlink($configFile);
     }

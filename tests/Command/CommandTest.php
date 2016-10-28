@@ -52,7 +52,7 @@ class CommandTest extends CommandTestCase
 
         $config = new Config();
         $config->set('transmission', [[
-            'host' => 'devnull',
+            'host' => 'localhost',
             'port' => 1234,
             'user' => 'user',
             'password' => 'pass'
