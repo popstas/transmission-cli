@@ -5,6 +5,7 @@ namespace Popstas\Transmission\Console;
 use Martial\Transmission\API;
 use Martial\Transmission\API\Argument\Session;
 use Martial\Transmission\API\Argument\Torrent;
+use Martial\Transmission\API\TorrentIdList;
 use Martial\Transmission\API\DuplicateTorrentException;
 
 class TransmissionClient
@@ -48,7 +49,8 @@ class TransmissionClient
         }, $ids);
 
         $this->getSessionId();
-        $torrentList = $this->api->torrentGet($this->sessionId, $cleanedIds, $fields);
+
+        $torrentList = $this->api->torrentGet($this->sessionId, new TorrentIdList($cleanedIds), $fields);
 
         return $torrentList;
     }
@@ -99,7 +101,7 @@ class TransmissionClient
         }
 
         $this->getSessionId();
-        $this->api->torrentRemove($this->sessionId, $torrentIds, $deleteLocalData);
+        $this->api->torrentRemove($this->sessionId, new TorrentIdList($torrentIds), $deleteLocalData);
 
         return true;
     }

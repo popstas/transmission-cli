@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fb38247211e05fd8c02b02a2b40c5086",
-    "content-hash": "1dabd5760470aa618e792e2c1bb6e744",
+    "hash": "8bf4e02be64df9da58d5ddc2ed353d66",
+    "content-hash": "984ed02c23916aafc3bfaeedd66e8cc0",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -244,16 +244,16 @@
         },
         {
             "name": "martial/transmission-api",
-            "version": "1.1.6",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MartialGeek/transmission-api.git",
-                "reference": "9fdc30bbaaf485c8bc980ce37d40ef76c8912532"
+                "reference": "f1114f971afbcd1337c4c7e590ef1fa9c29dbd03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MartialGeek/transmission-api/zipball/9fdc30bbaaf485c8bc980ce37d40ef76c8912532",
-                "reference": "9fdc30bbaaf485c8bc980ce37d40ef76c8912532",
+                "url": "https://api.github.com/repos/MartialGeek/transmission-api/zipball/f1114f971afbcd1337c4c7e590ef1fa9c29dbd03",
+                "reference": "f1114f971afbcd1337c4c7e590ef1fa9c29dbd03",
                 "shasum": ""
             },
             "require": {
@@ -285,7 +285,7 @@
                 }
             ],
             "description": "A PHP client for the Transmission RPC API.",
-            "time": "2016-03-11 09:36:35"
+            "time": "2016-03-29 08:13:20"
         },
         {
             "name": "psr/http-message",

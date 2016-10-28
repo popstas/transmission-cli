@@ -12,7 +12,7 @@
         "php": ">=5.6",
         "symfony/console": "*",
         "symfony/yaml": "*",
-        "martial/transmission-api": "1.1.6",
+        "martial/transmission-api": "*",
         "influxdb/influxdb-php": "*",
         "stecman/symfony-console-completion": "*"
     },

@@ -27,8 +27,11 @@ class TransmissionClientTest extends TestCase
         $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
         $this->httpClient = $this->getMock('GuzzleHttp\ClientInterface');
 
-        $this->api = $this->getMock('Martial\Transmission\API\RpcClient', [], [$this->httpClient, '', '']);
-        $this->api->setLogger($this->logger);
+        $this->api = $this->getMock(
+            'Martial\Transmission\API\RpcClient',
+            [],
+            [$this->httpClient, '', '', $this->logger]
+        );
 
         $this->csrfException = $this->getMock('Martial\Transmission\API\CSRFException', ['getSessionId']);
         $this->csrfException->method('getSessionId')->will($this->returnValue('123'));
@@ -86,7 +89,7 @@ class TransmissionClientTest extends TestCase
         $result = $this->client->removeTorrents([]);
         $this->assertFalse($result);
 
-        $result = $this->client->removeTorrents([1, 2]);
+        $result = $this->client->removeTorrents($this->expectedTorrentList);
         $this->assertTrue($result);
     }
 
@@ -100,9 +103,8 @@ class TransmissionClientTest extends TestCase
         $this->api = $this->getMock(
             'Martial\Transmission\API\RpcClient',
             ['sessionGet', 'getSessionId', 'freeSpace'],
-            [$this->httpClient, '', '']
+            [$this->httpClient, '', '', $this->logger]
         );
-        $this->api->setLogger($this->logger);
         $this->api->method('sessionGet')->willReturn([
             Session\Get::DOWNLOAD_DIR => '/a/b/c'
         ]);
