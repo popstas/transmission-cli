@@ -68,7 +68,7 @@ Download latest transmission-cli.phar [here](https://github.com/popstas/transmis
 ```
 composer global require popstas/transmission-cli
 ```
-If you cannot execute `transmission-cli` after that, probably you should add ~/.composer/vendor/bin to your PATH environment variable
+If you cannot execute `transmission-cli` after that, probably you should add ~/.config/composer/vendor/bin to your PATH environment variable
 as described [here](https://akrabat.com/global-installation-of-php-tools-with-composer/).
  
 
@@ -108,18 +108,30 @@ You need to install it for drawing torrent graphics.
 
 Simplest way to install InfluxDB - Docker:
 ```
-docker run --name influxdb\
-    -d --volume=/Users/popstas/lib/influxdb:/data \
+docker run --name influxdb -d --restart=always \
+    -v /Users/popstas/lib/influxdb:/data \
     -p 8083:8083 -p 8086:8086 \
-    tutum/influxdb
+    influxdb
 ```
-And if you don't want to see detailed stats about your torrents, you may not install InfluxDB, commands `stat-*` will not working.
+And if you don't want to see detailed stats about your torrents, you may not install InfluxDB, commands `stats-*` will not working.
 
 
 **Grafana**
 
-Add InfluxDB as data source to Grafana.
-Then import dashboard - [grafana-torrents.json](docs/grafana-torrents.json)
+1. Run Grafana with Docker
+
+```
+docker run --name grafana -d \
+    -v /Users/popstas/lib/grafana:/var/lib/grafana \
+    -p 3000:3000 \
+    -e "GF_SECURITY_ADMIN_USER=admin" \
+    -e "GF_SECURITY_ADMIN_PASSWORD=secret" \
+    grafana/grafana
+```
+
+2. Add InfluxDB as data source "influxdb" to Grafana, choose database "transmission".
+3. Import dashboard - [grafana-torrents.json](docs/grafana-torrents.json)
+
 If you don't want to see graphs, Grafana not necessary.
 
 #### [autocompletion](https://github.com/stecman/symfony-console-completion) for bash/zsh:
@@ -138,34 +150,12 @@ PATH="$PATH:/usr/local/bin"
 0  * * * * transmission-cli stats-send --transmission-host=wrtnsq
 1  2 * * * transmission-cli weburg-download --download-torrents-dir=/Volumes/media/_planeta/_torrents
 ```
-Don't forget add to cron PATH your ~/.composer/vendor/bin if you installed transmission-cli with `composer global`!
+Don't forget add to cron PATH your ~/.config/composer/vendor/bin if you installed transmission-cli with `composer global`!
 
 # Usage
 
 See [commands `--help`](docs/commands.md).
 
 
-# Contribution
-
-### Required checks for pass build:
-```
-./vendor/bin/phpcs --standard=psr2 ./src ./tests
-phpunit
-```
-
-### Chore
-- generate CHANGELOG.md
-```
-conventional-changelog -p angular -i CHANGELOG.md -s 
-```
-- generate command docs
-```
-bin/transmission-cli _docs > docs/commands.md
-```
-
-### Recommended
-- support code full coverage
-- check code with PHP Mess Detector:hich 
-```
-phpmd src/ text codesize,controversial,design,naming,unusedcode
-```
+# Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md).
