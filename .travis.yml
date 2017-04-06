@@ -23,7 +23,7 @@ install:
   - vendor/bin/phpcs --standard=psr2 ./src ./tests
 
 script:
-  - phpunit
+  - vendor/bin/phpunit
 
 deploy:
   provider: releases
