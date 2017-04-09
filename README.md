@@ -89,6 +89,13 @@ Also, you can pass config to command: `transmission-cli --config /path/to/config
 Commands `weburg-download`, `weburg-series-add`, interacts only with weburg.net and not requests to Transmission or InfluxDb.
 
 
+#### About torrent duplicates
+By default, `transmission-cli` prevents send stats to InfluxDB when you have torrents with same names in your Transmission,
+because it make stats about these torrents wrong. If it not matters for you, you can use `allow-duplicates` option in config. 
+When `allow-duplicates: true` defined in config, transmission-cli will allow to stats-send with duplicates
+and don't ask to remove duplicates after `torrent-add` command.
+
+
 #### Transmission
 If you want to make commands `torrent-*` working, you should enable remote access in Transmission
 and add host, port, username, password if it not defaults.

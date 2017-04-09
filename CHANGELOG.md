@@ -2,6 +2,22 @@
 # [](https://github.com/popstas/transmission-cli/compare/v0.7.0...v) (2017-04-09)
 
 
+### Bug Fixes
+
+* **torrent-remove-duplicates:** confirmation remove duplicates ([5fca77c](https://github.com/popstas/transmission-cli/commit/5fca77c)), closes [#38](https://github.com/popstas/transmission-cli/issues/38)
+
+
+### Features
+
+* **torrent-remove-duplicates:** config option `allow-duplicates` ([32ccc56](https://github.com/popstas/transmission-cli/commit/32ccc56)), closes [#38](https://github.com/popstas/transmission-cli/issues/38)
+
+
+### BREAKING CHANGES
+
+* torrent-remove-duplicates: `torrent-remove-duplicates` command now default interactive and requires confirmation.
+For using in cron you should use `-y` flag in almost all commands.
+
+
 
 <a name="0.7.0"></a>
 # [0.7.0](https://github.com/popstas/transmission-cli/compare/v0.6.0...v0.7.0) (2017-04-09)

@@ -20,3 +20,4 @@ transmission-host: localhost
 transmission-port: 9091
 transmission-user: ''
 transmission-password: ''
+allow-duplicates: false

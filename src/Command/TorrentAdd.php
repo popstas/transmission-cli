@@ -38,6 +38,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $client = $this->getApplication()->getClient();
+        $config = $this->getApplication()->getConfig();
 
         $torrentFiles = $input->getArgument('torrent-files');
         foreach ($torrentFiles as $torrentFile) {
@@ -46,7 +47,9 @@ EOT
 
         $output->writeln('All torrents added.');
 
-        $this->removeDuplicates($input, $output);
+        if (!$config->get('allow-duplicates')) {
+            $this->removeDuplicates($input, $output);
+        }
     }
 
     private function addFile(InputInterface $input, OutputInterface $output, TransmissionClient $client, $torrentFile)

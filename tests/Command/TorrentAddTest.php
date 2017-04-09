@@ -2,6 +2,7 @@
 
 namespace Popstas\Transmission\Console\Tests\Command;
 
+use Popstas\Transmission\Console\Config;
 use Popstas\Transmission\Console\Tests\Helpers\CommandTestCase;
 
 class TorrentAddTest extends CommandTestCase
@@ -10,6 +11,9 @@ class TorrentAddTest extends CommandTestCase
     {
         $this->setCommandName('torrent-add');
         parent::setUp();
+
+        $config = new Config();
+        $this->app->setConfig($config);
     }
 
     public function testAddOne()
@@ -38,6 +42,26 @@ class TorrentAddTest extends CommandTestCase
         $this->app->getClient()->expects($this->exactly(2))->method('addTorrent');
         $this->executeCommand(['torrent-files' => ['url-1', 'url-2'], '-y' => true]);
         $this->assertRegExp('/added/', $this->getDisplay());
+        $this->assertRegExp('/Found and deleted/', $this->getDisplay());
+    }
+
+    public function testAddAllowsDuplicates()
+    {
+        $config = $this->app->getConfig();
+        $config->set('allow-duplicates', true);
+
+        $this->app->getClient()->method('addTorrent')->willReturn([
+            'hashString' => '29cf5b5a005af16250801fd1586efae39604c0f5',
+            'id' => 101,
+            'name' => 'movie.mkv',
+        ]);
+
+        $torrentFile = tempnam(sys_get_temp_dir(), 'torrent');
+        $this->app->getClient()->expects($this->once())->method('addTorrent');
+        $this->executeCommand(['torrent-files' => [$torrentFile]]);
+        $this->assertRegExp('/' . basename($torrentFile) . ' added/', $this->getDisplay());
+        $this->assertNotRegExp('/Found and deleted/', $this->getDisplay());
+        unlink($torrentFile);
     }
 
     public function testAddDuplicate()

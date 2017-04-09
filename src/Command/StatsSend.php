@@ -39,11 +39,13 @@ EOT
         $client = $this->getApplication()->getClient();
 
         $torrentList = $client->getTorrentData();
-        $obsoleteList = TorrentListUtils::getObsoleteTorrents($torrentList);
-        if (!empty($obsoleteList)) {
-            $output->writeln('<comment>Found obsolete torrents,
-                              remove it using transmission-cli torrent-remove-duplicates</comment>');
-            return 1;
+        if (!$config->get('allow-duplicates')) {
+            $obsoleteList = TorrentListUtils::getObsoleteTorrents($torrentList);
+            if (!empty($obsoleteList)) {
+                $output->writeln('<comment>Found obsolete torrents, '
+                                 . 'remove it using transmission-cli torrent-remove-duplicates</comment>');
+                return 1;
+            }
         }
 
         try {
