@@ -4,7 +4,7 @@
 
 
 <a name="0.7.0"></a>
-# [0.7.0](https://github.com/popstas/transmission-cli/compare/v0.6.0...v0.7.0) (2017-04-06)
+# [0.7.0](https://github.com/popstas/transmission-cli/compare/v0.6.0...v0.7.0) (2017-04-09)
 
 
 ### Bug Fixes

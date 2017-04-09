@@ -22,7 +22,7 @@ class TorrentAddTest extends CommandTestCase
 
         $torrentFile = tempnam(sys_get_temp_dir(), 'torrent');
         $this->app->getClient()->expects($this->once())->method('addTorrent');
-        $this->executeCommand(['torrent-files' => [$torrentFile]]);
+        $this->executeCommand(['torrent-files' => [$torrentFile], '-y' => true]);
         $this->assertRegExp('/' . basename($torrentFile) . ' added/', $this->getDisplay());
         unlink($torrentFile);
     }
@@ -36,7 +36,7 @@ class TorrentAddTest extends CommandTestCase
         ]);
 
         $this->app->getClient()->expects($this->exactly(2))->method('addTorrent');
-        $this->executeCommand(['torrent-files' => ['url-1', 'url-2']]);
+        $this->executeCommand(['torrent-files' => ['url-1', 'url-2'], '-y' => true]);
         $this->assertRegExp('/added/', $this->getDisplay());
     }
 
@@ -45,13 +45,13 @@ class TorrentAddTest extends CommandTestCase
         $this->app->getClient()->method('addTorrent')->willReturn(['duplicate' => true]);
 
         $this->app->getClient()->expects($this->once())->method('addTorrent');
-        $this->executeCommand(['torrent-files' => ['url-1']]);
+        $this->executeCommand(['torrent-files' => ['url-1'], '-y' => true]);
         $this->assertRegExp('/added before/', $this->getDisplay());
     }
 
     public function testDryRun()
     {
         $this->app->getClient()->expects($this->never())->method('addTorrent');
-        $this->executeCommand(['torrent-files' => ['/non/exists/file/'], '--dry-run' => true]);
+        $this->executeCommand(['torrent-files' => ['/non/exists/file/'], '-y' => true, '--dry-run' => true]);
     }
 }

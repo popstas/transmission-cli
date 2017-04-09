@@ -22,6 +22,7 @@ class WeburgDownload extends Command
             ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Max age of series torrent')
             ->addOption('popular', null, InputOption::VALUE_NONE, 'Download only popular')
             ->addOption('series', null, InputOption::VALUE_NONE, 'Download only tracked series')
+            ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addArgument('movie-id', null, 'Movie ID or URL')
             ->setHelp(<<<EOT
 ## Download torrents from Weburg.net
@@ -315,9 +316,11 @@ EOT
         foreach ($hosts as $host) {
             $command = $this->getApplication()->find('torrent-add');
             $arguments = array(
-                'command'     => 'torrent-add',
-                'torrent-files' => $torrentFiles,
-                '--transmission-host' => $host
+                'command'             => 'torrent-add',
+                'torrent-files'       => $torrentFiles,
+                '--transmission-host' => $host,
+                '--yes'               => $input->getOption('yes'),
+                '--dry-run'           => $input->getOption('dry-run')
             );
 
             $addInput = new ArrayInput($arguments);

@@ -2,11 +2,11 @@
 
 namespace Popstas\Transmission\Console\Command;
 
-use Martial\Transmission\API\Argument\Torrent;
 use Popstas\Transmission\Console\TransmissionClient;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class TorrentAdd extends Command
@@ -18,6 +18,7 @@ class TorrentAdd extends Command
             ->setName('torrent-add')
             ->setAliases(['ta'])
             ->setDescription('Add torrents to Transmission')
+            ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addArgument('torrent-files', InputArgument::IS_ARRAY, 'List of torrent files to add')
             ->setHelp(<<<EOT
 ## Add torrents
@@ -45,7 +46,7 @@ EOT
 
         $output->writeln('All torrents added.');
 
-        $this->removeDuplicates($output);
+        $this->removeDuplicates($input, $output);
     }
 
     private function addFile(InputInterface $input, OutputInterface $output, TransmissionClient $client, $torrentFile)
@@ -63,14 +64,16 @@ EOT
         }, 'dry-run, don\'t really add torrents');
     }
 
-    private function removeDuplicates(OutputInterface $output)
+    private function removeDuplicates(InputInterface $input, OutputInterface $output)
     {
         $config = $this->getApplication()->getConfig();
 
         $command = $this->getApplication()->find('torrent-remove-duplicates');
         $arguments = array(
             'command'             => 'torrent-remove-duplicates',
-            '--transmission-host' => $config->get('transmission-host')
+            '--transmission-host' => $config->get('transmission-host'),
+            '--yes'               => $input->getOption('yes'),
+            '--dry-run'           => $input->getOption('dry-run')
         );
         $commandInput = new ArrayInput($arguments);
         $command->run($commandInput, $output);

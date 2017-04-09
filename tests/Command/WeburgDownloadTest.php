@@ -68,7 +68,7 @@ class WeburgDownloadTest extends CommandTestCase
         $client->method('isTorrentPopular')->will($this->onConsecutiveCalls(true, false, true));
         $client->expects($this->exactly(2))->method('downloadTorrent');
 
-        $this->executeCommand(['--popular' => true, '--download-torrents-dir' => $this->dest]);
+        $this->executeCommand(['--popular' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
         $display = $this->getDisplay();
         preg_match_all('/All torrents added/', $display, $addedCount);
         $this->assertCount(2, $addedCount[0]);
@@ -88,7 +88,8 @@ class WeburgDownloadTest extends CommandTestCase
         $this->executeCommand([
             '--popular' => true,
             '--download-torrents-dir' => $this->dest,
-            '--transmission-host'     => 'devnull'
+            '--transmission-host'     => 'devnull',
+            '-y'                      => true
         ]);
         $display = $this->getDisplay();
         preg_match_all('/All torrents added/', $display, $addedCount);
@@ -104,7 +105,7 @@ class WeburgDownloadTest extends CommandTestCase
         mkdir($this->dest . '/downloaded');
         file_put_contents($this->dest . '/downloaded/1', '');
 
-        $this->executeCommand(['--popular' => true, '--download-torrents-dir' => $this->dest]);
+        $this->executeCommand(['--popular' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
     }
 
     public function testAllPopularDryRun()
@@ -137,7 +138,7 @@ class WeburgDownloadTest extends CommandTestCase
         $client->expects($this->exactly(6))->method('downloadTorrent');
         $this->app->setWeburgClient($client);
 
-        $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest]);
+        $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
     }
 
     public function testDownloadEmptySeriesList()
@@ -146,7 +147,7 @@ class WeburgDownloadTest extends CommandTestCase
         $client = $this->app->getWeburgClient();
         $client->expects($this->never())->method('getSeriesTorrents');
 
-        $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest]);
+        $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
     }
 
 
@@ -166,7 +167,7 @@ class WeburgDownloadTest extends CommandTestCase
         $client = $this->app->getWeburgClient();
         $client->method('cleanMovieId')->willReturn(12345);
         $client->expects($this->once())->method('downloadTorrent');
-        $return = $this->executeCommand(['movie-id' => 12345]);
+        $return = $this->executeCommand(['movie-id' => 12345, '-y' => true]);
         $this->assertEquals(0, $return);
     }
 
@@ -181,7 +182,7 @@ class WeburgDownloadTest extends CommandTestCase
         $client->expects($this->exactly(2))->method('downloadTorrent');
         $this->app->setWeburgClient($client);
 
-        $this->executeCommand(['movie-id' => 12345]);
+        $this->executeCommand(['movie-id' => 12345, '-y' => true]);
     }
 
     public function testDownloadOneMovieInvalid()
