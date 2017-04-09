@@ -2,7 +2,7 @@ language: php
 sudo: false
 cache:
   directories:
-    - $HOME/.composer/cache/files
+    - "$HOME/.composer/cache/files"
 matrix:
   fast_finish: true
   include:
@@ -28,8 +28,9 @@ script:
 deploy:
   provider: releases
   api_key:
-    secure: Oy9uKchwNgHJDvb9OrZV64gc4jVRAkKigpT9CwFfDzm59aWhHbhh4JpTIHfmOo3xVKRDK0hgk/TGH1aHpphVQihWKnlLS62TpuDR28zruolCpPKg+ZinJ4jKbg5piCnTv+EZxpK3QvpiUX9rAzVtFEhlDc8KKZTtV3UyDvtokzhb84f5A6OlZqrMgGpspfBibHMnR/YJZFMl/MX5fiff2Fb+oOHHIVy9Cl/hZv4qLBtH5SwAbi5EQdg3qkVRqdSAy3j+/pYdmUGPvDJHkrzBozbP/QhFXeetuurwM9O7m3bsgFJ7qfJWnrWFJSdYUGLZwhcLF2GCv/seJ6xctHJ4mFsM3O0y9uQoj4QsawcEpjyNXP7RL+ypr4O98SK7AeH0+ucioGXyQ6dZxDqRjnCNkCA64+YUFclhUaEsxzYl/XkxD/p/IvuQM7DuKtRMfS6BoIFCFCDAPMlEriWvJUdPvji7u16RT99pcb/3vzZ9o14W8JM32lxZ5HoKly8oFAXi7IT7dBsLAItYm0NJRlsM9OWNa/SobPDL1qK3iqVAFONYRp/0kViS1yaFcMSWfxHgxCe2XzW6Gsrm7MmO7CGV+O07rwJ35HOTGdG2bbIdISHRcVFCcMZqevFfcn+OEmjiCEcrE4ec2s6ihX26zJUXv4cX678d03noGMGCn6udAxM=
+    secure: XzJTzl3BO0rOTBCCtnwlicdoBstZ0nK8pYpfz4OS+T3jK/bgzjNWd6UPRUP+QNdJ+AisYWscoIW4f9rgG1Ma5LODaNGacTAspEv83sS1S3Ye8XJfha4dwgXPhNggkdi88d/xcL7nwNyrP970HO+C5FYvga58pXs+4uE0yVd/HrbFcJHn9nlSeYzuCDCfif7KLsA86fdCEndVAUvmSsskZuS/79bZjNWDqA5sqRq9ns3KAyNPsO9Ftowf6f69dd2b3sv0hKxuk/5cIpu5qTFkQEdPZxkXODHQIOLVXxZW11NC2etBAWm5cuqWqTZp121rORwWBqTQd98+AkHMwwiGtBBb3hqQfiHs7/BNMRyiNPkJd5MfN9iVe75av0rpr69yag4AjdeCyyLLqOHMjVHKqZZz0IcobJx4HlyprjlGjFCRtdRCO3nTqqww0YqZkXToQ31m/t3tsOAkrKGlmREMiCJRo8SxR7lqolWcKpzxrVutA0DvpSvlzbEivW0ecN/mcbwIC518F8GpN/EG4jTEA6ZS6a0oRe3+GU8g/+Hc1ALkjyLAYK33zTLbvAuOCofhhBlFjEtc9wBnblTQAvAjjS6JUhpArLStjbMVHlJn6/mr+7fr7ZPxZEDzL7GWk+tJ/gHzdUckc7LFQw9S2zKFWGCjWfISC1MAN6C13lvTnEg=
   file: build/transmission-cli.phar
+  skip_cleanup: true
   on:
     repo: popstas/transmission-cli
     php: '5.6'
