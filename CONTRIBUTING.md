@@ -3,12 +3,6 @@ composer install
 npm install -g conventional-changelog-lint
 ```
 
-### Required checks for pass build:
-```
-./vendor/bin/phpcs --standard=psr2 ./src ./tests
-phpunit
-```
-
 ### .git/hooks/pre-commit
 ```
 #!/bin/sh
@@ -21,13 +15,9 @@ vendor/bin/phpcpd src
 ```
 
 ### Chore
-- generate CHANGELOG.md
+- generate CHANGELOG.md and docs/commands.md
 ```
-conventional-changelog -p angular -i CHANGELOG.md -s 
-```
-- generate command docs
-```
-bin/transmission-cli _docs > docs/commands.md
+scripts/generate-docs
 ```
 
 ### Recommended
