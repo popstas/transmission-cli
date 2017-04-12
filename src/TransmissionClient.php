@@ -52,6 +52,12 @@ class TransmissionClient
 
         $torrentList = $this->api->torrentGet($this->sessionId, new TorrentIdList($cleanedIds), $fields);
 
+        if (in_array(Torrent\Get::NAME, $fields)) {
+            foreach ($torrentList as $ind => $torrent) {
+                $torrentList[$ind][Torrent\Get::NAME] = str_replace("'", "\\'", $torrent[Torrent\Get::NAME]);
+            }
+        }
+
         return $torrentList;
     }
 
