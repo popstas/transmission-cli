@@ -100,35 +100,66 @@ class TorrentListUtils
 
     public static function getObsoleteTorrents(array $torrentList)
     {
-        $all = [];
+        $sameNamesAndDirectory = [];
         $obsolete = [];
 
         foreach ($torrentList as $torrent) {
-            $name = $torrent[Torrent\Get::NAME];
-            if (!isset($all[$name])) {
-                $all[$name] = $torrent;
+            $key = $torrent[Torrent\Get::NAME] . '_' . $torrent[Torrent\Get::DOWNLOAD_DIR];
+            $sameNamesAndDirectory[$key][$torrent[Torrent\Get::ID]] = $torrent;
+        }
+
+        foreach ($sameNamesAndDirectory as $key => $torrents) {
+            if (count($torrents) < 2) {
                 continue;
             }
 
-            $obs = self::detectObsoleteTorrent($all[$name], $torrent);
-            if ($obs) {
-                $obsolete[] = $obs;
-                if ($obs[Torrent\Get::ID] !== $torrent[Torrent\Get::ID]) {
-                    $all[$name] = $torrent;
-                }
-            }
+            $obsolete = array_merge($obsolete, self::detectObsoleteTorrent($torrents));
         }
 
         return $obsolete;
     }
 
-    private static function detectObsoleteTorrent($torrentInList, $torrentNotInList)
+    private static function detectObsoleteTorrent($torrents)
     {
-        if ($torrentInList[Torrent\Get::DOWNLOAD_DIR] !== $torrentNotInList[Torrent\Get::DOWNLOAD_DIR]) {
-            return false;
+        $all = [];
+        $obsoleteTorrents = [];
+
+        foreach ($torrents as $torrentNotInList) {
+            foreach ($all as $torrentInList) {
+                $obsolete = self::getCoveredTorrent($torrentInList, $torrentNotInList);
+                if ($obsolete) {
+                    $obsoleteTorrents[] = $obsolete;
+                }
+            }
+            $all[] = $torrentNotInList;
         }
 
-        return $torrentInList[Torrent\Get::TOTAL_SIZE] < $torrentNotInList[Torrent\Get::TOTAL_SIZE] ?
-            $torrentInList : $torrentNotInList;
+        return $obsoleteTorrents;
+    }
+
+    private static function getCoveredTorrent($torrent1, $torrent2)
+    {
+        $files1 = self::getFilesArray($torrent1);
+        $files2 = self::getFilesArray($torrent2);
+
+        if (self::isFilesContainsAllOtherFiles($files1, $files2)) {
+            return $torrent2;
+        } elseif (self::isFilesContainsAllOtherFiles($files2, $files1)) {
+            return $torrent1;
+        }
+
+        return false;
+    }
+
+    private static function isFilesContainsAllOtherFiles($files, $otherFiles)
+    {
+        return empty(array_diff($otherFiles, $files));
+    }
+
+    private static function getFilesArray($torrent)
+    {
+        return array_map(function ($file) {
+            return $file['length'] . '_' . $file['name'];
+        }, $torrent[Torrent\Get::FILES]);
     }
 }

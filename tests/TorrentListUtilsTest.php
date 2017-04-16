@@ -130,8 +130,75 @@ class TorrentListUtilsTest extends TestCase
 
     public function testGetObsoleteTorrents()
     {
-        $obsolete = TorrentListUtils::getObsoleteTorrents($this->expectedTorrentList);
+        $torrentList = [
+            [
+                'downloadDir'  => '/',
+                'id'           => 1,
+                'name'         => 'duplicates-test',
+                'files'        => [
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file1'
+                    ],
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file2'
+                    ],
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file3'
+                    ],
+                ]
+            ],
+            [
+                'downloadDir'  => '/',
+                'id'           => 2,
+                'name'         => 'duplicates-test',
+                'files'        => [
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file4'
+                    ],
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file5'
+                    ],
+                ]
+            ],
+            # torrent id=3 is duplicate
+            [
+                'downloadDir'  => '/',
+                'id'           => 3,
+                'name'         => 'duplicates-test',
+                'files'        => [
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file1'
+                    ],
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file2'
+                    ],
+                ],
+            ],
+            [
+                'downloadDir'  => '/',
+                'id'           => 4,
+                'name'         => 'duplicates-test',
+                'files'        => [
+                    [
+                        'length' => 2,
+                        'name'   => 'duplicates-test/file1'
+                    ],
+                    [
+                        'length' => 4,
+                        'name'   => 'duplicates-test/file2'
+                    ],
+                ],
+            ],
+        ];
+        $obsolete = TorrentListUtils::getObsoleteTorrents($torrentList);
         $this->assertCount(1, $obsolete);
-        $this->assertEquals(1, $obsolete[0]['id']);
+        $this->assertEquals(3, $obsolete[0]['id']);
     }
 }

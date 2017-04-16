@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/popstas/transmission-cli/compare/v0.7.1...v) (2017-04-12)
+# [](https://github.com/popstas/transmission-cli/compare/v0.7.2...v) (2017-04-16)
+
+
+
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/popstas/transmission-cli/compare/v0.7.1...v0.7.2) (2017-04-16)
+
+
+### Bug Fixes
+
+* **torrent-remove-duplicates:** better torrent duplicates detection ([0479bf0](https://github.com/popstas/transmission-cli/commit/0479bf0)), closes [#38](https://github.com/popstas/transmission-cli/issues/38)
 
 
 
@@ -10,7 +20,7 @@
 ### Bug Fixes
 
 * **torrent-remove-duplicates:** confirmation remove duplicates ([5fca77c](https://github.com/popstas/transmission-cli/commit/5fca77c)), closes [#38](https://github.com/popstas/transmission-cli/issues/38)
-* escape ' in torrent name ([66a8e89](https://github.com/popstas/transmission-cli/commit/66a8e89)), closes [#40](https://github.com/popstas/transmission-cli/issues/40)
+* escape ' in torrent name ([7385196](https://github.com/popstas/transmission-cli/commit/7385196)), closes [#40](https://github.com/popstas/transmission-cli/issues/40)
 
 
 ### Features

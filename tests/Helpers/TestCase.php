@@ -12,7 +12,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'totalSize'    => 1,
             'uploadedEver' => 3,
             'downloadedEver' => 1,
-            'doneDate' => 1456784850,
+            'doneDate'     => 1456784850,
+            'files'        => [],
         ],
         [
             'downloadDir'  => '/',
@@ -21,7 +22,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'totalSize'    => 2,
             'uploadedEver' => 4,
             'downloadedEver' => 1,
-            'doneDate' => 1456784850,
+            'doneDate'     => 1456784850,
+            'files'        => [],
         ],
         [
             'downloadDir'  => '/',
@@ -30,7 +32,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'totalSize'    => 3,
             'uploadedEver' => 5,
             'downloadedEver' => 1,
-            'doneDate' => 1456784850,
+            'doneDate'     => 1456784850,
+            'files'        => [],
         ],
         [
             'downloadDir'  => '/dir2',
@@ -39,7 +42,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'totalSize'    => 1,
             'uploadedEver' => 5,
             'downloadedEver' => 1,
-            'doneDate' => 0,
+            'doneDate'     => 0,
+            'files'        => [],
         ],
     ];
 

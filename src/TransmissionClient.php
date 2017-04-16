@@ -41,6 +41,7 @@ class TransmissionClient
                 Torrent\Get::DOWNLOAD_EVER,
                 Torrent\Get::DONE_DATE,
                 Torrent\Get::ADDED_DATE,
+                Torrent\Get::FILES,
             ];
         }
 
