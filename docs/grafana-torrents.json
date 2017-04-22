@@ -1,42 +1,29 @@
 {
-  "id": 1,
-  "title": "torrents",
-  "originalTitle": "torrents",
-  "tags": [],
-  "style": "dark",
-  "timezone": "browser",
+  "annotations": {
+    "list": []
+  },
   "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
   "hideControls": false,
-  "sharedCrosshair": false,
+  "id": 2,
+  "links": [],
+  "refresh": "1h",
   "rows": [
     {
       "collapse": false,
-      "editable": true,
       "height": 503,
       "panels": [
         {
           "aliasColors": {},
           "bars": true,
-          "datasource": null,
+          "datasource": "influxdb popstas-server transmission",
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": null,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)",
-            "thresholdLine": false
-          },
+          "grid": {},
           "id": 3,
           "interval": "",
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": false,
@@ -93,6 +80,7 @@
               ],
               "hide": false,
               "measurement": "uploaded",
+              "policy": "default",
               "query": "SELECT sum(\"value\") FROM \"uploaded\" WHERE \"host\" =~ /$host/ AND $timeFilter GROUP BY time($interv), \"host\"",
               "rawQuery": false,
               "refId": "A",
@@ -138,6 +126,7 @@
               ],
               "hide": false,
               "measurement": "uploaded",
+              "policy": "default",
               "query": "SELECT derivative(sum(\"value\"), $interv) FROM \"uploaded\" WHERE \"host\" =~ /$host/ AND $timeFilter GROUP BY time($interv), \"host\"",
               "rawQuery": false,
               "refId": "B",
@@ -171,43 +160,49 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "total",
           "tooltip": {
             "shared": true,
+            "sort": 0,
             "value_type": "cumulative"
           },
           "transparent": false,
           "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "bytes",
-            "bytes"
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "bytes",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "bytes",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
           ]
         },
         {
           "aliasColors": {},
           "bars": true,
-          "datasource": null,
+          "datasource": "influxdb popstas-server transmission",
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": null,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 1,
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": true,
@@ -255,6 +250,7 @@
               ],
               "hide": false,
               "measurement": "uploaded",
+              "policy": "default",
               "query": "SELECT derivative(sum(\"value\"), $interv) AS \"alias\" FROM \"uploaded\" WHERE \"host\" =~ /$host/ AND $timeFilter GROUP BY time($interv), \"torrent_name\"",
               "rawQuery": false,
               "refId": "A",
@@ -294,42 +290,48 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "top torrents",
           "tooltip": {
             "shared": false,
+            "sort": 0,
             "value_type": "individual"
           },
           "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "bytes",
-            "short"
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "bytes",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
           ]
         },
         {
           "aliasColors": {},
           "bars": true,
-          "datasource": null,
+          "datasource": "influxdb popstas-server transmission",
           "editable": true,
           "error": false,
           "fill": 1,
-          "grid": {
-            "leftLogBase": 1,
-            "leftMax": 1024000000,
-            "leftMin": null,
-            "rightLogBase": 1,
-            "rightMax": null,
-            "rightMin": null,
-            "threshold1": null,
-            "threshold1Color": "rgba(216, 200, 27, 0.27)",
-            "threshold2": null,
-            "threshold2Color": "rgba(234, 112, 112, 0.22)"
-          },
+          "grid": {},
           "id": 4,
-          "isNew": true,
           "legend": {
             "alignAsTable": true,
             "avg": true,
@@ -377,6 +379,7 @@
               ],
               "hide": false,
               "measurement": "uploaded",
+              "policy": "default",
               "query": "SELECT derivative(sum(\"value\"), $interv) AS \"alias\" FROM \"uploaded\" WHERE \"host\" =~ /$host/ AND $timeFilter GROUP BY time($interv), \"torrent_name\"",
               "rawQuery": false,
               "refId": "A",
@@ -416,173 +419,309 @@
               ]
             }
           ],
+          "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
           "title": "worst torrents",
           "tooltip": {
             "shared": false,
+            "sort": 0,
             "value_type": "individual"
           },
           "type": "graph",
-          "x-axis": true,
-          "y-axis": true,
-          "y_formats": [
-            "bytes",
-            "short"
-          ]
-        },
-        {
-          "title": "Panel Title",
-          "error": false,
-          "span": 12,
-          "editable": true,
-          "type": "table",
-          "isNew": true,
-          "id": 5,
-          "styles": [
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
             {
-              "type": "date",
-              "pattern": "Time",
-              "dateFormat": "YYYY-MM-DD HH:mm:ss"
+              "format": "bytes",
+              "logBase": 1,
+              "max": 1024000000,
+              "min": null,
+              "show": true
             },
             {
-              "unit": "short",
-              "type": "number",
-              "decimals": 2,
-              "colors": [
-                "rgba(245, 54, 54, 0.9)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(50, 172, 45, 0.97)"
-              ],
-              "colorMode": null,
-              "pattern": "/.*/",
-              "thresholds": []
+              "format": "short",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
             }
-          ],
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": 250,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": true,
+          "datasource": "influxdb popstas-server transmission",
+          "fill": 1,
+          "id": 5,
+          "legend": {
+            "alignAsTable": true,
+            "avg": false,
+            "current": true,
+            "max": false,
+            "min": false,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": false,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "span": 12,
+          "stack": true,
+          "steppedLine": false,
           "targets": [
             {
-              "refId": "A",
+              "alias": "checking",
               "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "A",
               "resultFormat": "time_series",
-              "tags": [],
-              "groupBy": [
-                {
-                  "type": "time",
-                  "params": [
-                    "$interval"
-                  ]
-                },
-                {
-                  "type": "fill",
-                  "params": [
-                    "null"
-                  ]
-                }
-              ],
               "select": [
                 [
                   {
-                    "type": "field",
                     "params": [
-                      "value"
-                    ]
+                      "check"
+                    ],
+                    "type": "field"
                   }
                 ]
               ],
-              "measurement": "uploaded",
-              "query": "SELECT \"value\" FROM \"uploaded\" WHERE $timeFilter GROUP BY time($interval) fill(null)"
+              "tags": []
+            },
+            {
+              "alias": "queued to check",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "B",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "check_wait"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": []
+            },
+            {
+              "alias": "downloading",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "C",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "download"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": []
+            },
+            {
+              "alias": "queued to download",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "D",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "download_wait"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": []
+            },
+            {
+              "alias": "seeding",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "E",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "seed"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": []
+            },
+            {
+              "alias": "queued to seed",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "F",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "seed_wait"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": []
+            },
+            {
+              "alias": "stopped",
+              "dsType": "influxdb",
+              "groupBy": [],
+              "measurement": "status",
+              "policy": "default",
+              "refId": "G",
+              "resultFormat": "time_series",
+              "select": [
+                [
+                  {
+                    "params": [
+                      "stopped"
+                    ],
+                    "type": "field"
+                  }
+                ]
+              ],
+              "tags": []
             }
           ],
-          "transform": "timeseries_to_columns",
-          "pageSize": null,
-          "showHeader": true,
-          "columns": [],
-          "scroll": true,
-          "fontSize": "100%",
-          "sort": {
-            "col": 0,
-            "desc": true
-          }
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Torrents status",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
         }
       ],
-      "title": "Row"
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
     }
   ],
-  "time": {
-    "from": "now-12h",
-    "to": "now"
-  },
-  "timepicker": {
-    "now": true,
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
-    ]
-  },
+  "schemaVersion": 14,
+  "style": "dark",
+  "tags": [],
   "templating": {
     "list": [
       {
         "allFormat": "regex wildcard",
+        "allValue": null,
         "current": {
-          "text": "localhost",
-          "value": "localhost",
-          "tags": []
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": null,
+        "hide": 0,
         "includeAll": true,
+        "label": null,
         "multi": false,
         "multiFormat": "glob",
         "name": "host",
-        "options": [
-          {
-            "text": "All",
-            "value": ".*",
-            "selected": false
-          },
-          {
-            "text": "localhost",
-            "value": "localhost",
-            "selected": true
-          },
-          {
-            "text": "wrtnsq",
-            "value": "wrtnsq",
-            "selected": false
-          }
-        ],
+        "options": [],
         "query": "SHOW TAG VALUES FROM \"uploaded\" WITH KEY = \"host\"",
-        "refresh": true,
+        "refresh": 1,
         "regex": "",
-        "type": "query"
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       },
       {
         "allFormat": "glob",
+        "auto": false,
+        "auto_count": 30,
+        "auto_min": "10s",
         "current": {
-          "tags": [],
           "text": "1h",
           "value": "1h"
         },
         "datasource": null,
+        "hide": 0,
         "includeAll": false,
+        "label": "",
         "multi": false,
         "multiFormat": "glob",
         "name": "interv",
@@ -639,16 +778,42 @@
           }
         ],
         "query": "1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
-        "refresh": false,
+        "refresh": 2,
         "type": "interval"
       }
     ]
   },
-  "annotations": {
-    "list": []
+  "time": {
+    "from": "now-12h",
+    "to": "now"
   },
-  "refresh": "1h",
-  "schemaVersion": 8,
-  "version": 18,
-  "links": []
+  "timepicker": {
+    "now": true,
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "torrents",
+  "version": 7
 }

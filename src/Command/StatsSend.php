@@ -44,6 +44,7 @@ EOT
             if (!empty($obsoleteList)) {
                 $output->writeln('<comment>Found obsolete torrents, '
                                  . 'remove it using transmission-cli torrent-remove-duplicates</comment>');
+                TorrentListUtils::printTorrentsTable($obsoleteList, $output);
                 return 1;
             }
         }
@@ -71,6 +72,8 @@ EOT
                     $logger->debug('Skip point: {point}', ['point' => $torrentPoint]);
                 }
             }
+
+            $points[] = $influxDbClient->buildStatus($torrentList, $transmissionHost);
 
             $this->dryRun($input, $output, function () use ($influxDbClient, $points) {
                 $influxDbClient->writePoints($points);

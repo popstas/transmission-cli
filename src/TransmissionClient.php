@@ -42,6 +42,7 @@ class TransmissionClient
                 Torrent\Get::DONE_DATE,
                 Torrent\Get::ADDED_DATE,
                 Torrent\Get::FILES,
+                Torrent\Get::STATUS,
             ];
         }
 
@@ -60,6 +61,20 @@ class TransmissionClient
         }
 
         return $torrentList;
+    }
+
+    public static function getTorrentStatusName($statusId)
+    {
+        $statuses = [
+            0 => 'stopped',
+            1 => 'check_wait',
+            2 => 'check',
+            3 => 'download_wait',
+            4 => 'download',
+            5 => 'seed_wait',
+            6 => 'seed',
+        ];
+        return $statuses[$statusId];
     }
 
     public function addTorrent($torrentFile, $downloadDir = null)

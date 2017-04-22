@@ -150,7 +150,7 @@ source <(transmission-cli _completion --generate-hook)
 #### Cron
 Then, add to cron tasks like this:
 ```
-PATH="$PATH:/usr/local/bin"
+PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:~/.config/composer/vendor/bin"
 59 * * * * transmission-cli torrent-remove-duplicates --yes --transmission-host=localhost
 59 * * * * transmission-cli torrent-remove-duplicates --yes --transmission-host=wrtnsq
 0  * * * * transmission-cli stats-send --transmission-host=localhost

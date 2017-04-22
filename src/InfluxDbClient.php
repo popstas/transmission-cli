@@ -134,6 +134,35 @@ class InfluxDbClient
         );
     }
 
+    public function buildStatus(array $torrentList, $transmissionHost)
+    {
+        $tagsData = [
+            'host' => $transmissionHost,
+        ];
+
+        $fieldsData = [
+            'total' => 0,
+        ];
+
+        for ($statusId = 0; $statusId < 7; $statusId++) {
+            $fieldsData[TransmissionClient::getTorrentStatusName($statusId)] = 0;
+        }
+
+        foreach ($torrentList as $torrent) {
+            $fieldsData['total']++;
+            $statusName = TransmissionClient::getTorrentStatusName($torrent[Torrent\Get::STATUS]);
+            $fieldsData[$statusName]++;
+        }
+
+        return new InfluxDB\Point(
+            'status',
+            null,
+            $tagsData,
+            $fieldsData,
+            time()
+        );
+    }
+
     /**
      * @param array $torrent
      * @param string $transmissionHost
