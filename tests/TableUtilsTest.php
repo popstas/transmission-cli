@@ -15,10 +15,10 @@ class TableUtilsTest extends TestCase
 
         $sortedRows = TableUtils::sortRowsByColumnNumber($rows, 2);
         $sortedIds = TorrentListUtils::getArrayField($sortedRows, 1);
-        $this->assertEquals([1, 2, 3, 4], $sortedIds);
+        $this->assertEquals([1, 2, 3, 4, 5], $sortedIds);
 
         $sortedRows = TableUtils::sortRowsByColumnNumber($rows, -2);
         $sortedIds = TorrentListUtils::getArrayField($sortedRows, 1);
-        $this->assertEquals([4, 3, 2, 1], $sortedIds);
+        $this->assertEquals([5, 4, 3, 2, 1], $sortedIds);
     }
 }

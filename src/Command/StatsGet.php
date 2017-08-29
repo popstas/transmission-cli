@@ -114,7 +114,8 @@ EOT
                 $torrent['per_day'] = $days ?
                     TorrentUtils::getSizeInGb($torrent['uploaded'] / $days) : 0;
 
-                $torrent['profit'] = round($torrent['uploaded'] / $torrent[Torrent\Get::TOTAL_SIZE] / $days * 100, 2);
+                $torrent['profit'] = $torrent[Torrent\Get::TOTAL_SIZE] ?
+                    round($torrent['uploaded'] / $torrent[Torrent\Get::TOTAL_SIZE] / $days * 100, 2) : 0;
 
                 return $torrent;
             }, $torrentList);

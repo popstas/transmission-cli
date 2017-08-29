@@ -45,6 +45,16 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             'doneDate'     => 0,
             'files'        => [],
         ],
+        [
+            'downloadDir'  => '/dir2',
+            'id'           => 5,
+            'name'         => 'zero sized torrent',
+            'totalSize'    => 0,
+            'uploadedEver' => 5,
+            'downloadedEver' => 1,
+            'doneDate'     => 0,
+            'files'        => [],
+        ],
     ];
 
     /**

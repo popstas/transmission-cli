@@ -19,7 +19,7 @@ class TorrentListUtilsTest extends TestCase
     public function testGetTorrentsField()
     {
         $torrentField = TorrentListUtils::getArrayField($this->expectedTorrentList, Torrent\Get::NAME);
-        $this->assertEquals(['name.ext', 'name.ext', 'name2.ext', 'name.ext'], $torrentField);
+        $this->assertEquals(['name.ext', 'name.ext', 'name2.ext', 'name.ext', 'zero sized torrent'], $torrentField);
     }
 
     public function filterTorrentsByAgeProvider()
