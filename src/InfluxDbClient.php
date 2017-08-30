@@ -120,7 +120,7 @@ class InfluxDbClient
 
         $fieldsData = [
             'uploaded_last'       => $uploadedDerivative,
-            'downloaded'          => $torrent[Torrent\Get::TOTAL_SIZE],
+            'downloaded'          => $torrent[Torrent\Get::DOWNLOAD_EVER],
             'age'                 => $age,
             'uploaded_per_day'    => $age ? intval($torrent[Torrent\Get::UPLOAD_EVER] / $age * 86400) : 0,
         ];
