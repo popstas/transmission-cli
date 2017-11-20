@@ -27,6 +27,6 @@ class TorrentUtils
     public static function getSizeInGb($sizeInBytes, $round = 2)
     {
         // 1024 not equals transmission value
-        return round($sizeInBytes / 1000 / 1000 / 1000, $round);
+        return round($sizeInBytes / 1024 / 1024 / 1024, $round);
     }
 }
