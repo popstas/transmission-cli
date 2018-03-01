@@ -88,7 +88,7 @@ class StatsGetTest extends CommandTestCase
 
     public function testWithoutArguments()
     {
-        $this->executeCommand([
+        $result = $this->executeCommand([
             '--name'   => 'asd',
             '--age'    => '<5',
             '--profit' => '>0',
@@ -96,6 +96,7 @@ class StatsGetTest extends CommandTestCase
             '--sort'   => '2',
             '--limit'  => 2,
         ]);
+        $this->assertEquals($result, 0);
     }
 
     public function testRemoveNotConfirmed()

@@ -83,7 +83,8 @@ class InfluxDbClientTest extends TestCase
         $this->influxDb->method('selectDB')->will($this->returnValue($database));
 
         $this->client->setDatabase($this->client->connectDatabase());
-        $this->client->connectDatabase();
+        $result = $this->client->connectDatabase();
+        $this->assertTrue(true);
     }
 
     public function testConnectNotExistsDatabase()
@@ -125,6 +126,7 @@ class InfluxDbClientTest extends TestCase
 
         $torrent = $this->expectedTorrentList[0];
         $this->client->buildPoint($torrent, 'localhost');
+        $this->assertTrue(true);
     }
 
     public function testSendTorrentPoints()
@@ -132,6 +134,7 @@ class InfluxDbClientTest extends TestCase
         $database = $this->getDatabaseMockReturnsResultSet([]);
         $this->client->setDatabase($database);
         $this->client->sendTorrentPoints($this->expectedTorrentList, 'localhost');
+        $this->assertTrue(true);
     }
 
     public function testWritePoints()
@@ -144,6 +147,7 @@ class InfluxDbClientTest extends TestCase
         $this->client->setDatabase($database);
 
         $this->client->writePoints([]);
+        $this->assertTrue(true);
     }
 
 

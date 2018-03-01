@@ -74,6 +74,7 @@ class TransmissionClientTest extends TestCase
         $this->client->addTorrent('/abc.torrent');
         $this->client->addTorrent('/abc.torrent', '/path/to/download');
         //$this->markTestIncomplete();
+        $this->assertTrue(true);
     }
 
     public function testAddMetadata()
@@ -82,6 +83,7 @@ class TransmissionClientTest extends TestCase
         $this->client->addTorrent($torrentFile);
         unlink($torrentFile);
         //$this->markTestIncomplete();
+        $this->assertTrue(true);
     }
 
     public function testRemoveTorrents()
@@ -96,6 +98,7 @@ class TransmissionClientTest extends TestCase
     public function testWaitForTransmission()
     {
         $this->client->waitForTransmission(0);
+        $this->assertTrue(true);
     }
 
     public function testGetDownloadDir()

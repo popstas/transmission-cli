@@ -15,6 +15,7 @@ class DocsTest extends CommandTestCase
 
     public function testDocs()
     {
-        $this->executeCommand();
+        $result = $this->executeCommand();
+        $this->assertEquals($result, 0);
     }
 }

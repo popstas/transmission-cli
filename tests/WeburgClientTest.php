@@ -229,6 +229,7 @@ class WeburgClientTest extends TestCase
         $this->httpClient->method('request')->will($this->returnValue($response));
 
         $this->client->getUrlBody('http://google.com');
+        $this->assertTrue(true);
     }
 
     /**

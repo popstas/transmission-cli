@@ -126,6 +126,7 @@ class TorrentListUtilsTest extends TestCase
     {
         $output = new NullOutput();
         TorrentListUtils::printTorrentsTable($this->expectedTorrentList, $output, 1, 2);
+        $this->assertTrue(true);
     }
 
     public function testGetObsoleteTorrents()

@@ -66,7 +66,8 @@ class StatsSendTest extends CommandTestCase
 
     public function testWithoutOptions()
     {
-        $this->executeCommand();
+        $result = $this->executeCommand();
+        $this->assertEquals($result, 0);
     }
 
     public function testInfluxDbCreateInfluxDbWithoutDatabase()
