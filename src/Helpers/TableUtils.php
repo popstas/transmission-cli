@@ -90,15 +90,18 @@ class TableUtils
 
     public static function sortRowsByColumnNumber(array $rows, $columnNumber)
     {
+        if (count($rows) == 0) {
+            return $rows;
+        }
         $rowsSorted = $rows;
         $columnsTotal = count(end($rows));
 
         $sortOrder = $columnNumber > 0 ? 1 : -1;
 
         $columnIndex = max(1, min(
-            $columnsTotal,
-            abs($columnNumber)
-        )) - 1;
+                $columnsTotal,
+                abs($columnNumber)
+            )) - 1;
 
         usort($rowsSorted, function ($first, $second) use ($columnIndex, $sortOrder) {
             return $first[$columnIndex] > $second[$columnIndex] ? $sortOrder : $sortOrder * -1;
