@@ -38,4 +38,4 @@ deploy:
     tags: true
 
 after_script:
-  - travis_retry php vendor/bin/coveralls
+  - travis_retry php vendor/bin/php-coveralls -v
