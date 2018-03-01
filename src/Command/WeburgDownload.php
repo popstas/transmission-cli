@@ -99,7 +99,12 @@ EOT
                     $downloadedFiles[] = $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
                 }
 
-                $this->addTorrents($input, $output, $downloadedFiles);
+                $downloadedFiles = $this->filterByLists($downloadedFiles);
+                if (!empty($downloadedFiles)) {
+                    $this->addTorrents($input, $output, $downloadedFiles);
+                } else {
+                    $output->writeln("\nAll torrents filtered by black/whitelists");
+                }
             }, 'dry-run, don\'t really download');
         } catch (\RuntimeException $e) {
             $output->writeln($e->getMessage());
@@ -283,8 +288,8 @@ EOT
         $torrentsDir = $config->overrideConfig($input, 'download-torrents-dir');
         if (!$torrentsDir) {
             throw new \RuntimeException('Destination directory not defined. '
-                .'Use command with --download-torrents-dir=/path/to/dir parameter '
-                .'or define destination directory \'download-torrents-dir\' in config file.');
+                . 'Use command with --download-torrents-dir=/path/to/dir parameter '
+                . 'or define destination directory \'download-torrents-dir\' in config file.');
         }
 
         if (!file_exists($torrentsDir)) {
@@ -297,6 +302,41 @@ EOT
         }
 
         return [$torrentsDir, $downloadDir];
+    }
+
+    private function filterByLists(array $torrentFiles)
+    {
+        $config = $this->getApplication()->getConfig();
+        $logger = $this->getApplication()->getLogger();
+
+        $whitelist = $config->get('download-filename-whitelist');
+        $blacklist = $config->get('download-filename-blacklist');
+
+        $torrentFiles = array_filter($torrentFiles, function ($torrentFile) use ($whitelist, $blacklist, $logger) {
+            if (!empty($whitelist)) {
+                $matched = false;
+                foreach ($whitelist as $white) {
+                    if (preg_match('/' . $white . '/i', $torrentFile)) {
+                        $logger->info($torrentFile . ' matched whitelist: ' . $white);
+                        $matched = true;
+                    }
+                }
+                if (!$matched) {
+                    $logger->info($torrentFile . ' not matched any whitelist: ' . implode(', ', $whitelist));
+                    return false;
+                }
+            }
+            if (!empty($blacklist)) {
+                foreach ($blacklist as $black) {
+                    if (preg_match('/' . $black . '/i', $torrentFile)) {
+                        $logger->info($torrentFile . ' matched blacklist: ' . $black);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+        return $torrentFiles;
     }
 
     private function addTorrents(InputInterface $input, OutputInterface $output, array $torrentFiles)
@@ -320,7 +360,7 @@ EOT
                 'torrent-files'       => $torrentFiles,
                 '--transmission-host' => $host,
                 '--yes'               => $input->getOption('yes'),
-                '--dry-run'           => $input->getOption('dry-run')
+                '--dry-run'           => $input->getOption('dry-run'),
             );
 
             $addInput = new ArrayInput($arguments);

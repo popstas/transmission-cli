@@ -88,6 +88,7 @@ Also, you can pass config to command: `transmission-cli --config /path/to/config
 
 Commands `weburg-download`, `weburg-series-add`, interacts only with weburg.net and not requests to Transmission or InfluxDb.
 
+You can use `download-filename-whitelist` and `download-filename-blacklist` lists for filter torrents before download.
 
 #### About torrent duplicates
 By default, `transmission-cli` prevents send stats to InfluxDB when you have torrents with same names in your Transmission,

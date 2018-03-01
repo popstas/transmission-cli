@@ -56,12 +56,11 @@ class WeburgDownloadTest extends CommandTestCase
     }
 
 
-
     public function testDownloadPopular()
     {
         $this->app->getConfig()->set('transmission', [
             ['host' => 'devnull1', 'port' => 9091, 'user' => '', 'password' => ''],
-            ['host' => 'devnull2', 'port' => 9091, 'user' => '', 'password' => '']
+            ['host' => 'devnull2', 'port' => 9091, 'user' => '', 'password' => ''],
         ]);
 
         $client = $this->app->getWeburgClient();
@@ -78,7 +77,7 @@ class WeburgDownloadTest extends CommandTestCase
     {
         $this->app->getConfig()->set('transmission', [
             ['host' => 'devnull1', 'port' => 9091, 'user' => '', 'password' => ''],
-            ['host' => 'devnull2', 'port' => 9091, 'user' => '', 'password' => '']
+            ['host' => 'devnull2', 'port' => 9091, 'user' => '', 'password' => ''],
         ]);
 
         $client = $this->app->getWeburgClient();
@@ -86,10 +85,10 @@ class WeburgDownloadTest extends CommandTestCase
         $client->expects($this->exactly(2))->method('downloadTorrent');
 
         $this->executeCommand([
-            '--popular' => true,
+            '--popular'               => true,
             '--download-torrents-dir' => $this->dest,
             '--transmission-host'     => 'devnull',
-            '-y'                      => true
+            '-y'                      => true,
         ]);
         $display = $this->getDisplay();
         preg_match_all('/All torrents added/', $display, $addedCount);
@@ -127,7 +126,6 @@ class WeburgDownloadTest extends CommandTestCase
     }
 
 
-
     public function testDownloadSeries()
     {
         $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
@@ -151,7 +149,6 @@ class WeburgDownloadTest extends CommandTestCase
     }
 
 
-
     public function testBothPopularAndSeries()
     {
         $this->executeCommand(['--download-torrents-dir' => $this->dest]);
@@ -159,7 +156,6 @@ class WeburgDownloadTest extends CommandTestCase
         $this->assertRegExp('/series/', $display);
         $this->assertRegExp('/popular/', $display);
     }
-
 
 
     public function testDownloadOneMovie()
@@ -193,5 +189,46 @@ class WeburgDownloadTest extends CommandTestCase
         $result = $this->executeCommand(['movie-id' => 12345]);
         $this->assertEquals(1, $result);
         $this->assertRegExp('/seems not weburg movie/', $this->getDisplay());
+    }
+
+    public function testFilterByLists()
+    {
+        $this->app->getConfig()->set('download-filename-whitelist', ['1080']);
+        $this->app->getConfig()->set('download-filename-blacklist', ['jaskier']);
+        $this->app->getConfig()->set('weburg-series-list', ['1']);
+
+        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
+        $client->method('getSeriesTorrents')->willReturn(['url-1']);
+        $client->method('getMovieInfoById')->willReturn(['title' => 'series', 'hashes' => [1, 2]]);
+        $this->app->setWeburgClient($client);
+
+        $client->method('downloadTorrent')->will($this->onConsecutiveCalls(
+            '/path/to/torrent_1080.torrent',
+            '/path/to/torrent_720.torrent',
+            '/path/to/torrent_1080_Jaskier.torrent',
+            '/path/to/torrent_1080_Jaskier.torrent'
+        ));
+
+        // will whitelisted
+        $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
+        $this->assertEquals(0, $result);
+        $this->assertRegExp('/Add torrents to/', $this->getDisplay());
+
+        // will not whitelisted
+        $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
+        $this->assertEquals(0, $result);
+        $this->assertRegExp('/All torrents filtered/', $this->getDisplay());
+
+        // will blacklisted
+        $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
+        $this->assertEquals(0, $result);
+        $this->assertRegExp('/All torrents filtered/', $this->getDisplay());
+
+        // no blacklist
+        $this->app->getConfig()->set('download-filename-blacklist', []);
+        $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
+        $this->assertEquals(0, $result);
+        $this->assertRegExp('/Add torrents to/', $this->getDisplay());
     }
 }

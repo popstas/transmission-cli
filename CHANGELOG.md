@@ -1,5 +1,45 @@
 <a name=""></a>
-# [](https://github.com/popstas/transmission-cli/compare/v0.7.2...v) (2017-04-16)
+# [](https://github.com/popstas/transmission-cli/compare/v0.7.6...v) (2018-03-01)
+
+
+
+<a name="0.7.6"></a>
+## [0.7.6](https://github.com/popstas/transmission-cli/compare/v0.7.5...v0.7.6) (2017-11-20)
+
+
+### Bug Fixes
+
+* fix torrent size display by division 1024 instead of 1000 ([76fb2ee](https://github.com/popstas/transmission-cli/commit/76fb2ee))
+
+
+
+<a name="0.7.5"></a>
+## [0.7.5](https://github.com/popstas/transmission-cli/compare/v0.7.4...v0.7.5) (2017-08-30)
+
+
+### Bug Fixes
+
+* stats-send stored torrent size instead downloaded size ([6094d56](https://github.com/popstas/transmission-cli/commit/6094d56)), closes [#41](https://github.com/popstas/transmission-cli/issues/41)
+
+
+
+<a name="0.7.4"></a>
+## [0.7.4](https://github.com/popstas/transmission-cli/compare/v0.7.3...v0.7.4) (2017-08-29)
+
+
+### Bug Fixes
+
+* division by zero when torrent total size == 0 ([8012da3](https://github.com/popstas/transmission-cli/commit/8012da3)), closes [#29](https://github.com/popstas/transmission-cli/issues/29)
+
+
+
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/popstas/transmission-cli/compare/v0.7.2...v0.7.3) (2017-04-22)
+
+
+### Features
+
+* Logging torrents status ([22d68a5](https://github.com/popstas/transmission-cli/commit/22d68a5)), closes [#39](https://github.com/popstas/transmission-cli/issues/39)
 
 
 
@@ -9,7 +49,7 @@
 
 ### Bug Fixes
 
-* **torrent-remove-duplicates:** better torrent duplicates detection ([0479bf0](https://github.com/popstas/transmission-cli/commit/0479bf0)), closes [#38](https://github.com/popstas/transmission-cli/issues/38)
+* **torrent-remove-duplicates:** better torrent duplicates detection ([27dee60](https://github.com/popstas/transmission-cli/commit/27dee60)), closes [#38](https://github.com/popstas/transmission-cli/issues/38)
 
 
 
@@ -30,7 +70,7 @@
 
 ### BREAKING CHANGES
 
-* torrent-remove-duplicates: `torrent-remove-duplicates` command now default interactive and requires confirmation.
+* **torrent-remove-duplicates:** `torrent-remove-duplicates` command now default interactive and requires confirmation.
 For using in cron you should use `-y` flag in almost all commands.
 
 
@@ -51,8 +91,8 @@ For using in cron you should use `-y` flag in almost all commands.
 
 ### Features
 
-* **api:** getDownloadDir, getFreeSpace ([3ac3386](https://github.com/popstas/transmission-cli/commit/3ac3386))
-* **stats-get, torrent-list:** show available free disk space ([a0d5071](https://github.com/popstas/transmission-cli/commit/a0d5071))
+* **api:** getDownloadDir, getFreeSpace ([3ac3386](https://github.com/popstas/transmission-cli/commit/3ac3386)), closes [#22](https://github.com/popstas/transmission-cli/issues/22)
+* **stats-get, torrent-list:** show available free disk space ([a0d5071](https://github.com/popstas/transmission-cli/commit/a0d5071)), closes [#22](https://github.com/popstas/transmission-cli/issues/22)
 * Remove duplicates after torrent-add ([b6b7ad6](https://github.com/popstas/transmission-cli/commit/b6b7ad6)), closes [#transmission-cli-31](https://github.com/popstas/transmission-cli/issues/transmission-cli-31)
 
 
@@ -71,7 +111,7 @@ For using in cron you should use `-y` flag in almost all commands.
 ### Features
 
 * **_docs:** Command for generate docs/commands.md with commands help ([b635820](https://github.com/popstas/transmission-cli/commit/b635820)), closes [#32](https://github.com/popstas/transmission-cli/issues/32)
-* **command:** command help render markdown code blocks ([d863814](https://github.com/popstas/transmission-cli/commit/d863814))
+* **command:** command help render markdown code blocks ([d863814](https://github.com/popstas/transmission-cli/commit/d863814)), closes [#28](https://github.com/popstas/transmission-cli/issues/28)
 * **torrent-add:** add command for add torrent by file or url ([2515f9c](https://github.com/popstas/transmission-cli/commit/2515f9c)), closes [#4](https://github.com/popstas/transmission-cli/issues/4)
 * multiple transmission instances in config ([ef90596](https://github.com/popstas/transmission-cli/commit/ef90596)), closes [#11](https://github.com/popstas/transmission-cli/issues/11)
 * **weburg-download:** add downloaded torrents with torrent-add command ([7229c34](https://github.com/popstas/transmission-cli/commit/7229c34)), closes [#30](https://github.com/popstas/transmission-cli/issues/30)

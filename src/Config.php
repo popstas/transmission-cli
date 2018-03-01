@@ -13,8 +13,8 @@ class Config
                 'host'     => 'localhost',
                 'port'     => 9091,
                 'user'     => '',
-                'password' => ''
-            ]
+                'password' => '',
+            ],
         ],
 
         'influxdb-host'     => 'localhost',
@@ -28,11 +28,14 @@ class Config
         'download-kinopoisk-min' => '8.0',
         'download-comments-min'  => 10,
         'download-votes-min'     => 25,
-        
-        'weburg-series-list' => [],
-        'weburg-series-max-age' => 1,
+
+        'download-filename-whitelist' => [],
+        'download-filename-blacklist' => [],
+
+        'weburg-series-list'           => [],
+        'weburg-series-max-age'        => 1,
         'weburg-series-allowed-misses' => 1,
-        'weburg-request-delay' => 2
+        'weburg-request-delay'         => 2,
     );
 
     private $config;
