@@ -1,33 +1,35 @@
 {
-    "name": "popstas/transmission-cli",
-    "description": "Transmission client for automate weburg.net downloads",
-    "license": "GPL-V2",
-    "authors": [
-        {
-            "name": "Stanislav Popov",
-            "email": "popstas@gmail.com"
-        }
-    ],
-    "require": {
-        "php": ">=5.6",
-        "symfony/console": "*",
-        "symfony/yaml": "*",
-        "martial/transmission-api": "*",
-        "influxdb/influxdb-php": "*",
-        "stecman/symfony-console-completion": "*"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "~6.0.0",
-        "satooshi/php-coveralls": "*",
-        "squizlabs/php_codesniffer": "*",
-        "sebastian/phpcpd": "*",
-        "mockery/mockery": "^1.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Popstas\\Transmission\\Console\\": "src/",
-            "Popstas\\Transmission\\Console\\Tests\\": "tests/"
-        }
-    },
-    "bin": ["bin/transmission-cli"]
+  "name": "popstas/transmission-cli",
+  "description": "Transmission client for automate weburg.net downloads",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Stanislav Popov",
+      "email": "popstas@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "symfony/console": "^3.4.0",
+    "symfony/yaml": "^3.4.0",
+    "martial/transmission-api": "^2.0.0",
+    "influxdb/influxdb-php": "^1.0.0",
+    "stecman/symfony-console-completion": "^0.7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "~6.0.0",
+    "satooshi/php-coveralls": "*",
+    "squizlabs/php_codesniffer": "*",
+    "sebastian/phpcpd": "*",
+    "mockery/mockery": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Popstas\\Transmission\\Console\\": "src/",
+      "Popstas\\Transmission\\Console\\Tests\\": "tests/"
+    }
+  },
+  "bin": [
+    "bin/transmission-cli"
+  ]
 }
