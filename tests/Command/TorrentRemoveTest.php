@@ -23,7 +23,9 @@ class TorrentRemoveTest extends CommandTestCase
     {
         $command = $this->getCommand();
 
-        $question = $this->getMock('Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $question = $this->getMockBuilder('Symfony\Component\Console\Helper\QuestionHelper')
+            ->setMethods(['ask'])
+            ->getMock();
         $question->expects($this->at(0))
             ->method('ask')
             ->will($this->returnValue(true));
@@ -38,7 +40,9 @@ class TorrentRemoveTest extends CommandTestCase
 
 
         // not confirmed
-        $question = $this->getMock('Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $question = $this->getMockBuilder('Symfony\Component\Console\Helper\QuestionHelper')
+            ->setMethods(['ask'])
+            ->getMock();
         $question->expects($this->at(0))
             ->method('ask')
             ->will($this->returnValue(false));

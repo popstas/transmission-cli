@@ -17,7 +17,9 @@ class TorrentRemoveDuplicatesTest extends CommandTestCase
         $command = $this->getCommand();
 
         // confirmed
-        $question = $this->getMock('Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $question = $this->getMockBuilder('Symfony\Component\Console\Helper\QuestionHelper')
+            ->setMethods(['ask'])
+            ->getMock();
         $question->expects($this->at(0))
             ->method('ask')
             ->will($this->returnValue(true));
@@ -32,7 +34,9 @@ class TorrentRemoveDuplicatesTest extends CommandTestCase
 
 
         // not confirmed
-        $question = $this->getMock('Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $question = $this->getMockBuilder('Symfony\Component\Console\Helper\QuestionHelper')
+            ->setMethods(['ask'])
+            ->getMock();
         $question->expects($this->at(0))
             ->method('ask')
             ->will($this->returnValue(false));
@@ -54,9 +58,15 @@ class TorrentRemoveDuplicatesTest extends CommandTestCase
 
     public function testNoObsolete()
     {
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $api = $this->getMock('Martial\Transmission\API\RpcClient', [], [$httpClient, '', '']);
-        $client = $this->getMock('Popstas\Transmission\Console\TransmissionClient', [], [$api]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient, '', ''])
+            ->getMock();
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\TransmissionClient')
+            ->setMethods([])
+            ->setConstructorArgs([$api])
+            ->getMock();
         $client->method('getTorrentData')->will($this->returnValue([]));
         $this->app->setClient($client);
 

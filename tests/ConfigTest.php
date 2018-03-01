@@ -96,21 +96,21 @@ class ConfigTest extends TestCase
         $config->set('config-parameter', 'original');
 
         // not defined option
-        $input = $this->getMock('Symfony\Component\Console\Input\InputInterface');
+        $input = $this->createMock('Symfony\Component\Console\Input\InputInterface');
         $input->method('hasOption')->willReturn(false);
         $input->expects($this->never())->method('getOption');
         $config->overrideConfig($input, 'config-parameter');
         $this->assertEquals('original', $config->get('config-parameter'));
 
         // override with option name = config name
-        $input = $this->getMock('Symfony\Component\Console\Input\InputInterface');
+        $input = $this->createMock('Symfony\Component\Console\Input\InputInterface');
         $input->method('hasOption')->willReturn(true);
         $input->method('getOption')->willReturn('overrided');
         $config->overrideConfig($input, 'config-parameter');
         $this->assertEquals('overrided', $config->get('config-parameter'));
 
         // override with option name != config name
-        $input = $this->getMock('Symfony\Component\Console\Input\InputInterface');
+        $input = $this->createMock('Symfony\Component\Console\Input\InputInterface');
         $input->method('hasOption')->willReturn(true);
         $input->method('getOption')->willReturn('overrided2');
         $config->overrideConfig($input, 'option-name', 'config-parameter');

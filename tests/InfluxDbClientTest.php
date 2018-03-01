@@ -28,7 +28,7 @@ class InfluxDbClientTest extends TestCase
 
         $this->client = new InfluxDbClient($this->influxDb, 'dbname');
 
-        $logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $logger = $this->createMock('\Psr\Log\LoggerInterface');
         $this->client->setLogger($logger);
 
         parent::setUp();
@@ -36,9 +36,15 @@ class InfluxDbClientTest extends TestCase
 
     private function getDatabaseMockReturnsResultSet($value)
     {
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
 
-        $queryBuilder = $this->getMock('InfluxDB\Query\Builder', ['getResultSet'], [$database]);
+        $queryBuilder = $this->getMockBuilder('InfluxDB\Query\Builder')
+            ->setMethods(['getResultSet'])
+            ->setConstructorArgs([$database])
+            ->getMock();
         $resultSet = $this->getMockBuilder('InfluxDB\ResultSet')
             ->setMethods([])
             ->setConstructorArgs([''])
@@ -53,12 +59,14 @@ class InfluxDbClientTest extends TestCase
 
     public function testConnectDatabaseOnGet()
     {
-        $this->client = $this->getMock(
-            'Popstas\Transmission\Console\InfluxDbClient',
-            ['connectDatabase'],
-            [$this->influxDb, 'dbname']
-        );
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $this->client = $this->getMockBuilder('Popstas\Transmission\Console\InfluxDbClient')
+            ->setMethods(['connectDatabase'])
+            ->setConstructorArgs([$this->influxDb, 'dbname'])
+            ->getMock();
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
         $this->client->expects($this->once())->method('connectDatabase')->willReturn($database);
 
 
@@ -67,7 +75,10 @@ class InfluxDbClientTest extends TestCase
 
     public function testConnectExistsDatabase()
     {
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
         $database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($database));
 
@@ -77,7 +88,10 @@ class InfluxDbClientTest extends TestCase
 
     public function testConnectNotExistsDatabase()
     {
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
         $database->method('exists')->will($this->returnValue(false));
         $database->expects($this->once())->method('create');
         $this->influxDb->method('selectDB')->will($this->returnValue($database));
@@ -90,9 +104,12 @@ class InfluxDbClientTest extends TestCase
      */
     public function testConnectBrokenDatabase()
     {
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
 
-        $requestInterface = $this->getMock('Psr\Http\Message\RequestInterface');
+        $requestInterface = $this->createMock('Psr\Http\Message\RequestInterface');
         $exception = new \GuzzleHttp\Exception\ConnectException('error', $requestInterface);
         $database->method('exists')->willThrowException($exception);
 
@@ -119,7 +136,10 @@ class InfluxDbClientTest extends TestCase
 
     public function testWritePoints()
     {
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
         $database->method('writePoints')->willReturn(true);
         $this->client->setDatabase($database);
 

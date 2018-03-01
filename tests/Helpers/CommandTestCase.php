@@ -39,7 +39,7 @@ abstract class CommandTestCase extends TestCase
         $this->app = new Application();
 
         // logger
-        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
+        $this->logger = $this->createMock('\Psr\Log\LoggerInterface');
         $this->app->setLogger($this->logger);
 
         // config
@@ -53,9 +53,15 @@ abstract class CommandTestCase extends TestCase
         $config->saveConfigFile();
 
         // TransmissionClient
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $api = $this->getMock('Martial\Transmission\API\RpcClient', [], [$httpClient, '', '']);
-        $client = $this->getMock('Popstas\Transmission\Console\TransmissionClient', [], [$api]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient, '', ''])
+            ->getMock();
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\TransmissionClient')
+            ->setMethods([])
+            ->setConstructorArgs([$api])
+            ->getMock();
         $client->method('getTorrentData')->will($this->returnValue($this->expectedTorrentList));
         $this->app->setClient($client);
 
@@ -66,8 +72,14 @@ abstract class CommandTestCase extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $influxDbClient = new InfluxDbClient($influxDb, 'dbname');
-        $database = $this->getMock('InfluxDB\Database', [], ['dbname', $influxDb]);
-        $queryBuilder = $this->getMock('InfluxDB\Query\Builder', ['getResultSet'], [$database]);
+        $database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $influxDb])
+            ->getMock();
+        $queryBuilder = $this->getMockBuilder('InfluxDB\Query\Builder')
+            ->setMethods(['getResultSet'])
+            ->setConstructorArgs([$database])
+            ->getMock();
         $resultSet = $this->getMockBuilder('InfluxDB\ResultSet')
             ->setMethods([])
             ->setConstructorArgs([''])

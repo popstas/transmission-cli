@@ -41,17 +41,19 @@ class StatsGetTest extends CommandTestCase
         $this->app->setConfig($config);
 
         $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
-         ->setMethods([])
-         ->setConstructorArgs([''])
-         ->disableOriginalConstructor()
-         ->getMock();
+            ->setMethods([])
+            ->setConstructorArgs([''])
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->influxDbClient = $this->getMock(
-            'Popstas\Transmission\Console\InfluxDbClient',
-            [],
-            [$this->influxDb, 'test']
-        );
-        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $this->influxDbClient = $this->getMockBuilder('Popstas\Transmission\Console\InfluxDbClient')
+            ->setMethods([])
+            ->setConstructorArgs([$this->influxDb, 'test'])
+            ->getMock();
+        $this->database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
         $this->database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
@@ -66,10 +68,10 @@ class StatsGetTest extends CommandTestCase
         $config = $this->app->getConfig();
         $config->set('influxdb-database', '');
         $influx_connect = [
-            'host' => $config->get('influxdb-host'),
-            'port' => $config->get('influxdb-port'),
-            'user' => $config->get('influxdb-user'),
-            'password' => $config->get('influxdb-password')
+            'host'     => $config->get('influxdb-host'),
+            'port'     => $config->get('influxdb-port'),
+            'user'     => $config->get('influxdb-user'),
+            'password' => $config->get('influxdb-password'),
         ];
 
         $logText = 'Connect InfluxDB using: {user}:{password}@{host}:{port}';
@@ -87,12 +89,12 @@ class StatsGetTest extends CommandTestCase
     public function testWithoutArguments()
     {
         $this->executeCommand([
-            '--name' => 'asd',
-            '--age' => '<5',
+            '--name'   => 'asd',
+            '--age'    => '<5',
             '--profit' => '>0',
-            '--days' => '7',
-            '--sort' => '2',
-            '--limit' => 2,
+            '--days'   => '7',
+            '--sort'   => '2',
+            '--limit'  => 2,
         ]);
     }
 
@@ -100,7 +102,9 @@ class StatsGetTest extends CommandTestCase
     {
         $command = $this->getCommand();
 
-        $question = $this->getMock('Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
+        $question = $this->getMockBuilder('Symfony\Component\Console\Helper\QuestionHelper')
+            ->setMethods(['ask'])
+            ->getMock();
         $question->expects($this->at(0))
             ->method('ask')
             ->will($this->returnValue(false));
@@ -109,7 +113,7 @@ class StatsGetTest extends CommandTestCase
 
         $result = $this->executeCommand([
             '--rm'    => true,
-            '--limit' => 1
+            '--limit' => 1,
         ]);
         $this->assertEquals(1, $result);
         $this->assertRegExp('/Aborting/', $this->getDisplay());

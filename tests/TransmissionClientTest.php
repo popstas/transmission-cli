@@ -24,22 +24,22 @@ class TransmissionClientTest extends TestCase
 
     public function setUp()
     {
-        $this->logger = $this->getMock('\Psr\Log\LoggerInterface');
-        $this->httpClient = $this->getMock('GuzzleHttp\ClientInterface');
+        $this->logger = $this->createMock('\Psr\Log\LoggerInterface');
+        $this->httpClient = $this->createMock('GuzzleHttp\ClientInterface');
 
-        $this->api = $this->getMock(
-            'Martial\Transmission\API\RpcClient',
-            [],
-            [$this->httpClient, '', '', $this->logger]
-        );
+        $this->api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods([])
+            ->setConstructorArgs([$this->httpClient, '', '', $this->logger])
+            ->getMock();
 
-        $this->csrfException = $this->getMock('Martial\Transmission\API\CSRFException', ['getSessionId']);
+        $this->csrfException = $this->getMockBuilder('Martial\Transmission\API\CSRFException')
+            ->setMethods(['getSessionId'])
+            ->getMock();
         $this->csrfException->method('getSessionId')->will($this->returnValue('123'));
 
         $this->api->method('sessionGet')->willThrowException($this->csrfException);
         $this->api->method('torrentGet')->will($this->returnValue($this->expectedTorrentList));
 
-        //$this->client = $this->getMock('TransmissionClient', ['getSessionId'], [$this->api]);
         $this->client = new TransmissionClient($this->api);
 
         parent::setUp();
@@ -100,13 +100,12 @@ class TransmissionClientTest extends TestCase
 
     public function testGetDownloadDir()
     {
-        $this->api = $this->getMock(
-            'Martial\Transmission\API\RpcClient',
-            ['sessionGet', 'getSessionId', 'freeSpace'],
-            [$this->httpClient, '', '', $this->logger]
-        );
+        $this->api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods(['sessionGet', 'getSessionId', 'freeSpace'])
+            ->setConstructorArgs([$this->httpClient, '', '', $this->logger])
+            ->getMock();
         $this->api->method('sessionGet')->willReturn([
-            Session\Get::DOWNLOAD_DIR => '/a/b/c'
+            Session\Get::DOWNLOAD_DIR => '/a/b/c',
         ]);
         $this->client = new TransmissionClient($this->api);
 
@@ -115,13 +114,12 @@ class TransmissionClientTest extends TestCase
 
     public function testGetFreeSpace()
     {
-        $this->api = $this->getMock(
-            'Martial\Transmission\API\RpcClient',
-            ['sessionGet', 'getSessionId', 'freeSpace'],
-            [$this->httpClient, '', '']
-        );
+        $this->api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods(['sessionGet', 'getSessionId', 'freeSpace'])
+            ->setConstructorArgs([$this->httpClient, '', ''])
+            ->getMock();
         $this->api->method('sessionGet')->willReturn([
-            Session\Get::DOWNLOAD_DIR => '/a/b/c'
+            Session\Get::DOWNLOAD_DIR => '/a/b/c',
         ]);
         $this->client = new TransmissionClient($this->api);
 
@@ -132,13 +130,12 @@ class TransmissionClientTest extends TestCase
 
     public function testGetFreeSpaceWithDir()
     {
-        $this->api = $this->getMock(
-            'Martial\Transmission\API\RpcClient',
-            ['sessionGet', 'getSessionId', 'freeSpace'],
-            [$this->httpClient, '', '']
-        );
+        $this->api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods(['sessionGet', 'getSessionId', 'freeSpace'])
+            ->setConstructorArgs([$this->httpClient, '', ''])
+            ->getMock();
         $this->api->method('sessionGet')->willReturn([
-            Session\Get::DOWNLOAD_DIR => '/a/b/c'
+            Session\Get::DOWNLOAD_DIR => '/a/b/c',
         ]);
         $this->client = new TransmissionClient($this->api);
 

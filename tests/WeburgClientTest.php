@@ -21,7 +21,7 @@ class WeburgClientTest extends TestCase
 
     public function setUp()
     {
-        $this->httpClient = $this->getMock('GuzzleHttp\ClientInterface');
+        $this->httpClient = $this->createMock('GuzzleHttp\ClientInterface');
         $this->client = new WeburgClient($this->httpClient);
 
         parent::setUp();
@@ -29,7 +29,10 @@ class WeburgClientTest extends TestCase
 
     public function getClientWithBodyResponse($body)
     {
-        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', ['getUrlBody'], [$this->httpClient]);
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods(['getUrlBody'])
+            ->setConstructorArgs([$this->httpClient])
+            ->getMock();
         $client->method('getUrlBody')->will($this->returnValue($body));
         return $client;
     }
@@ -97,9 +100,9 @@ class WeburgClientTest extends TestCase
     {
         return [
             'from previous day' => [strtotime('2016-02-16 00:00:00'), '17.02.2016'],
-            'from same day' => [strtotime('2016-02-17 00:00:00'), '17.02.2016'],
-            'from unix epoch' => [0, '17.02.2016'],
-            'from next day' => [strtotime('2016-02-18 00:00:00'), false],
+            'from same day'     => [strtotime('2016-02-17 00:00:00'), '17.02.2016'],
+            'from unix epoch'   => [0, '17.02.2016'],
+            'from next day'     => [strtotime('2016-02-18 00:00:00'), false],
         ];
     }
 
@@ -193,7 +196,7 @@ class WeburgClientTest extends TestCase
 
     public function testDownloadTorrent()
     {
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $response->method('getStatusCode')->will($this->returnValue(200));
         $response->method('getBody')->will($this->returnValue('mock'));
         $response->method('getHeader')->will($this->returnValue(['filename="movie.torrent"']));
@@ -211,7 +214,7 @@ class WeburgClientTest extends TestCase
      */
     public function testDownloadTorrentError()
     {
-        $guzzleResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $guzzleResponse = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $guzzleResponse->method('getStatusCode')->will($this->returnValue(404));
         $this->httpClient->method('request')->will($this->returnValue($guzzleResponse));
 
@@ -220,7 +223,7 @@ class WeburgClientTest extends TestCase
 
     public function testGetUrlBody()
     {
-        $response = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $response = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $response->method('getStatusCode')->will($this->returnValue(200));
         $response->method('getBody')->will($this->returnValue('mock'));
         $this->httpClient->method('request')->will($this->returnValue($response));
@@ -233,7 +236,7 @@ class WeburgClientTest extends TestCase
      */
     public function testGetUrlBodyError()
     {
-        $guzzleResponse = $this->getMock('\Psr\Http\Message\ResponseInterface');
+        $guzzleResponse = $this->createMock('\Psr\Http\Message\ResponseInterface');
         $guzzleResponse->method('getStatusCode')->will($this->returnValue(404));
         $guzzleResponse->method('getBody')->will($this->returnValue('mock'));
         $this->httpClient->method('request')->will($this->returnValue($guzzleResponse));

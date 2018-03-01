@@ -45,17 +45,19 @@ class StatsSendTest extends CommandTestCase
         $this->app->setConfig($config);
 
         $this->influxDb = $this->getMockBuilder('InfluxDB\Client')
-         ->setMethods([])
-         ->setConstructorArgs([''])
-         ->disableOriginalConstructor()
-         ->getMock();
+            ->setMethods([])
+            ->setConstructorArgs([''])
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->influxDbClient = $this->getMock(
-            'Popstas\Transmission\Console\InfluxDbClient',
-            [],
-            [$this->influxDb, 'test']
-        );
-        $this->database = $this->getMock('InfluxDB\Database', [], ['dbname', $this->influxDb]);
+        $this->influxDbClient = $this->getMockBuilder('Popstas\Transmission\Console\InfluxDbClient')
+            ->setMethods([])
+            ->setConstructorArgs([$this->influxDb, 'test'])
+            ->getMock();
+        $this->database = $this->getMockBuilder('InfluxDB\Database')
+            ->setMethods([])
+            ->setConstructorArgs(['dbname', $this->influxDb])
+            ->getMock();
         $this->database->method('exists')->will($this->returnValue(true));
         $this->influxDb->method('selectDB')->will($this->returnValue($this->database));
 
@@ -74,10 +76,10 @@ class StatsSendTest extends CommandTestCase
         $config = $this->app->getConfig();
         $config->set('influxdb-database', '');
         $influx_connect = [
-            'host' => $config->get('influxdb-host'),
-            'port' => $config->get('influxdb-port'),
-            'user' => $config->get('influxdb-user'),
-            'password' => $config->get('influxdb-password')
+            'host'     => $config->get('influxdb-host'),
+            'port'     => $config->get('influxdb-port'),
+            'user'     => $config->get('influxdb-user'),
+            'password' => $config->get('influxdb-password'),
         ];
 
         $logText = 'Connect InfluxDB using: {user}:{password}@{host}:{port}';
@@ -112,9 +114,15 @@ class StatsSendTest extends CommandTestCase
 
     public function testObsoleteTorrentsExists()
     {
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $api = $this->getMock('Martial\Transmission\API\RpcClient', [], [$httpClient, '', '']);
-        $client = $this->getMock('Popstas\Transmission\Console\TransmissionClient', [], [$api]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $api = $this->getMockBuilder('Martial\Transmission\API\RpcClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient, '', ''])
+            ->getMock();
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\TransmissionClient')
+            ->setMethods([])
+            ->setConstructorArgs([$api])
+            ->getMock();
         // put back obsolete torrent
         $this->expectedTorrentList[1] = $this->obsoleteTorrent;
         $client->method('getTorrentData')->will($this->returnValue($this->expectedTorrentList));

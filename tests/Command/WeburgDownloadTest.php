@@ -23,8 +23,11 @@ class WeburgDownloadTest extends CommandTestCase
         $config->set('weburg-series-list', [1, 2, 3]);
         $this->app->setConfig($config);
 
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient])
+            ->getMock();
         $client->method('getMoviesIds')->will($this->returnValue([1, 2, 3]));
         $client->method('getMovieTorrentUrlsById')->will($this->returnValue(['http://torrent-url']));
         $client->method('getSeriesTorrents')->willReturn(['torrent-url']);
@@ -128,8 +131,11 @@ class WeburgDownloadTest extends CommandTestCase
 
     public function testDownloadSeries()
     {
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient])
+            ->getMock();
         $client->method('getSeriesTorrents')->willReturn(['url-1', 'url-2']);
         $client->method('getMovieInfoById')->willReturn(['title' => 'series', 'hashes' => [1, 2]]);
         $client->expects($this->exactly(3))->method('getSeriesTorrents');
@@ -169,8 +175,11 @@ class WeburgDownloadTest extends CommandTestCase
 
     public function testDownloadOneSeries()
     {
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient])
+            ->getMock();
         $client->method('getSeriesTorrents')->willReturn(['url-1', 'url-2']);
         $client->method('cleanMovieId')->willReturn(12345);
         $client->method('getMovieInfoById')->willReturn(['title' => 'series', 'hashes' => [1, 2]]);
@@ -197,8 +206,11 @@ class WeburgDownloadTest extends CommandTestCase
         $this->app->getConfig()->set('download-filename-blacklist', ['jaskier']);
         $this->app->getConfig()->set('weburg-series-list', ['1']);
 
-        $httpClient = $this->getMock('GuzzleHttp\ClientInterface');
-        $client = $this->getMock('Popstas\Transmission\Console\WeburgClient', [], [$httpClient]);
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods([])
+            ->setConstructorArgs([$httpClient])
+            ->getMock();
         $client->method('getSeriesTorrents')->willReturn(['url-1']);
         $client->method('getMovieInfoById')->willReturn(['title' => 'series', 'hashes' => [1, 2]]);
         $this->app->setWeburgClient($client);
