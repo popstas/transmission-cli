@@ -75,7 +75,7 @@ class WeburgClient
 
     public function getMoviesIds()
     {
-        $moviesUrl = 'http://weburg.net/movies/new/?clever_title=1&template=0&last=0';
+        $moviesUrl = 'https://weburg.net/movies/new/?clever_title=1&template=0&last=0';
 
         $jsonRaw = $this->getUrlBody($moviesUrl, [
             'Content-Type'     => 'text/html; charset=utf-8',
@@ -92,7 +92,7 @@ class WeburgClient
 
     public function getMovieUrl($movieId)
     {
-        return 'http://weburg.net/movies/info/' . $movieId;
+        return 'https://weburg.net/movies/info/' . $movieId;
     }
 
     /**
@@ -173,7 +173,7 @@ class WeburgClient
 
     private function getMovieTorrentUrl($movieId, $hash = '')
     {
-        return 'http://weburg.net/ajax/download/movie?'
+        return 'https://weburg.net/ajax/download/movie?'
         . ($hash ? 'hash=' . $hash . '&' : '')
         . 'obj_id=' . $movieId;
     }

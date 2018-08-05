@@ -142,7 +142,15 @@ class Application extends BaseApplication
     {
         $config = $this->getConfig();
         $requestDelay = $config->get('weburg-request-delay');
-        $httpClient = new GuzzleHttp\Client();
+        $httpClient = new GuzzleHttp\Client([
+            'allow_redirects' => [
+                'max'             => 10,
+                'strict'          => false,
+                'referer'         => false,
+                'protocols'       => ['http', 'https'],
+                'track_redirects' => false,
+            ],
+        ]);
         return new WeburgClient($httpClient, $requestDelay);
     }
 

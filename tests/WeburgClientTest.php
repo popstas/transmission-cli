@@ -149,7 +149,7 @@ class WeburgClientTest extends TestCase
     public function testGetMovieUrl()
     {
         $this->assertEquals(
-            'http://weburg.net/movies/info/12345',
+            'https://weburg.net/movies/info/12345',
             $this->invokeMethod($this->client, 'getMovieUrl', [12345])
         );
     }
@@ -157,12 +157,12 @@ class WeburgClientTest extends TestCase
     public function testGetMovieTorrentUrl()
     {
         $this->assertEquals(
-            'http://weburg.net/ajax/download/movie?obj_id=12345',
+            'https://weburg.net/ajax/download/movie?obj_id=12345',
             $this->invokeMethod($this->client, 'getMovieTorrentUrl', [12345])
         );
 
         $this->assertEquals(
-            'http://weburg.net/ajax/download/movie?hash=abcde&obj_id=12345',
+            'https://weburg.net/ajax/download/movie?hash=abcde&obj_id=12345',
             $this->invokeMethod($this->client, 'getMovieTorrentUrl', [12345, 'abcde'])
         );
     }
