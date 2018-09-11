@@ -166,7 +166,7 @@ class WeburgClient
         if (preg_match('/^\d+$/', $idOrUrl)) {
             return $idOrUrl;
         }
-        preg_match('/^http:\/\/weburg\.net\/(series|movies)\/info\/(\d+)$/', $idOrUrl, $res);
+        preg_match('/^https?:\/\/weburg\.net\/(series|movies)\/info\/(\d+)$/', $idOrUrl, $res);
         $movieId = count($res) ? $res[2] : null;
         return $movieId;
     }
@@ -183,7 +183,7 @@ class WeburgClient
         $info = [];
 
         $checks = [
-            'title'            => '<title>(.*?) — Weburg<\/title>',
+            'title'            => '<title>(.*?)<\/title>',
             'comments'         => 'Комментариев:&nbsp;(\d+)',
             'rating_kinopoisk' => 'external-ratings-link_type_kinopoisk.*?>(\d+\.\d+)',
             'rating_imdb'      => 'external-ratings-link_type_imdb.*?>(\d+\.\d+)',
