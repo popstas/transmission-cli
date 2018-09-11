@@ -59,6 +59,7 @@ class Application extends BaseApplication
             new Command\TorrentRemove(),
             new Command\TorrentRemoveDuplicates(),
             new Command\WeburgDownload(),
+            new Command\WeburgInfo(),
             new Command\WeburgSeriesAdd(),
         ]);
         return $commands;

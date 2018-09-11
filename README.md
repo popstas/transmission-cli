@@ -41,6 +41,7 @@ Based on:
 - `weburg-download [movie url or id]` - Download movie without popularity check
 - `weburg-download [series url or id] [--days=1]` - Download series for last x days
 - `weburg-series-add`, `wsa`         - Add series to monitoring list
+- `weburg-info`, `wi`                - Test internal weburg parser
 
 #### Global command options
 - `--config` - set path to config file
