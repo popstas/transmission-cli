@@ -94,6 +94,11 @@ EOT
                 $torrentsDir,
                 $torrentsUrls
             ) {
+                if (empty($torrentsUrls)) {
+                    $output->writeln("\nNo torrents for download");
+                    return;
+                }
+
                 $downloadedFiles = [];
                 foreach ($torrentsUrls as $torrentUrl) {
                     $downloadedFiles[] = $weburgClient->downloadTorrent($torrentUrl, $torrentsDir);
