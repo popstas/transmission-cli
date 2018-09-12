@@ -183,6 +183,11 @@ After download all torrents, command call `torrent-add` command for each transmi
 If was defined `--transmission-host` option, then `torrent-add` will called only for this host.
 
 
+## Info about movie on Weburg.net
+
+Command for test internal weburg parser.
+
+
 ## Add series to download list
 
 You can automatically download new series. To do this, you should add series to download list:

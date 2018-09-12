@@ -1,5 +1,42 @@
 <a name=""></a>
-# [](https://github.com/popstas/transmission-cli/compare/v0.7.6...v) (2018-03-01)
+# [](https://github.com/popstas/transmission-cli/compare/v0.8.0...v) (2018-09-12)
+
+
+
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/popstas/transmission-cli/compare/v0.7.8...v0.8.0) (2018-09-12)
+
+
+### Bug Fixes
+
+* correct title and url parse ([eafa4ae](https://github.com/popstas/transmission-cli/commit/eafa4ae))
+
+
+### Features
+
+* add title to weburg-series-list ([4327ed4](https://github.com/popstas/transmission-cli/commit/4327ed4))
+* weburg-info command ([9935e08](https://github.com/popstas/transmission-cli/commit/9935e08))
+
+
+
+<a name="0.7.8"></a>
+## [0.7.8](https://github.com/popstas/transmission-cli/compare/v0.7.7...v0.7.8) (2018-08-05)
+
+
+### Bug Fixes
+
+* drop php 5.6 support ([10a6790](https://github.com/popstas/transmission-cli/commit/10a6790))
+* weburg redirects > 5, change urls to https ([9492ba7](https://github.com/popstas/transmission-cli/commit/9492ba7))
+
+
+
+<a name="0.7.7"></a>
+## [0.7.7](https://github.com/popstas/transmission-cli/compare/v0.7.6...v0.7.7) (2018-03-01)
+
+
+### Features
+
+* whitelist and blacklist ([1977afc](https://github.com/popstas/transmission-cli/commit/1977afc)), closes [#43](https://github.com/popstas/transmission-cli/issues/43)
 
 
 
