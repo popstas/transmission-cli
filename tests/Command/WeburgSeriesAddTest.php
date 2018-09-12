@@ -19,6 +19,15 @@ class WeburgSeriesAddTest extends CommandTestCase
         $config->saveConfigFile();
 
         $this->app->setConfig($config);
+
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods(['getMovieInfoById'])
+            ->setConstructorArgs([$httpClient])
+            ->getMock();
+        $client->method('getMovieInfoById')->willReturn(['title' => 'movie', 'comments' => 123, 'rating_imdb' => null]);
+
+        $this->app->setWeburgClient($client);
     }
 
     public function tearDown()
@@ -30,7 +39,7 @@ class WeburgSeriesAddTest extends CommandTestCase
     public function testAddTwice()
     {
         $this->executeCommand(['series-id' => '12345']);
-        $this->assertRegExp('/Series 12345 added to list/', $this->getDisplay());
+        $this->assertRegExp('/Series 12345 movie added to list/', $this->getDisplay());
 
         $this->executeCommand(['series-id' => 'http://weburg.net/series/info/12345']);
         $this->assertRegExp('/already in list/', $this->getDisplay());

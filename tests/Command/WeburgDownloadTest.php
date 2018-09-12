@@ -20,7 +20,7 @@ class WeburgDownloadTest extends CommandTestCase
         }
         $config = new Config();
         $config->set('download-torrents-dir', $this->dest);
-        $config->set('weburg-series-list', [1, 2, 3]);
+        $config->set('weburg-series-list', [['id' => 1], ['id' => 2], ['id' => 3]]);
         $this->app->setConfig($config);
 
         $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
@@ -204,7 +204,7 @@ class WeburgDownloadTest extends CommandTestCase
     {
         $this->app->getConfig()->set('download-filename-whitelist', ['1080']);
         $this->app->getConfig()->set('download-filename-blacklist', ['jaskier']);
-        $this->app->getConfig()->set('weburg-series-list', ['1']);
+        $this->app->getConfig()->set('weburg-series-list', [['id' => '1']]);
 
         $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
         $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')

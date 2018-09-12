@@ -2,6 +2,7 @@
 
 namespace Popstas\Transmission\Console\Command;
 
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -15,7 +16,7 @@ class WeburgSeriesAdd extends Command
             ->setName('weburg-series-add')
             ->setAliases(['wsa'])
             ->setDescription('Add series to monitoring list')
-            ->addArgument('series-id', null, 'series id or series url')
+            ->addArgument('series-id', InputArgument::REQUIRED, 'series id or series url')
             ->setHelp(<<<EOT
 ## Add series to download list
 
@@ -48,16 +49,24 @@ EOT
         }
 
         $seriesList = $config->get('weburg-series-list');
-        if (in_array($seriesId, $seriesList)) {
+        if (!empty(array_filter($seriesList, function ($item) use ($seriesId) {
+            // can be array or id
+            return is_array($item) ? $item['id'] == $seriesId : $item == $seriesId;
+        }))) {
             $output->writeln($seriesId . ' already in list');
             return 0;
         }
 
-        $seriesList[] = $seriesId;
+        $seriesInfo = $weburgClient->getMovieInfoById($seriesId);
+        $seriesList[] = [
+            'id' => $seriesId,
+            'title' => $seriesInfo['title']
+        ];
+
         $config->set('weburg-series-list', $seriesList);
         $config->saveConfigFile();
 
-        $output->writeln('Series ' . $seriesId . ' added to list');
+        $output->writeln('Series ' . $seriesId . ' ' . $seriesInfo['title'] . ' added to list');
         return 0;
     }
 }

@@ -218,18 +218,24 @@ EOT
 
         $config = $this->getApplication()->getConfig();
 
-        $seriesIds = $config->get('weburg-series-list');
-        if (!$seriesIds) {
+        $seriesList = $config->get('weburg-series-list');
+        if (!$seriesList) {
             return [];
         }
 
         $output->writeln("\nDownloading tracked series");
 
-        $progress = new ProgressBar($output, count($seriesIds));
+        $progress = new ProgressBar($output, count($seriesList));
         $progress->start();
 
-        foreach ($seriesIds as $seriesId) {
-            $progress->setMessage('Check series ' . $seriesId . '...');
+        foreach ($seriesList as $seriesItem) {
+            if (is_array($seriesItem)) {
+                $seriesId = $seriesItem['id'];
+                $seriesTitle = isset($seriesItem['title']) && $seriesItem['title'] ? $seriesItem['title'] : $seriesId;
+            } else {
+                $seriesId = $seriesTitle = $seriesItem;
+            }
+            $progress->setMessage('Check series ' . $seriesTitle . '...');
             $progress->advance();
 
             $movieInfo = $weburgClient->getMovieInfoById($seriesId);

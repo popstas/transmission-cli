@@ -183,7 +183,7 @@ class WeburgClient
         $info = [];
 
         $checks = [
-            'title'            => '<title>(.*?)<\/title>',
+            'title'            => '<title>(.*?)( — Weburg)?( — Вебург)?<\/title>',
             'comments'         => 'Комментариев:&nbsp;(\d+)',
             'rating_kinopoisk' => 'external-ratings-link_type_kinopoisk.*?>(\d+\.\d+)',
             'rating_imdb'      => 'external-ratings-link_type_imdb.*?>(\d+\.\d+)',

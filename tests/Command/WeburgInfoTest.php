@@ -19,6 +19,15 @@ class WeburgInfoTest extends CommandTestCase
         $config->saveConfigFile();
 
         $this->app->setConfig($config);
+
+        $httpClient = $this->createMock('GuzzleHttp\ClientInterface');
+        $client = $this->getMockBuilder('Popstas\Transmission\Console\WeburgClient')
+            ->setMethods(['getMovieInfoById'])
+            ->setConstructorArgs([$httpClient])
+            ->getMock();
+        $client->method('getMovieInfoById')->willReturn(['title' => 'movie', 'comments' => 123, 'rating_imdb' => null]);
+
+        $this->app->setWeburgClient($client);
     }
 
     public function tearDown()
@@ -30,6 +39,6 @@ class WeburgInfoTest extends CommandTestCase
     public function testInfo()
     {
         $this->executeCommand(['movie-id' => '12345']);
-        $this->assertRegExp('/Энди Уорхол/', $this->getDisplay());
+        $this->assertRegExp('/movie/', $this->getDisplay());
     }
 }

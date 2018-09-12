@@ -12,7 +12,7 @@ download-kinopoisk-min: '8.0'
 download-comments-min: 10
 download-votes-min: 25
 weburg-series-list:
-    - '21829'
+    - { id: '21829', title: 'Викинги' }
 weburg-series-max-age: 1
 weburg-series-allowed-misses: 1
 weburg-request-delay: 2
