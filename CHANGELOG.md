@@ -1,5 +1,15 @@
 <a name=""></a>
-# [](https://github.com/popstas/transmission-cli/compare/v0.8.0...v) (2018-09-12)
+# [](https://github.com/popstas/transmission-cli/compare/v0.8.1...v) (2018-11-18)
+
+
+
+<a name="0.8.1"></a>
+## [0.8.1](https://github.com/popstas/transmission-cli/compare/v0.8.0...v0.8.1) (2018-09-12)
+
+
+### Bug Fixes
+
+* distinguish "no torrents" and "all torrents filtered" ([7b985ef](https://github.com/popstas/transmission-cli/commit/7b985ef))
 
 
 

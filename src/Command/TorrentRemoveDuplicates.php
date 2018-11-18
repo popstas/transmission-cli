@@ -61,15 +61,19 @@ EOT
         }
 
         $this->dryRun($input, $output, function () use ($client, $obsoleteList, $config, $input, $output) {
-            $influxDbClient = $this->getApplication()->getInfluxDbClient(
-                $config->get('influxdb-host'),
-                $config->get('influxdb-port'),
-                $config->get('influxdb-user'),
-                $config->get('influxdb-password'),
-                $config->get('influxdb-database')
-            );
-            $transmissionHost = $config->get('transmission-host');
-            $influxDbClient->sendTorrentPoints($obsoleteList, $transmissionHost);
+            try {
+                $influxDbClient = $this->getApplication()->getInfluxDbClient(
+                    $config->get('influxdb-host'),
+                    $config->get('influxdb-port'),
+                    $config->get('influxdb-user'),
+                    $config->get('influxdb-password'),
+                    $config->get('influxdb-database')
+                );
+                $transmissionHost = $config->get('transmission-host');
+                $influxDbClient->sendTorrentPoints($obsoleteList, $transmissionHost);
+            } catch (\Exception $exception) {
+                $output->writeln('InfluxDB not available');
+            }
 
             $client->removeTorrents($obsoleteList);
             $names = TorrentListUtils::getArrayField($obsoleteList, Torrent\Get::NAME);

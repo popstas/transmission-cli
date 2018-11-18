@@ -78,15 +78,19 @@ EOT
         }
 
         $this->dryRun($input, $output, function () use ($config, $torrentList, $client, $input, $output) {
-            $influxDbClient = $this->getApplication()->getInfluxDbClient(
-                $config->get('influxdb-host'),
-                $config->get('influxdb-port'),
-                $config->get('influxdb-user'),
-                $config->get('influxdb-password'),
-                $config->get('influxdb-database')
-            );
-            $transmissionHost = $config->get('transmission-host');
-            $influxDbClient->sendTorrentPoints($torrentList, $transmissionHost);
+            try {
+                $influxDbClient = $this->getApplication()->getInfluxDbClient(
+                    $config->get('influxdb-host'),
+                    $config->get('influxdb-port'),
+                    $config->get('influxdb-user'),
+                    $config->get('influxdb-password'),
+                    $config->get('influxdb-database')
+                );
+                $transmissionHost = $config->get('transmission-host');
+                $influxDbClient->sendTorrentPoints($torrentList, $transmissionHost);
+            } catch (\Exception $exception) {
+                $output->writeln('InfluxDB not available');
+            }
 
             $deleteLocalData = !$input->getOption('soft');
             $client->removeTorrents($torrentList, $deleteLocalData);
