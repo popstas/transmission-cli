@@ -17,6 +17,7 @@ Based on:
 - delete not popular uploads from transmission
 - working with multiple transmission instances
 - command line autocompletion
+- add torrents with GET request
 
 ## Graphics
 
@@ -52,6 +53,12 @@ Based on:
 - `--transmission-user` - set transmission user
 - `--transmission-password` - set transmission password
 
+#### HTTP server for add torrents
+```
+node scripts/server-torrent-add.js
+```
+
+Then you can add torrents via open urls like http://localhost:10293/?url=http%3A%2F%2Fbt.weburg.net%2Fgettorrent.php%3Fsecuritykey%3D70c3fcb98000761e78ea2b9c8bedd69e%26user_id%3D151954%26info_hash%3D9f67aa271026be1ca2d7c6b4a88f9417455d64f5
 
 # Install
 
