@@ -25,7 +25,7 @@
   }
 
   const addLinks = () => {
-    let links = $('.js-a__torrent,.objects__torrent:not(.js-a__transmission)');
+    let links = $('.js-a__torrent:not(.js-a__transmission),.objects__torrent:not(.js-a__transmission)');
     links.each((ind, elem) => {
       const link = $(elem);
       link.addClass('js-a__transmission');
