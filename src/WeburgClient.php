@@ -14,12 +14,22 @@ class WeburgClient
 
     private $requestDelay;
 
+    /**
+     * WeburgClient constructor.
+     * @param ClientInterface $httpClient
+     * @param int $requestDelay
+     */
     public function __construct(ClientInterface $httpClient, $requestDelay = 0)
     {
         $this->httpClient = $httpClient;
         $this->requestDelay = $requestDelay;
     }
 
+    /**
+     * @param $movieId
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function getMovieInfoById($movieId)
     {
         $movieUrl = $this->getMovieUrl($movieId);
@@ -32,6 +42,7 @@ class WeburgClient
     /**
      * @param $movieId
      * @return array urls of movie (not series)
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getMovieTorrentUrlsById($movieId)
     {
@@ -47,6 +58,7 @@ class WeburgClient
      * @param int $daysMax torrents older last days will not matched
      * @param int $allowedMisses after x misses next checks will broken
      * @return array urls of matched torrent files
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getSeriesTorrents($movieId, $hashes, $daysMax = 1, $allowedMisses = 0)
     {
@@ -73,6 +85,10 @@ class WeburgClient
         return $torrentsUrls;
     }
 
+    /**
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
     public function getMoviesIds()
     {
         $moviesUrl = 'https://weburg.net/movies/new/?clever_title=1&template=0&last=0';
@@ -90,7 +106,43 @@ class WeburgClient
         return $moviesIds;
     }
 
-    public function getMovieUrl($movieId)
+    /**
+     * @param $q
+     * @return bool|string
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function getMovieIdByQuery($q)
+    {
+        $results = $this->movieQuery($q);
+
+        if ($results && $results[0] && $results[0]->object_id) {
+            return $results[0]->object_id;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $q
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function movieQuery($q)
+    {
+        $resultUrl = 'https://weburg.net/ajax/autocomplete/search/main?' . http_build_query (['q' => $q]);
+
+        $jsonRaw = $this->getUrlBody($resultUrl, [
+            'Content-Type' => 'text/html; charset=utf-8',
+            'User-Agent'   => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0',
+            // 'X-Requested-With' => 'XMLHttpRequest',
+        ]);
+
+        $resultJson = json_decode($jsonRaw);
+
+        return $resultJson;
+    }
+
+    public static function getMovieUrl($movieId)
     {
         return 'https://weburg.net/movies/info/' . $movieId;
     }
@@ -100,6 +152,7 @@ class WeburgClient
      * @param array $headers
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \RuntimeException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function getUrl($url, $headers = [])
     {
@@ -124,6 +177,7 @@ class WeburgClient
      * @param array $headers
      * @return \Psr\Http\Message\StreamInterface
      * @throws \RuntimeException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getUrlBody($url, $headers = [])
     {
@@ -137,6 +191,7 @@ class WeburgClient
      * @param $torrentsDir
      * @return string path to downloaded file
      * @throws \RuntimeException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function downloadTorrent($url, $torrentsDir)
     {
@@ -153,15 +208,15 @@ class WeburgClient
         return $filePath;
     }
 
-    public function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
+    public static function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
     {
         return $movieInfo['comments'] >= $commentsMin
-        || $movieInfo['rating_imdb'] >= $imdbMin
-        || $movieInfo['rating_kinopoisk'] >= $kinopoiskMin
-        || $movieInfo['rating_votes'] >= $votesMin;
+            || $movieInfo['rating_imdb'] >= $imdbMin
+            || $movieInfo['rating_kinopoisk'] >= $kinopoiskMin
+            || $movieInfo['rating_votes'] >= $votesMin;
     }
 
-    public function cleanMovieId($idOrUrl)
+    public static function cleanMovieId($idOrUrl)
     {
         if (preg_match('/^\d+$/', $idOrUrl)) {
             return $idOrUrl;
@@ -171,14 +226,14 @@ class WeburgClient
         return $movieId;
     }
 
-    private function getMovieTorrentUrl($movieId, $hash = '')
+    private static function getMovieTorrentUrl($movieId, $hash = '')
     {
         return 'https://weburg.net/ajax/download/movie?'
-        . ($hash ? 'hash=' . $hash . '&' : '')
-        . 'obj_id=' . $movieId;
+            . ($hash ? 'hash=' . $hash . '&' : '')
+            . 'obj_id=' . $movieId;
     }
 
-    private function getMovieInfo($body)
+    private static function getMovieInfo($body)
     {
         $info = [];
 
@@ -206,7 +261,7 @@ class WeburgClient
      * @param $fromTimestamp
      * @return bool|string date if matched, false if not
      */
-    private function checkTorrentDate($body, $fromTimestamp)
+    private static function checkTorrentDate($body, $fromTimestamp)
     {
         preg_match('/(\d{2})\.(\d{2})\.(\d{4})/mis', $body, $res);
         if (empty($res)) {
@@ -217,7 +272,7 @@ class WeburgClient
         return $torrentTimestamp >= $fromTimestamp ? $res[0] : false;
     }
 
-    private function getInfoUrls($body)
+    private static function getInfoUrls($body)
     {
         preg_match_all('/\/movies\/info\/([0-9]+)/', $body, $res);
         $moviesIds = array_unique($res[1]);
@@ -228,7 +283,7 @@ class WeburgClient
      * @param $body
      * @return array
      */
-    private function getTorrentsUrls($body)
+    private static function getTorrentsUrls($body)
     {
         preg_match_all('/(http:\/\/.*?gettorrent.*?)"/', $body, $res);
         $torrentsUrls = $res[1];

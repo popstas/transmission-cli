@@ -22,6 +22,7 @@ class WeburgDownload extends Command
             ->addOption('days', null, InputOption::VALUE_OPTIONAL, 'Max age of series torrent')
             ->addOption('popular', null, InputOption::VALUE_NONE, 'Download only popular')
             ->addOption('series', null, InputOption::VALUE_NONE, 'Download only tracked series')
+            ->addOption('query', null, InputOption::VALUE_OPTIONAL, 'Search and download movie from Weburg')
             ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addArgument('movie-id', null, 'Movie ID or URL')
             ->setHelp(<<<EOT
@@ -129,7 +130,14 @@ EOT
     ) {
         $torrentsUrls = [];
 
-        if (!$input->getOption('popular') && !$input->getOption('series')) {
+        if ($input->getOption('query')) {
+            $torrentsUrls = array_merge(
+                $torrentsUrls,
+                $this->getTorrentsUrlByQuery($output, $weburgClient, $downloadDir, $input->getOption('query'))
+            );
+        }
+
+        if (!$input->getOption('popular') && !$input->getOption('series') && !$input->getOption('query')) {
             $input->setOption('popular', true);
             $input->setOption('series', true);
         }
@@ -147,6 +155,43 @@ EOT
                 $this->getTrackedSeriesUrls($output, $weburgClient, $daysMax, $allowedMisses)
             );
         }
+
+        return $torrentsUrls;
+    }
+
+    public function getTorrentsUrlByQuery(OutputInterface $output, WeburgClient $weburgClient, $downloadDir, $query)
+    {
+        $torrentsUrls = [];
+
+        $logger = $this->getApplication()->getLogger();
+
+        $movieId = $weburgClient->getMovieIdByQuery($query);
+        if(!$movieId){
+            $output->writeln("\nNot found any for query $query");
+        }
+
+        $downloadedLogfile = $downloadDir . '/' . $movieId;
+
+        $isDownloaded = file_exists($downloadedLogfile);
+        if ($isDownloaded) {
+            $output->writeln("\nMovie $query was downloaded before");
+        }
+
+        $movieInfo = $weburgClient->getMovieInfoById($movieId);
+        foreach (array_keys($movieInfo) as $infoField) {
+            if (!isset($movieInfo[$infoField])) {
+                $logger->warning('Cannot find ' . $infoField . ' in movie ' . $movieId);
+            }
+        }
+
+        $movieUrls = $weburgClient->getMovieTorrentUrlsById($movieId);
+        $torrentsUrls = array_merge($torrentsUrls, $movieUrls);
+        $logger->info('Download movie ' . $movieId . ': ' . $movieInfo['title']);
+
+        file_put_contents(
+            $downloadedLogfile,
+            date('Y-m-d H:i:s') . "\n" . implode("\n", $torrentsUrls)
+        );
 
         return $torrentsUrls;
     }
@@ -375,7 +420,7 @@ EOT
             );
 
             $addInput = new ArrayInput($arguments);
-            $output->writeln("\nAdd torrents to " . $host);
+            $output->writeln("\nAdd " . count($torrentFiles) . " torrents to " . $host);
             $command->run($addInput, $output);
         }
     }
