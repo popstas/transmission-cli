@@ -23,6 +23,7 @@ class WeburgDownload extends Command
             ->addOption('popular', null, InputOption::VALUE_NONE, 'Download only popular')
             ->addOption('series', null, InputOption::VALUE_NONE, 'Download only tracked series')
             ->addOption('query', null, InputOption::VALUE_OPTIONAL, 'Search and download movie from Weburg')
+            ->addOption('movies-url', null, InputOption::VALUE_OPTIONAL, 'URL with movies on Weburg')
             ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addArgument('movie-id', null, 'Movie ID or URL')
             ->setHelp(<<<EOT
@@ -143,9 +144,10 @@ EOT
         }
 
         if ($input->getOption('popular')) {
+            $moviesUrl = $input->getOption('movies-url');
             $torrentsUrls = array_merge(
                 $torrentsUrls,
-                $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir)
+                $this->getPopularTorrentsUrls($output, $weburgClient, $downloadDir, $moviesUrl)
             );
         }
 
@@ -196,14 +198,18 @@ EOT
         return $torrentsUrls;
     }
 
-    public function getPopularTorrentsUrls(OutputInterface $output, WeburgClient $weburgClient, $downloadDir)
-    {
+    public function getPopularTorrentsUrls(
+        OutputInterface $output,
+        WeburgClient $weburgClient,
+        $downloadDir,
+        $moviesUrl = null
+    ) {
         $torrentsUrls = [];
 
         $config = $this->getApplication()->getConfig();
         $logger = $this->getApplication()->getLogger();
 
-        $moviesIds = $weburgClient->getMoviesIds();
+        $moviesIds = $weburgClient->getMoviesIds($moviesUrl);
 
         $output->writeln("\nDownloading popular torrents");
 

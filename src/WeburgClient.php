@@ -4,6 +4,10 @@ namespace Popstas\Transmission\Console;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 class WeburgClient
 {
@@ -28,7 +32,7 @@ class WeburgClient
     /**
      * @param $movieId
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function getMovieInfoById($movieId)
     {
@@ -42,7 +46,7 @@ class WeburgClient
     /**
      * @param $movieId
      * @return array urls of movie (not series)
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function getMovieTorrentUrlsById($movieId)
     {
@@ -58,7 +62,7 @@ class WeburgClient
      * @param int $daysMax torrents older last days will not matched
      * @param int $allowedMisses after x misses next checks will broken
      * @return array urls of matched torrent files
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function getSeriesTorrents($movieId, $hashes, $daysMax = 1, $allowedMisses = 0)
     {
@@ -86,22 +90,25 @@ class WeburgClient
     }
 
     /**
+     * @param string $moviesUrl
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
-    public function getMoviesIds()
+    public function getMoviesIds($moviesUrl = 'https://weburg.net/movies/new/?clever_title=1&template=0&last=0')
     {
-        $moviesUrl = 'https://weburg.net/movies/new/?clever_title=1&template=0&last=0';
-
+        if (!$moviesUrl) {
+            $moviesUrl = 'https://weburg.net/movies/new/?clever_title=1&template=0&last=0';
+        }
         $jsonRaw = $this->getUrlBody($moviesUrl, [
             'Content-Type'     => 'text/html; charset=utf-8',
             'User-Agent'       => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0',
             'X-Requested-With' => 'XMLHttpRequest',
         ]);
 
-        $moviesJson = json_decode($jsonRaw);
+        $moviesJson = @json_decode($jsonRaw);
+        $html = $moviesJson ? $moviesJson->items : strval($jsonRaw);
 
-        $moviesIds = $this->getInfoUrls($moviesJson->items);
+        $moviesIds = $this->getInfoUrls($html);
 
         return $moviesIds;
     }
@@ -109,7 +116,7 @@ class WeburgClient
     /**
      * @param $q
      * @return bool|string
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function getMovieIdByQuery($q)
     {
@@ -125,7 +132,7 @@ class WeburgClient
     /**
      * @param $q
      * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function movieQuery($q)
     {
@@ -150,9 +157,9 @@ class WeburgClient
     /**
      * @param $url
      * @param array $headers
-     * @return \Psr\Http\Message\ResponseInterface
-     * @throws \RuntimeException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return ResponseInterface
+     * @throws RuntimeException
+     * @throws GuzzleException
      */
     private function getUrl($url, $headers = [])
     {
@@ -164,7 +171,7 @@ class WeburgClient
         ]);
 
         if ($res->getStatusCode() != 200) {
-            throw new \RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
+            throw new RuntimeException('Error ' . $res->getStatusCode() . 'while get url ' . $url);
         }
 
         sleep($this->requestDelay);
@@ -175,9 +182,9 @@ class WeburgClient
     /**
      * @param string $url
      * @param array $headers
-     * @return \Psr\Http\Message\StreamInterface
-     * @throws \RuntimeException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return StreamInterface
+     * @throws RuntimeException
+     * @throws GuzzleException
      */
     public function getUrlBody($url, $headers = [])
     {
@@ -190,8 +197,8 @@ class WeburgClient
      * @param $url
      * @param $torrentsDir
      * @return string path to downloaded file
-     * @throws \RuntimeException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws RuntimeException
+     * @throws GuzzleException
      */
     public function downloadTorrent($url, $torrentsDir)
     {
