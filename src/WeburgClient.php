@@ -215,7 +215,7 @@ class WeburgClient
         return $filePath;
     }
 
-    public static function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
+    public function isTorrentPopular($movieInfo, $commentsMin, $imdbMin, $kinopoiskMin, $votesMin)
     {
         return $movieInfo['comments'] >= $commentsMin
             || $movieInfo['rating_imdb'] >= $imdbMin
@@ -223,7 +223,7 @@ class WeburgClient
             || $movieInfo['rating_votes'] >= $votesMin;
     }
 
-    public static function cleanMovieId($idOrUrl)
+    public function cleanMovieId($idOrUrl)
     {
         if (preg_match('/^\d+$/', $idOrUrl)) {
             return $idOrUrl;
