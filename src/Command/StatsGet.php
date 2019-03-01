@@ -136,8 +136,6 @@ EOT
         $output->writeln('Free space: ' . TorrentUtils::getSizeInGb($freeSpace) . ' GB');
 
         if ($input->getOption('rm') && count($torrentList) > 0) {
-            $torrentIds = TorrentListUtils::getArrayField($tableData['rows'], 1);
-            var_dump($torrentIds);
             return $this->removeTorrents($input, $output, $tableData['rows']);
         }
 

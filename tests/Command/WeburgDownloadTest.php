@@ -225,7 +225,7 @@ class WeburgDownloadTest extends CommandTestCase
         // will whitelisted
         $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
         $this->assertEquals(0, $result);
-        $this->assertRegExp('/Add torrents to/', $this->getDisplay());
+        $this->assertRegExp('/Add 1 torrents to/', $this->getDisplay());
 
         // will not whitelisted
         $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
@@ -241,6 +241,6 @@ class WeburgDownloadTest extends CommandTestCase
         $this->app->getConfig()->set('download-filename-blacklist', []);
         $result = $this->executeCommand(['--series' => true, '--download-torrents-dir' => $this->dest, '-y' => true]);
         $this->assertEquals(0, $result);
-        $this->assertRegExp('/Add torrents to/', $this->getDisplay());
+        $this->assertRegExp('/Add 1 torrents to/', $this->getDisplay());
     }
 }
