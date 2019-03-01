@@ -39,6 +39,7 @@ Based on:
 - `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
 - `weburg-download --popular`        - Download only popular
 - `weburg-download --series`         - Download only series
+- `weburg-download --query`          - Download first result
 - `weburg-download [movie url or id]` - Download movie without popularity check
 - `weburg-download [series url or id] [--days=1]` - Download series for last x days
 - `weburg-series-add`, `wsa`         - Add series to monitoring list
