@@ -129,7 +129,7 @@ class WeburgClient
      */
     public function movieQuery($q)
     {
-        $resultUrl = 'https://weburg.net/ajax/autocomplete/search/main?' . http_build_query (['q' => $q]);
+        $resultUrl = 'https://weburg.net/ajax/autocomplete/search/main?' . http_build_query(['q' => $q]);
 
         $jsonRaw = $this->getUrlBody($resultUrl, [
             'Content-Type' => 'text/html; charset=utf-8',

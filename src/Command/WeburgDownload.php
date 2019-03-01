@@ -166,7 +166,7 @@ EOT
         $logger = $this->getApplication()->getLogger();
 
         $movieId = $weburgClient->getMovieIdByQuery($query);
-        if(!$movieId){
+        if (!$movieId) {
             $output->writeln("\nNot found any for query $query");
         }
 
