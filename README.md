@@ -36,7 +36,7 @@ Based on:
 - `torrent-remove-duplicates`, `trd` - Remove duplicates obsolete torrents
 - `stats-get [--name='name'] [--age='>1 <3 =2'] [profit='>0'] [--days=7] [--sort=1] [--limit=10] [--rm]`, `sg` - Get metrics from InfluxDB
 - `stats-send`, `ss`                 - Send metrics to InfluxDB
-- `weburg-download`, `wd`            - Download popular torrents and tracked series from weburg.net
+- `weburg-download [--limit 1]`, `wd`            - Download popular torrents and tracked series from weburg.net
 - `weburg-download --popular [--movies-url=url]`        - Download only popular
 - `weburg-download --series`         - Download only series
 - `weburg-download --query`          - Download first result

@@ -24,6 +24,7 @@ class WeburgDownload extends Command
             ->addOption('series', null, InputOption::VALUE_NONE, 'Download only tracked series')
             ->addOption('query', null, InputOption::VALUE_OPTIONAL, 'Search and download movie from Weburg')
             ->addOption('movies-url', null, InputOption::VALUE_OPTIONAL, 'URL with movies on Weburg')
+            ->addOption('limit', null, InputOption::VALUE_OPTIONAL, 'Limit torrent list')
             ->addOption('yes', 'y', InputOption::VALUE_NONE, 'Don\'t ask confirmation')
             ->addArgument('movie-id', null, 'Movie ID or URL')
             ->setHelp(<<<EOT
@@ -31,7 +32,7 @@ class WeburgDownload extends Command
 
 You can automatically download popular torrents from http://weburg.net/movies/new out of the box, use command:
 ```
-transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory
+transmission-cli weburg-download --download-torrents-dir=/path/to/torrents/directory [--limit=10]
 ```
 
 or define `download-torrents-dir` in config and just:
@@ -99,6 +100,12 @@ EOT
                 if (empty($torrentsUrls)) {
                     $output->writeln("\nNo torrents for download");
                     return;
+                }
+
+                $limit = $input->getOption('limit');
+                if ($limit && count($torrentsUrls) > $limit) {
+                    $output->writeln("\nLimit list from " . count($torrentsUrls) . " to $limit");
+                    $torrentsUrls = array_slice($torrentsUrls, 0, $limit);
                 }
 
                 $downloadedFiles = [];
